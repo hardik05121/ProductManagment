@@ -14,6 +14,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 namespace ProductManagment_DataAccess.Data
 {
 // this is browser edit.
+
+    //push this code thropugh the vs code.
     public  class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
