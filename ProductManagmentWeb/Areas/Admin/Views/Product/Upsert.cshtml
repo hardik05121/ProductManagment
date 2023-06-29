@@ -1,0 +1,173 @@
+﻿@model ProductVM
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2"> @(Model.Product.Id != 0 ? "Update" : "Create") Product</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <input asp-for="Product.Id" hidden />
+            <div class="row">
+                <div class="col-12">
+                    <div class="border p-3">
+
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.Name" class="form-control border-0 shadow" />
+                            <label asp-for="Product.Name" class="ms-2"></label>
+                            <span asp-validation-for="Product.Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.Code" class="form-control border-0 shadow" />
+                            <label asp-for="Product.Code" class="ms-2"></label>
+                            <span asp-validation-for="Product.Code" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Product.BrandId" asp-items="@Model.BrandList" id="Brand" class="form-select border-0 shadow">
+                                <option disabled selected>--Select Brand--</option>
+                            </select>
+                            <label asp-for="Product.BrandId" class="ms-2"></label>
+                            <span asp-validation-for="Product.BrandId" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Product.CategoryId" asp-items="@Model.CategoryList" id="Category" class="form-select border-0 shadow">
+                                <option disabled selected>--Select Category--</option>
+                            </select>
+                            <label asp-for="Product.CategoryId" class="ms-2"></label>
+                            <span asp-validation-for="Product.CategoryId" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Product.UnitId" asp-items="@Model.UnitList" id="Unit" class="form-select border-0 shadow">
+                                <option disabled selected>--Select Unit--</option>
+                            </select>
+                            <label asp-for="Product.UnitId" class="ms-2"></label>
+                            <span asp-validation-for="Product.UnitId" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Product.WarehouseId" asp-items="@Model.WarehouseList" id="Warehouse" class="form-select border-0 shadow">
+                                <option disabled selected>--Select Warehouse--</option>
+                            </select>
+                            <label asp-for="Product.WarehouseId" class="ms-2"></label>
+                            <span asp-validation-for="Product.WarehouseId" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Product.TaxId" asp-items="@Model.TaxList" id="Tax" class="form-select border-0 shadow">
+                                <option disabled selected>--Select TaxId--</option>
+                            </select>
+                            <label asp-for="Product.TaxId" class="ms-2"></label>
+                            <span asp-validation-for="Product.TaxId" class="text-danger"></span>
+                        </div>
+
+
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.SkuCode" class="form-control border-0 shadow" />
+                            <label asp-for="Product.SkuCode" class="ms-2"></label>
+                            <span asp-validation-for="Product.SkuCode" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.SkuName" class="form-control border-0 shadow" />
+                            <label asp-for="Product.SkuName" class="ms-2"></label>
+                            <span asp-validation-for="Product.SkuName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.SalesPrice" class="form-control border-0 shadow" />
+                            <label asp-for="Product.SalesPrice" class="ms-2"></label>
+                            <span asp-validation-for="Product.SalesPrice" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.PurchasePrice" class="form-control border-0 shadow" />
+                            <label asp-for="Product.PurchasePrice" class="ms-2"></label>
+                            <span asp-validation-for="Product.PurchasePrice" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.Mrp" class="form-control border-0 shadow" />
+                            <label asp-for="Product.Mrp" class="ms-2"></label>
+                            <span asp-validation-for="Product.Mrp" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.BarcodeNumber" class="form-control border-0 shadow" />
+                            <label asp-for="Product.BarcodeNumber" class="ms-2"></label>
+                            <span asp-validation-for="Product.BarcodeNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Product.Description" class="form-control border-0 shadow" />
+                            <label asp-for="Product.Description" class="ms-2"></label>
+                            <span asp-validation-for="Product.Description" class="text-danger"></span>
+                        </div>
+
+                        @if (Model.Product.Id != 0)
+                        {
+                            <div class="form-floating py-2 col-12">
+                                <input asp-for="Product.UpdatedDate" type="date" class="form-control border-0 shadow" />
+                                <label asp-for="Product.UpdatedDate" class="ms-2"></label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-floating py-2 col-12">
+                                <input asp-for="Product.CreatedDate" type="date" class="form-control border-0 shadow" />
+                                <label asp-for="Product.CreatedDate" class="ms-2"></label>
+                            </div>
+                        }
+
+                        <div class="form-floating py-2 col-12">
+                            <input type="file" name="file" class="form-control border-0 shadow" />
+                            <label asp-for="Product.ProductImage" class="ms-2"></label>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Product.IsActive"></label>
+                            <input asp-for="Product.IsActive" type="checkbox" value="true" />
+                        </div>
+
+
+
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-3">
+                                @if (Model.Product.Id != 0)
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">Update</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">Create</button>
+                                }
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                    Back to List
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-2">
+                    <img src="@Model.Product.ProductImage" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+                </div>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
+        });
+    </script>
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+} 

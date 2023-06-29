@@ -1,0 +1,181 @@
+﻿@model InventoryVM
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">
+                  @*   @(Model.Inventory.Id != 0 ? "Update" : "Create") City</h2>  *@
+                  @if (Model.Inventory.Id != 0)
+                {
+                     //   <p>Manage Inventory For</p>  <span>  @Model.Inventory.Product.Name </span>
+                }
+                else
+                {
+                        <p>Manage Inventory For</p>
+                } 
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <input asp-for="Inventory.Id" hidden />
+            <div class="row">
+                <div class="col-12">
+                    <div class="border p-3">
+                        @*   @(Model.Product.Id != 0 ? "Update" : "Create") City</h2> *@
+                         @if (Model.Inventory.Id != 0)
+                        {
+                            <div class="form-floating py-2 col-12" style="display:none;">
+                                <select asp-for="@Model.Inventory.ProductId"  asp-items="@Model.ProductList" class="form-select border-0 shadow">
+                                    <option disabled selected>--Select Product--</option>
+                                </select>
+                                <label asp-for="Inventory.ProductId" class="ms-2"></label>
+                                <span asp-validation-for="Inventory.ProductId" class="text-danger"></span>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-floating py-2 col-12">
+                                <select asp-for="@Model.Inventory.ProductId" asp-items="@Model.ProductList" class="form-select border-0 shadow">
+                                    <option disabled selected>--Select Product--</option>
+                                </select>
+                                <label asp-for="Inventory.ProductId" class="ms-2"></label>
+                                <span asp-validation-for="Inventory.ProductId" class="text-danger"></span>
+                            </div>
+                        } 
+                        @*<div asp-validation-summary="ModelOnly"></div>*@
+                       
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Inventory.Stock" class="form-control border-0 shadow" />
+                            <label asp-for="Inventory.Stock" class="ms-2"></label>
+                            <span asp-validation-for="Inventory.Stock" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Inventory.UnitId" asp-items="@Model.UnitList" class="form-select border-0 shadow">
+                                <option disabled selected>--Select BaseUnit--</option>
+                            </select>
+                            <label asp-for="Inventory.UnitId" class="ms-2"></label>
+                            <span asp-validation-for="Inventory.UnitId" class="text-danger"></span>
+                        </div>
+
+                         <div class="form-floating py-2 col-12">
+                            <input asp-for="Inventory.UnitPrice" class="form-control border-0 shadow" />
+                            <label asp-for="Inventory.UnitPrice" class="ms-2"></label>
+                            <span asp-validation-for="Inventory.UnitPrice" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-floating py-2 col-12">
+                            <select  asp-for="@Model.Inventory.WarehouseId" asp-items="@Model.WarehouseList" class="form-select border-0 shadow">
+                                <option disabled selected>--Select Product--</option>
+                            </select>
+                            <label asp-for="Inventory.WarehouseId" class="ms-2"></label>
+                            <span asp-validation-for="Inventory.WarehouseId" class="text-danger"></span>
+                        </div>
+
+
+
+
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-3">
+                                @if (Model.Inventory.Id != 0)
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">Update</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">Create</button>
+                                }
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <a asp-controller="Inventory" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                    Back to List
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#Input_Role').change(function () {
+                var selection = $('#Input_Role Option:Selected').text();
+                if (selection == 'Company') {
+                    $('#Input_CompanyId').show();
+                }
+                else {
+                    $('#Input_CompanyId').hide();
+                }
+            })
+        })
+    </script>
+
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
+        });
+    </script>
+    <script src="https://cdn.tiny.cloud/1/your-tinymce-script.js" referrerpolicy="origin"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#City_CountryId").change(function () {
+                var countryId = $(this).val();
+                $.ajax({
+                    url: '@Url.Action("GetStatesByCountry", "City")',
+                    // url: '/City/getCitiesByState',
+                    type: 'GET',
+                    //dataType: 'json'
+                    data: { countryId: countryId },
+                    success: function (data) {
+                        $("#City_StateId").empty();
+                        $("#City_StateId").append('<option disabled selected>--Select State--</option>');
+                        // alert(data);
+                        $.each(data, function (i, state) {
+                            // alert(i);
+                            $("#City_StateId").append($('<option></option>').val(state.id).text(state.stateName));
+                        });
+                    }
+                });
+            });
+
+            $("#City_StateId").change(function () {
+                var stateId = $(this).val();
+                $.ajax({
+                    url: '@Url.Action("GetCitiesByState", "City")',
+                    //  url: '/City/GetStatesByCountry',
+                    type: 'GET',
+                    data: { stateId: stateId },
+                    success: function (data) {
+                        $("#City_Id").empty();
+                        $("#City_Id").append('<option disabled selected>--Select City--</option>');
+                        $.each(data, function (i, city) {
+
+                            $("#City_Id").append($('<option></option>').val(city.id).text(city.cityName));
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+}
