@@ -3,17 +3,10 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProductManagment_Models.Models;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ProductManagment_DataAccess.Data
 {
-    // this is browser edit.
+
 
     public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {

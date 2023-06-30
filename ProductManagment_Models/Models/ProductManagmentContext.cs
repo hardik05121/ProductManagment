@@ -41,7 +41,6 @@ public partial class ProductManagmentContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
-
     public virtual DbSet<State> States { get; set; }
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -51,7 +50,6 @@ public partial class ProductManagmentContext : DbContext
     public virtual DbSet<Unit> Units { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
 
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
@@ -241,7 +239,6 @@ public partial class ProductManagmentContext : DbContext
                 .HasConstraintName("FK_Suppliers_States");
         });
 
-    
 
         OnModelCreatingPartial(modelBuilder);
     }
