@@ -9,11 +9,11 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCateg.ory.Database;
 
 namespace ProductManagment_DataAccess.Data
 {
 // this is try by deep
+//this is try by jaydev
 
     public  class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
