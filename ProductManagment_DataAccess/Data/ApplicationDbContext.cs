@@ -13,7 +13,7 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace ProductManagment_DataAccess.Data
 {
-// this is browser edit.
+
 
     public  class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
