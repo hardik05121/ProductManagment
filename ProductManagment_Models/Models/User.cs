@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProductManagment_Models.Models;
 
-public partial class User
+public partial class User : IdentityUser
 {
     [Key]
     [StringLength(50)]
@@ -23,14 +25,6 @@ public partial class User
     [StringLength(450)]
     public string? Email { get; set; }
 
-    [StringLength(50)]
-    public string Password { get; set; } = null!;
-
-    [StringLength(50)]
-    public string ConfirmPassword { get; set; } = null!;
-
-    public int RoleId { get; set; }
-
     [StringLength(450)]
     public string? Address { get; set; }
 
@@ -39,7 +33,11 @@ public partial class User
 
     public DateTime? CreatedDate { get; set; }
 
-    [ForeignKey("RoleId")]
-    [InverseProperty("Users")]
-    public virtual Role Role { get; set; } = null!;
+    [NotMapped]
+    public string RoleId { get; set; }
+    [NotMapped]
+    public string Role { get; set; }
+    [NotMapped]
+    public IEnumerable<SelectListItem> RoleList { get; set; }
+
 }

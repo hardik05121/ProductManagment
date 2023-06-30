@@ -41,7 +41,6 @@ public partial class ProductManagmentContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<State> States { get; set; }
 
@@ -53,7 +52,6 @@ public partial class ProductManagmentContext : DbContext
 
     public virtual DbSet<User> Users { get; set; }
 
-    public virtual DbSet<UserRole> UserRoles { get; set; }
 
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
@@ -243,19 +241,7 @@ public partial class ProductManagmentContext : DbContext
                 .HasConstraintName("FK_Suppliers_States");
         });
 
-        modelBuilder.Entity<User>(entity =>
-        {
-            entity.HasOne(d => d.Role).WithMany(p => p.Users)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Users_Roles1");
-        });
-
-        modelBuilder.Entity<UserRole>(entity =>
-        {
-            entity.HasOne(d => d.Role).WithMany(p => p.UserRoles)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_UserRoles_Roles");
-        });
+    
 
         OnModelCreatingPartial(modelBuilder);
     }
