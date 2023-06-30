@@ -7,7 +7,7 @@ using System;
 namespace ProductManagment_DataAccess.Data
 {
 
-    // try to deep
+    
     public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
