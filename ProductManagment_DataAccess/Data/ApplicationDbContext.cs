@@ -15,7 +15,6 @@ namespace ProductManagment_DataAccess.Data
 {
 // this is browser edit.
 
-    //push this code thropugh the vs code.
     public  class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
@@ -49,7 +48,6 @@ namespace ProductManagment_DataAccess.Data
 
         public virtual DbSet<Product> Products { get; set; }
 
-        public virtual DbSet<Role> Roles { get; set; }
 
         public virtual DbSet<State> States { get; set; }
 
@@ -60,8 +58,6 @@ namespace ProductManagment_DataAccess.Data
         public virtual DbSet<Unit> Units { get; set; }
 
         public virtual DbSet<User> Users { get; set; }
-
-        public virtual DbSet<UserRole> UserRoles { get; set; }
 
         public virtual DbSet<Warehouse> Warehouses { get; set; }
     }

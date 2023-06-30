@@ -19,15 +19,12 @@ namespace ProductManagment_DataAccess.Repository
         public ICountryRepository Country { get; private set; }
         public ICustomerRepository Customer { get; private set; }
         public IProductRepository Product { get; private set; }
-        public IRoleRepository Role { get; private set; }
         public IStateRepository State { get; private set; }
         public ISupplierRepository Supplier { get; private set; }
         public ITaxRepository Tax { get; private set; }
         public IUnitRepository Unit { get; private set; }
 
         public IUserRepository User { get; private set; }
-
-        public IUserRoleRepository UserRole { get; private set; }
 
         public IWarehouseRepository Warehouse { get; private set; }
         public IInventoryRepository Inventory { get; private set; }
@@ -48,13 +45,11 @@ namespace ProductManagment_DataAccess.Repository
             Country = new CountryRepository(_db);
             Customer = new CustomerRepository(_db);
             Product = new ProductRepository(_db);
-            Role = new RoleRepository(_db);
             State = new StateRepository(_db);
             Supplier = new SupplierRepository(_db);
             Tax = new TaxRepository(_db);
             Unit = new UnitRepository(_db);
             User = new UserRepository(_db);
-            UserRole = new UserRoleRepository(_db);
             Warehouse = new WarehouseRepository(_db);
             Inventory = new InventoryRepository(_db);
             Inquiry = new InquiryRepository(_db);

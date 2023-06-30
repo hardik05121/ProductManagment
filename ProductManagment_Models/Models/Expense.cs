@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProductManagment_Models.Models;
@@ -34,6 +33,5 @@ public partial class Expense
 
     [ForeignKey("ExpenseCategoryId")]
     [InverseProperty("Expenses")]
-    [ValidateNever]
     public virtual ExpenseCategory ExpenseCategory { get; set; } = null!;
 }

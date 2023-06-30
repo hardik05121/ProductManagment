@@ -15,13 +15,11 @@ namespace ProductManagment_DataAccess.Repository.IRepository
         ICountryRepository Country { get; }
         ICustomerRepository Customer { get; }
         IProductRepository Product { get; }
-        IRoleRepository Role { get; }
         IStateRepository State { get; }
         ISupplierRepository Supplier { get; }
         ITaxRepository Tax { get; }
         IUnitRepository Unit { get; }
         IUserRepository User { get; }
-        IUserRoleRepository UserRole { get; }
         IWarehouseRepository Warehouse { get; }
         IInventoryRepository Inventory { get; }
         IExpenseCategoryRepository ExpenseCategory { get; }
