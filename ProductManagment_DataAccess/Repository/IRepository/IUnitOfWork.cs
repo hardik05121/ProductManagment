@@ -15,6 +15,7 @@ namespace ProductManagment_DataAccess.Repository.IRepository
         ICountryRepository Country { get; }
         ICustomerRepository Customer { get; }
         IProductRepository Product { get; }
+
         IStateRepository State { get; }
         ISupplierRepository Supplier { get; }
         ITaxRepository Tax { get; }

@@ -6,9 +6,9 @@ using System;
 
 namespace ProductManagment_DataAccess.Data
 {
-// this is try by deep
 
-    public  class ApplicationDbContext : IdentityDbContext<IdentityUser>
+
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -40,7 +40,6 @@ namespace ProductManagment_DataAccess.Data
         public virtual DbSet<Inventory> Inventorys { get; set; }
 
         public virtual DbSet<Product> Products { get; set; }
-
 
         public virtual DbSet<State> States { get; set; }
 

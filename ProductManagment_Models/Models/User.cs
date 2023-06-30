@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProductManagment_Models.Models;
 
-public partial class User
+public partial class User : IdentityUser
 {
     [Key]
     [StringLength(50)]
@@ -28,6 +30,12 @@ public partial class User
 
     [StringLength(450)]
     public string? UserImage { get; set; }
-
     public DateTime? CreatedDate { get; set; }
+    [NotMapped]
+    public string RoleId { get; set; }
+    [NotMapped]
+    public string Role { get; set; }
+    [NotMapped]
+    public IEnumerable<SelectListItem> RoleList { get; set; }
+
 }

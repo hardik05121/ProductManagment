@@ -239,6 +239,7 @@ public partial class ProductManagmentContext : DbContext
                 .HasConstraintName("FK_Suppliers_States");
         });
 
+
         OnModelCreatingPartial(modelBuilder);
     }
 
