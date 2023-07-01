@@ -30,9 +30,7 @@ public partial class User : IdentityUser
 
     [StringLength(450)]
     public string? UserImage { get; set; }
-
     public DateTime? CreatedDate { get; set; }
-
     [NotMapped]
     public string RoleId { get; set; }
     [NotMapped]

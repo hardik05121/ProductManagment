@@ -12,6 +12,7 @@ public partial class Brand
     public int Id { get; set; }
 
     [StringLength(50)]
+    [MaxLength(10, ErrorMessage = "BrandName must be 10 characters or less")]
     public string BrandName { get; set; } = null!;
 
     [StringLength(450)]

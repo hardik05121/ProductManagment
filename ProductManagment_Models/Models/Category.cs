@@ -12,6 +12,7 @@ public partial class Category
     public int Id { get; set; }
 
     [StringLength(50)]
+    [MaxLength(10, ErrorMessage = "Name must be 10 characters or less")]
     public string Name { get; set; } = null!;
 
     [StringLength(450)]

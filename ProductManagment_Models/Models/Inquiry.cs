@@ -18,13 +18,21 @@ public partial class Inquiry
     public string ContactPerson { get; set; } = null!;
 
     [StringLength(50)]
+    [RegularExpression(@"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}", ErrorMessage = "Please enter correct email")]
+    [DataType(DataType.EmailAddress)]
     public string? Email { get; set; }
-
+    [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$",
+              ErrorMessage = "Entered phone format is not valid.")]
     public long? MobileNumber { get; set; }
+    [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$",
+              ErrorMessage = "Entered phone format is not valid.")]
 
     public long? PhoneNumber { get; set; }
 
     [StringLength(450)]
+    [Required(ErrorMessage = "Please enter the product URL.")]
+    [RegularExpression(@"^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$",
+        ErrorMessage = "Please enter a valid URL.")]
     public string? Website { get; set; }
 
     [StringLength(450)]
