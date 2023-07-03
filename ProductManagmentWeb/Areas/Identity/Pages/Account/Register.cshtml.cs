@@ -48,6 +48,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
             IWebHostEnvironment webHostEnvironment,
 
             IUnitOfWork unitOfWork)
+
         {
             _unitOfWork = unitOfWork;
             _roleManager = roleManager;
@@ -115,16 +116,22 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-
+            [Display(Name = "Select Role")]
             public string? Role { get; set; }
             [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
 
             [Required]
+            [Display(Name = "FirstName*")]
             public string FirstName { get; set; }
+            [Required]
+            [Display(Name = "LastName*")]
             public string? LastName { get; set; }
+            [Display(Name = "MobileNumber")]
             public string? MobileNumber { get; set; }
+            [Display(Name = "Address")]
             public string? Address { get; set; }
+            [Display(Name = "UserImage")]
             public string? UserImage { get; set; }
 
 

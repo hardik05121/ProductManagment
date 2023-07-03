@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using System.Drawing.Drawing2D;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -45,20 +46,38 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Upsert(Tax tax)
         {
+
             if (ModelState.IsValid)
             {
 
                 if (tax.Id == 0)
                 {
-                    _unitOfWork.Tax.Add(tax);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Tax created successfully";
+                    Tax taxObj = _unitOfWork.Tax.Get(u => u.Name == tax.Name);
+                    if(taxObj != null)
+                    {
+                        TempData["error"] = "Tax Name Already Exist!";
+                    }
+                    else
+                    {
+
+                        _unitOfWork.Tax.Add(tax);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Tax created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Tax.Update(tax);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Tax Updated successfully";
+                    Tax taxObj = _unitOfWork.Tax.Get(u => u.Id != tax.Id && u.Name == tax.Name);
+                    if (taxObj != null)
+                    {
+                        TempData["error"] = "Tax Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Tax.Update(tax);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Tax Updated successfully";
+                    }
                 }
                 return RedirectToAction("Index");
             }

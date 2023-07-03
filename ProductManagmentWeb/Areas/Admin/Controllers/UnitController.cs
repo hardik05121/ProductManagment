@@ -50,15 +50,32 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
                 if (unit.Id == 0)
                 {
-                    _unitOfWork.Unit.Add(unit);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Unit created successfully";
+                    Unit unitObj = _unitOfWork.Unit.Get(u => u.UnitName == unit.UnitName);
+                    if (unitObj != null)
+                    {
+                        TempData["error"] = "Unit Name Already Exist!";
+                    }
+                    else
+                    {
+
+                        _unitOfWork.Unit.Add(unit);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Unit created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Unit.Update(unit);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Unit Updated successfully";
+                    Unit unitObj = _unitOfWork.Unit.Get(u => u.Id != unit.Id && u.UnitName == unit.UnitName);
+                    if (unitObj != null)
+                    {
+                        TempData["error"] = "Tax Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Unit.Update(unit);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Tax Updated successfully";
+                    }
                 }
                 return RedirectToAction("Index");
             }
