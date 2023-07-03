@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using System.Drawing.Drawing2D;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -47,18 +48,33 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 if (inquirySource.Id == 0)
                 {
-                    _unitOfWork.InquirySource.Add(inquirySource);
-                    _unitOfWork.Save();
-                    TempData["success"] = "InquirySource created successfully";
+                    InquirySource inquirySourceobj = _unitOfWork.InquirySource.Get(u => u.InquirySourceName == inquirySource.InquirySourceName);
+                    if (inquirySourceobj != null)
+                    {
+                        TempData["error"] = "InquirySource Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.InquirySource.Add(inquirySource);
+                        _unitOfWork.Save();
+                        TempData["success"] = "InquirySource created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.InquirySource.Update(inquirySource);
-                    _unitOfWork.Save();
-                    TempData["success"] = "InquirySource Updated successfully";
+                    InquirySource inquirySourceobj = _unitOfWork.InquirySource.Get(u => u.Id != inquirySource.Id && u.InquirySourceName == inquirySource.InquirySourceName);
+                    if (inquirySourceobj != null)
+                    {
+                        TempData["error"] = "Brand Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.InquirySource.Update(inquirySource);
+                        _unitOfWork.Save();
+                        TempData["success"] = "InquirySource Updated successfully";
+                    }
                 }
                 return RedirectToAction("Index");
             }
