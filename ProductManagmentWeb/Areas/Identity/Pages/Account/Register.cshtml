@@ -27,22 +27,22 @@
                         <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3 col-md-6">
-                        <input asp-for="Input.FirstName" class="form-control" placeholder="name@example.com" />
+                        <input asp-for="Input.FirstName" class="form-control" placeholder="First Name" />
                         <label asp-for="Input.FirstName" class="ms-2 text-muted">First Name</label>
                         <span asp-validation-for="Input.FirstName" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3 col-md-6">
-                        <input asp-for="Input.LastName" class="form-control" placeholder="name@example.com" />
+                        <input asp-for="Input.LastName" class="form-control" placeholder="Last Name" />
                         <label asp-for="Input.LastName" class="ms-2 text-muted">Last Name</label>
                         <span asp-validation-for="Input.LastName" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3 col-md-6">
-                        <input asp-for="Input.MobileNumber" class="form-control" placeholder="name@example.com" />
+                        <input asp-for="Input.MobileNumber" class="form-control" placeholder="Mobile Number" />
                         <label asp-for="Input.MobileNumber" class="ms-2 text-muted">Mobile Number</label>
                         <span asp-validation-for="Input.MobileNumber" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3 col-md-6">
-                        <input asp-for="Input.Address" class="form-control" placeholder="name@example.com" />
+                        <input asp-for="Input.Address" class="form-control" placeholder="Address" />
                         <label asp-for="Input.Address" class="ms-2 text-muted">Address</label>
                         <span asp-validation-for="Input.Address" class="text-danger"></span>
                     </div>
@@ -56,7 +56,7 @@
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3 col-md-6">
-                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="Confirm Password" />
                         <label asp-for="Input.ConfirmPassword" class="ms-2 text-muted">Confirm Password</label>
                         <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                     </div>
@@ -79,6 +79,7 @@
                     </div>
                 </form>
             </div>
+
             @if (!User.IsInRole(SD.Role_Admin))
             {
                 <div class="col-md-12 p-3 text-center">

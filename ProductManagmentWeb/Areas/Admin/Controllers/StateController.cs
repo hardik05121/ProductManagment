@@ -6,6 +6,7 @@ using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
 using System.Data;
+using System.Drawing.Drawing2D;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -69,20 +70,34 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             {
                 if (stateVM.State.Id == 0)
                 {
-                    _unitOfWork.State.Add(stateVM.State);
-                    _unitOfWork.Save();
-                    TempData["success"] = "State Created successfully";
+                    State stateObj = _unitOfWork.State.Get(u => u.StateName == stateVM.State.StateName && u.CountryId == stateVM.State.CountryId);
+                    if (stateObj != null)
+                    {
+                        TempData["error"] = "State Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.State.Add(stateVM.State);
+                        _unitOfWork.Save();
+                        TempData["success"] = "State Created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.State.Update(stateVM.State);
-                    _unitOfWork.Save();
-                    TempData["success"] = "State Updated successfully";
+                    State stateObj = _unitOfWork.State.Get(u => u.Id != stateVM.State.Id && u.StateName == stateVM.State.StateName);
+                    if (stateObj != null)
+                    {
+                        TempData["error"] = "State Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.State.Update(stateVM.State);
+                        _unitOfWork.Save();
+                        TempData["success"] = "State Updated successfully";
+                    }
                 }
                 return RedirectToAction("Index");
             }
-
-
             else
             {
                 stateVM.CountryList = _unitOfWork.Country.GetAll().Select(u => new SelectListItem

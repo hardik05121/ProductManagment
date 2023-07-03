@@ -91,19 +91,34 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     supplierVM.Supplier.SupplierImage = @"\images\supplier\" + fileName;
                 }
 
-
-
                 if (supplierVM.Supplier.Id == 0)
                 {
-                    _unitOfWork.Supplier.Add(supplierVM.Supplier);
+                    Supplier supplierObj = _unitOfWork.Supplier.Get(u => u.SupplierName == supplierVM.Supplier.SupplierName);
+                    if (supplierObj != null)
+                    {
+                        TempData["error"] = "Supplier Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Supplier.Add(supplierVM.Supplier);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Supplier created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Supplier.Update(supplierVM.Supplier);
+                    Supplier supplierObj = _unitOfWork.Supplier.Get(u => u.Id != supplierVM.Supplier.Id && u.SupplierName == supplierVM.Supplier.SupplierName);
+                    if (supplierObj != null)
+                    {
+                        TempData["error"] = "Supplier Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Supplier.Update(supplierVM.Supplier);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Supplier Updated successfully";
+                    }
                 }
-
-                _unitOfWork.Save();
-                TempData["success"] = "Supplier created successfully";
                 return RedirectToAction("Index");
             }
             else

@@ -49,7 +49,7 @@ public partial class Product
 
     public long? BarcodeNumber { get; set; }
 
-    [StringLength(50, MinimumLength = 50)]
+    [StringLength(50, MinimumLength = 5)]
     public string? Description { get; set; }
 
     public bool IsActive { get; set; }
