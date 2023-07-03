@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using System.Drawing.Drawing2D;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -50,15 +51,32 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
                 if (country.Id == 0)
                 {
-                    _unitOfWork.Country.Add(country);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Country created successfully";
+                    Country countryObj = _unitOfWork.Country.Get(u => u.CountryName == country.CountryName);
+                    if (countryObj != null)
+                    {
+                        TempData["error"] = "Country Name Already Exist!";
+                    }
+                    else
+                    {
+
+                        _unitOfWork.Country.Add(country);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Country created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Country.Update(country);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Country Updated successfully";
+                    Country countryObj = _unitOfWork.Country.Get(u => u.Id != country.Id && u.CountryName == country.CountryName);
+                    if (countryObj != null)
+                    {
+                        TempData["error"] = "Country Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Country.Update(country);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Country Updated successfully";
+                    }
                 }
                 return RedirectToAction("Index");
             }
