@@ -33,6 +33,29 @@
         [Display(Name = "Joining Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime JoiningDate { get; set; } *@
+        public DateTime JoiningDate { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
+        
+
+        Connectionn String:-
+        {
+        "Logging": {
+        "LogLevel": {
+        "Default": "Information",
+        "Microsoft.AspNetCore": "Warning"
+        }
+        },
+        "AllowedHosts": "*",
+        "ConnectionStrings": {
+
+        "defaultconnection": "Server=HARDIK\\SQLEXPRESS;Database=ProductManagment;Trusted_Connection=True;Encrypt=False;"
+
+        }
+        }
+        *@
     </p>
 </div>

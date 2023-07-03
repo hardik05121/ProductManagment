@@ -44,20 +44,37 @@ namespace ProductManagment.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Upsert(Warehouse warehouse)
         {
-            if (ModelState.IsValid)
+           if (ModelState.IsValid)
             {
 
                 if (warehouse.Id == 0)
                 {
-                    _unitOfWork.Warehouse.Add(warehouse);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Warehousy created successfully";
+                    Warehouse warehouseObj = _unitOfWork.Warehouse.Get(u => u.WarehouseName == warehouse.WarehouseName);
+                    if (warehouseObj != null)
+                    {
+                        TempData["error"] = "Warehouse Name Already Exist!";
+                    }
+                    else
+                    {
+
+                        _unitOfWork.Warehouse.Add(warehouse);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Warehouse created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Warehouse.Update(warehouse);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Warehousy Updated successfully";
+                    Warehouse warehouseObj = _unitOfWork.Warehouse.Get(u => u.Id != warehouse.Id && u.WarehouseName == warehouse.WarehouseName);
+                    if (warehouseObj != null)
+                    {
+                        TempData["error"] = "Warehouse Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Warehouse.Update(warehouse);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Warehouse Updated successfully";
+                    }
                 }
                 return RedirectToAction("Index");
             }
