@@ -87,17 +87,13 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     _unitOfWork.Save();
                     TempData["success"] = "Brand Updated successfully";
                 }
-
+;
 
                 return RedirectToAction("Index");
             }
             else
             {
-                //productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
-                //{
-                //    Text = u.Name,
-                //    Value = u.Id.ToString()
-                //});
+            
                 return View(brand);
             }
         }

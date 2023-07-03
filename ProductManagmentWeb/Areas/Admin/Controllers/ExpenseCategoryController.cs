@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using System.Drawing.Drawing2D;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -50,23 +51,46 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
                 if (expenseCategory.Id == 0)
                 {
-                    _unitOfWork.ExpenseCategory.Add(expenseCategory);
-                    _unitOfWork.Save();
-                    TempData["success"] = "ExpenseCategory created successfully";
+
+                    ExpenseCategory expenseCategoryobj = _unitOfWork.ExpenseCategory.Get(u => u.ExpenseCategoryName == expenseCategory.ExpenseCategoryName);
+                    if (expenseCategoryobj != null)
+                    {
+                        TempData["error"] = "ExpenseCategory Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.ExpenseCategory.Add(expenseCategory);
+                        _unitOfWork.Save();
+                        TempData["success"] = "ExpenseCategory created successfully";
+                    }
+
                 }
                 else
                 {
-                    _unitOfWork.ExpenseCategory.Update(expenseCategory);
-                    _unitOfWork.Save();
-                    TempData["success"] = "ExpenseCategory Updated successfully";
+                    ExpenseCategory expenseCategoryobj = _unitOfWork.ExpenseCategory.Get(u => u.Id != expenseCategory.Id && u.ExpenseCategoryName == expenseCategory.ExpenseCategoryName);
+                    if (expenseCategoryobj != null)
+                    {
+                        TempData["error"] = "ExpenseCategory Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.ExpenseCategory.Update(expenseCategory);
+                        _unitOfWork.Save();
+                        TempData["success"] = "ExpenseCategory Updated successfully";
+                    }
+
                 }
+
                 return RedirectToAction("Index");
             }
             else
             {
-                return View(expenseCategory);
+                return View(expenseCategory); 
             }
+
+         
         }
+
         #endregion
 
         #region API CALLS
