@@ -51,7 +51,7 @@ namespace ProductManagment.Areas.Admin.Controllers
             if (await _roleManager.RoleExistsAsync(roleObj.Name))
             {
                 //errr
-                TempData["success"] = "Role Already Exist!";
+                TempData["error"] = "Role Already Exist!";
                 return RedirectToAction(nameof(Index));
 
             }

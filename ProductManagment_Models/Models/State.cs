@@ -12,8 +12,10 @@ public partial class State
     public int Id { get; set; }
 
     [StringLength(50)]
+    [Display(Name = "StateName*")]
     public string StateName { get; set; } = null!;
 
+    [Display(Name = "Select YourCountry")]
     public int CountryId { get; set; }
 
     public bool IsActive { get; set; }
@@ -40,3 +42,6 @@ public partial class State
     [InverseProperty("State")]
     public virtual ICollection<Supplier> SupplierStates { get; set; } = new List<Supplier>();
 }
+
+
+

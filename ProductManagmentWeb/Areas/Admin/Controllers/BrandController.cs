@@ -75,29 +75,44 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     brand.BrandImage = @"\images\brand\" + fileName;
                 }
 
+
+
                 if (brand.Id == 0)
                 {
-                    _unitOfWork.Brand.Add(brand);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Brand created successfully";
+                    Brand brandObj = _unitOfWork.Brand.Get(u => u.BrandName == brand.BrandName);
+                    if (brandObj != null)
+                    {
+                        TempData["error"] = "Brand Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Brand.Add(brand);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Brand created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Brand.Update(brand);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Brand Updated successfully";
-                }
+                    Brand brandObj = _unitOfWork.Brand.Get(u => u.Id != brand.Id && u.BrandName == brand.BrandName);
+                    if (brandObj != null)
+                    {
+                        TempData["error"] = "Brand Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Brand.Update(brand);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Brand Updated successfully";
+                    }
 
+                }
+;
 
                 return RedirectToAction("Index");
             }
             else
             {
-                //productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem
-                //{
-                //    Text = u.Name,
-                //    Value = u.Id.ToString()
-                //});
+            
                 return View(brand);
             }
         }
