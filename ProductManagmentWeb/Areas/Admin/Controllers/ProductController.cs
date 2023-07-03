@@ -107,18 +107,50 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     productVM.Product.ProductImage = @"\images\product\" + fileName;
                 }
 
+                //if (productVM.Product.Id == 0)
+                //{
+                //    _unitOfWork.Product.Add(productVM.Product);
+                //    _unitOfWork.Save();
+                //    TempData["success"] = "Product created successfully";
+                //}
+                //else
+                //{
+                //    _unitOfWork.Product.Update(productVM.Product);
+                //    _unitOfWork.Save();
+                //    TempData["success"] = "Product Updated successfully";
+                //}
+
+
                 if (productVM.Product.Id == 0)
                 {
-                    _unitOfWork.Product.Add(productVM.Product);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Product created successfully";
+                    Product productObj = _unitOfWork.Product.Get(u => u.Name == productVM.Product.Name);
+                    if (productObj != null)
+                    {
+                        TempData["error"] = "Product Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Product.Add(productVM.Product);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Product created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Product.Update(productVM.Product);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Product Updated successfully";
+                    Product productObj = _unitOfWork.Product.Get(u => u.Id != productVM.Product.Id && u.Name == productVM.Product.Name);
+                    if (productObj != null)
+                    {
+                        TempData["error"] = "Product Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Product.Update(productVM.Product);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Product Updated successfully";
+                    }
+
                 }
+
 
                 return RedirectToAction("Index");
             }
