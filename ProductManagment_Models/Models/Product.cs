@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 
 namespace ProductManagment_Models.Models;
@@ -70,10 +71,12 @@ public partial class Product
 
     [ForeignKey("BrandId")]
     [InverseProperty("Products")]
+    [ValidateNever]
     public virtual Brand Brand { get; set; } = null!;
 
     [ForeignKey("CategoryId")]
     [InverseProperty("Products")]
+    [ValidateNever]
     public virtual Category Category { get; set; } = null!;
 
     [InverseProperty("Product")]
@@ -84,14 +87,17 @@ public partial class Product
 
     [ForeignKey("TaxId")]
     [InverseProperty("Products")]
+    [ValidateNever]
     public virtual Tax Tax { get; set; } = null!;
 
     [ForeignKey("UnitId")]
     [InverseProperty("Products")]
+    [ValidateNever]
     public virtual Unit Unit { get; set; } = null!;
 
     [ForeignKey("WarehouseId")]
     [InverseProperty("Products")]
+    [ValidateNever]
     public virtual Warehouse Warehouse { get; set; } = null!;
 }
 
