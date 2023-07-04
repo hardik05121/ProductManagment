@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <table id="tblData" class="table table-bordered table-striped" style="width:100%">
+        <table id="tblData" class="table table-bordered table-striped display" style="width:100%">
             <thead>
                 <tr>
                     <th>Brand Name</th>
@@ -29,11 +29,44 @@
                     <th></th>
                 </tr>
             </thead>
+            <tfoot>
+                <tr>
+                    <th>Brand Name</th>
+                    <th>Brand Name</th>
+                   @*  <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th> *@
+                </tr>
+            </tfoot>
+
         </table>
 
     </div>
 </div>
 
 @section Scripts{
-    <script src="~/js/brand.js"></script>432
+    <script src="~/js/brand.js"></script>
+    <script>
+        $('#tblData').DataTable({
+            initComplete: function () {
+                this.api()
+                    .columns()
+                    .every(function () {
+                        var column = this;
+                        var title = column.footer().textContent;
+
+                        // Create input element and add event listener
+                        $('<input type="text" placeholder="Search ' + title + '" />')
+                            .appendTo($(column.footer()).empty())
+                            .on('keyup change clear', function () {
+                                if (column.search() !== this.value) {
+                                    column.search(this.value).draw();
+                                }
+                            });
+                    });
+            },
+        });
+    </script>
+    <link rel="stylesheet" href="~/css/brand.css" asp-append-version="true" />
 }

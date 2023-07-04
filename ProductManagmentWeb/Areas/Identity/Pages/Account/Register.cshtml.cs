@@ -141,8 +141,6 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-
-
             Input = new()
             {
                 RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
@@ -150,11 +148,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
                     Text = i,
                     Value = i
                 })
-
-
             };
-
-
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -218,7 +212,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _userManager.AddToRoleAsync(user, SD.Role_Customer);
+                        await _userManager.AddToRoleAsync(user, Input.Role);
                     }
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -237,7 +231,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        if (User.IsInRole(SD.Role_Admin))
+                        if (User.IsInRole(Input.Role))
                         {
                             TempData["success"] = "New User Created Successfully";
                         }
