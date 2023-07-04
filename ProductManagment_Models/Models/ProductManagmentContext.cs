@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace ProductManagment_Models.Models;
 
 public partial class ProductManagmentContext : DbContext
