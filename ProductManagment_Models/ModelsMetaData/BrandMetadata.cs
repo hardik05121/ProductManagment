@@ -9,13 +9,18 @@
 
 //namespace ProductManagment_Models.Models
 //{
-//    public class BrandMetadata
+//    [MetadataType(typeof(BrandMetadata))]
+//    public partial class Brand
 //    {
-//        [Key]
-//        public int Id { get; set; }
+
+//    }
+
+//    //[Bind(Exclude = "ID")]
+//    public partial class BrandMetadata
+//    {
 
 //        [StringLength(50)]
-//        [Display(Name ="Brand Name*")]
+//        [Display(Name = "Brand Name*")]
 //        [MaxLength(10, ErrorMessage = "BrandName must be 10 characters or less")]
 //        public string BrandName { get; set; } = null!;
 
@@ -25,8 +30,5 @@
 
 //    }
 
-//    [MetadataType(typeof(BrandMetadata))]
-//    public partial class Brand
-//    {
-//    }
+ 
 //}
