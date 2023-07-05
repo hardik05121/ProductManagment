@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using System.Data;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    // [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = "Admin")]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

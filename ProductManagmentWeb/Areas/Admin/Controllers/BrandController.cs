@@ -1,12 +1,18 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+
+using System.Data;
+
 //using ProductManagment_Models.ModelsMetadata;
+
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class BrandController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
