@@ -10,7 +10,7 @@ public partial class Expense
 {
     [Key]
     public int Id { get; set; }
-  
+
     public DateTime CreatedDate { get; set; }
 
     public DateTime ExpenseDate { get; set; }

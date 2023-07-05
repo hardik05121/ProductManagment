@@ -11,25 +11,16 @@ public partial class Supplier
     [Key]
     public int Id { get; set; }
 
-    [StringLength(50, MinimumLength = 3)]
-    [Display(Name = "SupplierName*")]
+    [StringLength(50)]
     public string SupplierName { get; set; } = null!;
 
     [StringLength(50)]
-    [DataType(DataType.PhoneNumber)]
-    [Display(Name = "PhoneNumber*")]
-    [RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Invalid Phone number")]
     public string? ContactPerson { get; set; }
 
     [StringLength(450)]
-    [DataType(DataType.EmailAddress)]
-    [RegularExpression(@"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}", ErrorMessage = "Invalid Email Address")]
     public string? Email { get; set; }
 
     [StringLength(450)]
-    [Required(ErrorMessage = "Please enter the product URL.")]
-    [RegularExpression(@"^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$",
-        ErrorMessage = "Please enter a valid URL.")]
     public string? WebSite { get; set; }
 
     public long MobileNumber { get; set; }
@@ -37,20 +28,15 @@ public partial class Supplier
     public long? PhoneNumber { get; set; }
 
     [StringLength(450)]
-    [Display(Name = "Your Address*")]
     public string? Address { get; set; }
 
-    [Display(Name = "Select Country*")]
     public int CountryId { get; set; }
 
-    [Display(Name = "Select State*")]
     public int StateId { get; set; }
 
-    [Display(Name = "Select City*")]
     public int CityId { get; set; }
 
     [StringLength(450)]
-    [Display(Name = "Enter Billing Address*")]
     public string BillingAddress { get; set; } = null!;
 
     public int BillingCountryId { get; set; }
@@ -60,7 +46,6 @@ public partial class Supplier
     public int BillingCityId { get; set; }
 
     [StringLength(450)]
-    [Display(Name = "Enter Shipping Address*")]
     public string ShippingAddress { get; set; } = null!;
 
     public int ShippingCountryId { get; set; }
@@ -111,38 +96,3 @@ public partial class Supplier
     [InverseProperty("SupplierStates")]
     public virtual State State { get; set; } = null!;
 }
-
-
-
-//worked string;-
-
-//[Display(Name = "Price for 50+")]
-
-//[Range(1, 1000, ErrorMessage = "Please enter a value between 1 and 1000")]
-
-//[StringLength(60, MinimumLength = 3)]
-
-//[DataType(DataType.Date)]
-//[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-//[DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
-
-//[DataType(DataType.PhoneNumber)]
-//[RegularExpression(@"^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$", ErrorMessage = "Invalid Phone number")]
-//[StringLength(13, MinimumLength = 10)]
-//[RegularExpression(@"^(0|91)?[6-9][0-9]{9}$", ErrorMessage = "Invalid Mobile Number.")]
-//[RegularExpression(@"^([\+]?33[-]?|[0])?[1-9][0-9]{8}$", ErrorMessage = "Invalid Mobile Number.")]
-
-//[StringLength(50)]
-//[DataType(DataType.EmailAddress)]
-//[RegularExpression(@"[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}", ErrorMessage = "Invalid Email Address")]
-//public string? Email { get; set; }
-
-//[Required(ErrorMessage = "Please enter the product URL.")]
-//[RegularExpression(@"^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$",
-//    ErrorMessage = "Please enter a valid URL.")]
-//public string? WebSite { get; set; }
-
-//[Display(Name = "Joining Date")]
-//[DataType(DataType.Date)]
-//[DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}",ApplyFormatInEditMode = true)]
-//public DateTime JoiningDate { get; set; }

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository
 {
-    public class CustomerRepository : Repository<Customer>, ICustomerRepository
+    public class CustomerRepository : Repository<CustomerMetadata>, ICustomerRepository
     {
         private ApplicationDbContext _db;
         public CustomerRepository(ApplicationDbContext db) : base(db)
@@ -22,7 +22,7 @@ namespace ProductManagment_DataAccess.Repository
 
         
 
-        public void Update(Customer obj)
+        public void Update(CustomerMetadata obj)
         {
             _db.Customers.Update(obj);
         }

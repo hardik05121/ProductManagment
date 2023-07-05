@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository
 {
-    public class CompanyRepository : Repository<Company>, ICompanyRepository
+    public class CompanyRepository : Repository<CompanyMetadata>, ICompanyRepository
     {
         private ApplicationDbContext _db;
         public CompanyRepository(ApplicationDbContext db) : base(db)
@@ -21,7 +21,7 @@ namespace ProductManagment_DataAccess.Repository
         }
 
         
-        public void Update(Company obj)
+        public void Update(CompanyMetadata obj)
         {
             var objFromDb = _db.Companies.FirstOrDefault(u => u.Id == obj.Id);
             if (objFromDb != null)

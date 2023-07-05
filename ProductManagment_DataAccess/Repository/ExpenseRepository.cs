@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository
 {
-    public class ExpenseRepository : Repository<Expense>, IExpenseRepository
+    public class ExpenseRepository : Repository<ExpenseMetadata>, IExpenseRepository
     {
         private ApplicationDbContext _db;
         public ExpenseRepository(ApplicationDbContext db) : base(db)
@@ -19,7 +19,7 @@ namespace ProductManagment_DataAccess.Repository
 
 
 
-        public void Update(Expense obj)
+        public void Update(ExpenseMetadata obj)
         {
             _db.Expenses.Update(obj);
         }
