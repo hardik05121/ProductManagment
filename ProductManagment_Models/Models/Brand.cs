@@ -18,6 +18,5 @@ public partial class Brand
     public string? BrandImage { get; set; }
 
     [InverseProperty("Brand")]
-
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 }

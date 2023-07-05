@@ -17,21 +17,21 @@ namespace ProductManagment_DataAccess.Data
 
         public virtual DbSet<Brand> Brands { get; set; }
 
-        public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<CategoryMetadata> Categories { get; set; }
 
         public virtual DbSet<City> Cities { get; set; }
 
-        public virtual DbSet<Company> Companies { get; set; }
+        public virtual DbSet<CompanyMetadata> Companies { get; set; }
 
         public virtual DbSet<Country> Countries { get; set; }
 
-        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<CustomerMetadata> Customers { get; set; }
 
-        public virtual DbSet<Expense> Expenses { get; set; }
+        public virtual DbSet<ExpenseMetadata> Expenses { get; set; }
 
         public virtual DbSet<ExpenseCategory> ExpenseCategories { get; set; }
 
-        public virtual DbSet<Inquiry> Inquiries { get; set; }
+        public virtual DbSet<InquiryMetadata> Inquiries { get; set; }
 
         public virtual DbSet<InquirySource> InquirySources { get; set; }
 

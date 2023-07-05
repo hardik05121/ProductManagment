@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository.IRepository
 {
-    public interface IExpenseRepository : IRepository<Expense>
+    public interface IExpenseRepository : IRepository<ExpenseMetadata>
     {
-        void Update(Expense obj);
+        void Update(ExpenseMetadata obj);
     }
 }

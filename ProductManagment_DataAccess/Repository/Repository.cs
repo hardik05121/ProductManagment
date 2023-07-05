@@ -36,7 +36,8 @@ namespace ProductManagment_DataAccess.Repository
                  query= dbSet;
                 
             }
-            else {
+            else 
+            {
                  query = dbSet.AsNoTracking();
             }
 
