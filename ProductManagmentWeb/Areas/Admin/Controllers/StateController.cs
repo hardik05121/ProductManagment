@@ -86,7 +86,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 }
                 else
                 {
-                    State stateObj = _unitOfWork.State.Get(u => u.Id != stateVM.State.Id && u.StateName == stateVM.State.StateName);
+                    State stateObj = _unitOfWork.State.Get(u => u.Id != stateVM.State.Id && u.StateName == stateVM.State.StateName && u.CountryId == stateVM.State.CountryId);
                     if (stateObj != null)
                     {
                         TempData["error"] = "State Name Already Exist!";

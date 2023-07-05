@@ -124,13 +124,17 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "FirstName*")]
             public string FirstName { get; set; }
+
             [Required]
             [Display(Name = "LastName*")]
             public string? LastName { get; set; }
+
             [Display(Name = "MobileNumber")]
             public string? MobileNumber { get; set; }
+
             [Display(Name = "Address")]
             public string? Address { get; set; }
+
             [Display(Name = "UserImage")]
             public string? UserImage { get; set; }
 
@@ -141,8 +145,6 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-
-
             Input = new()
             {
                 RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
@@ -150,11 +152,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
                     Text = i,
                     Value = i
                 })
-
-
             };
-
-
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -194,6 +192,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
                         {
                             System.IO.File.Delete(oldImagePath);
                         }
+
                     }
 
                     using (var fileStream = new FileStream(Path.Combine(userPath, fileName), FileMode.Create))

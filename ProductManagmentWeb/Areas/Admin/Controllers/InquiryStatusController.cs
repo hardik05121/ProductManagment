@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+
 using System.Data;
+
+using System.Diagnostics.Metrics;
+
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -53,15 +57,39 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
                 if (inquiryStatus.Id == 0)
                 {
-                    _unitOfWork.InquiryStatus.Add(inquiryStatus);
-                    _unitOfWork.Save();
-                    TempData["success"] = "InquiryStatus created successfully";
+                    InquiryStatus inquiryStatusObj = _unitOfWork.InquiryStatus.Get(u => u.InquiryStatusName == inquiryStatus.InquiryStatusName);
+                    if (inquiryStatusObj != null)
+                    {
+                        TempData["error"] = "InquiryStatus Name Already Exist!";
+                    }
+                    else
+                    {
+
+                        _unitOfWork.InquiryStatus.Add(inquiryStatus);
+                        _unitOfWork.Save();
+                        TempData["success"] = "InquiryStatus created successfully";
+                    }
+
+                    //_unitOfWork.InquiryStatus.Add(inquiryStatus);
+                    //_unitOfWork.Save();
+                    //TempData["success"] = "InquiryStatus created successfully";
                 }
                 else
                 {
-                    _unitOfWork.InquiryStatus.Update(inquiryStatus);
-                    _unitOfWork.Save();
-                    TempData["success"] = "InquiryStatus Updated successfully";
+                    InquiryStatus inquiryStatusyObj = _unitOfWork.InquiryStatus.Get(u => u.Id != inquiryStatus.Id && u.InquiryStatusName == inquiryStatus.InquiryStatusName);
+                    if (inquiryStatusyObj != null)
+                    {
+                        TempData["error"] = "InquiryStatus Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.InquiryStatus.Update(inquiryStatus);
+                        _unitOfWork.Save();
+                        TempData["success"] = "InquiryStatus Updated successfully";
+                    }
+                    //_unitOfWork.InquiryStatus.Update(inquiryStatus);
+                    //_unitOfWork.Save();
+                    //TempData["success"] = "InquiryStatus Updated successfully";
                 }
                 return RedirectToAction("Index");
             }

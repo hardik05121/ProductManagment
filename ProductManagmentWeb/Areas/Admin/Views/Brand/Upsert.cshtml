@@ -8,6 +8,7 @@
             </div>
         </div>
     </div>
+
     <div class="card-body p-4">
         <form method="post" class="row" enctype="multipart/form-data">
             <input asp-for="Id" hidden />
@@ -21,7 +22,7 @@
                             <label asp-for="BrandName" class="ms-2"></label>
                             <span asp-validation-for="BrandName" class="text-danger"></span>
                         </div>
-                   
+
                         <div class="form-floating py-2 col-12">
                             <input type="file" name="file" class="form-control border-0 shadow" />
                             <label asp-for="BrandImage" class="ms-2"></label>
@@ -56,8 +57,6 @@
         </form>
     </div>
 </div>
-
-
 
 
 @section Scripts{
