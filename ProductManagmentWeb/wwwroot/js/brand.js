@@ -31,7 +31,7 @@ function loadDataTable() {
         ]
     });
 }
-//  	\images\brand\ff243e55-654a-4796-86d0-23ef6f39afbf.png
+
 function Delete(url) {
     Swal.fire({
         title: 'Are you sure?',

@@ -218,7 +218,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        await _userManager.AddToRoleAsync(user, SD.Role_Customer);
+                        await _userManager.AddToRoleAsync(user, Input.Role);
                     }
 
                     var userId = await _userManager.GetUserIdAsync(user);
@@ -237,7 +237,7 @@ namespace ProductManagmentWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
-                        if (User.IsInRole(SD.Role_Admin))
+                        if (User.IsInRole(Input.Role))
                         {
                             TempData["success"] = "New User Created Successfully";
                         }

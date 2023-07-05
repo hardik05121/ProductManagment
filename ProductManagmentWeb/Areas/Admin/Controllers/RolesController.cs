@@ -11,6 +11,7 @@ using System.Data;
 namespace ProductManagment.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles ="Admin")]
     public class RolesController : Controller
     {
 
@@ -68,7 +69,7 @@ namespace ProductManagment.Areas.Admin.Controllers
                 var objFromDb = _db.Roles.FirstOrDefault(u => u.Id == roleObj.Id);
                 if (objFromDb == null)
                 {
-                    TempData["success"] = "Role Not Found";
+                    TempData["error"] = "Role Not Found";
 
 
                 }
@@ -91,7 +92,7 @@ namespace ProductManagment.Areas.Admin.Controllers
             var objFromDB = _db.Roles.FirstOrDefault(u => u.Id == id);
             if (objFromDB == null)
             {
-                TempData["success"] = "Role Not Found";
+                TempData["error"] = "Role Not Found";
                 return RedirectToAction(nameof(Index));
 
 
@@ -100,7 +101,7 @@ namespace ProductManagment.Areas.Admin.Controllers
             var userRoleAssign = _db.UserRoles.Where(w => w.RoleId == id).Count();
             if (userRoleAssign > 0)
             {
-                TempData["success"] = "Can not delete Role, this user is assign a role";
+                TempData["error"] = "Can not delete Role, this user is assign a role";
                 return RedirectToAction(nameof(Index));
 
             }

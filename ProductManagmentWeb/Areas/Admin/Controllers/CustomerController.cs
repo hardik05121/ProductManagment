@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.ViewModels;
 using ProductManagment_Models.Models;
+using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
 
     public class CustomerController : Controller
     {

@@ -554,7 +554,14 @@ bg-success {
 /*newwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww*/
 
 
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+    white-space: nowrap;
+}
 
+#tblData {
+    overflow: auto;
+}
 
  
 body {
@@ -973,4 +980,19 @@ a[href*="#followme"]::before {
     background-color: rgba(250,250,250,.8);
     z-index: 1;
 }
+
+
+
+.content-left-sidebar .widget-area .hfe-nav-menu ul.sub-menu {
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    position: relative !important;
+}
+.footer {
+    z-index: 10;
+    position: absolute;
+    bottom: 0;
+}
+
 
