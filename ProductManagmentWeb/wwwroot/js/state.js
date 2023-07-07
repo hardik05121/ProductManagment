@@ -2,10 +2,11 @@
 
 $(document).ready(function () {
     loadDataTable();
-});
+});   Aaa  
 
 function loadDataTable() {
-    dataTable = $('#tblData').DataTable({
+    dataTable = $('#tblData').DataTable({ 
+        "paging": false,
         "ajax": { url: '/admin/state/getall' },
         "columns": [
             { "data": "stateName", "width": "25%" },
@@ -44,7 +45,7 @@ function Delete(url) {
                     dataTable.ajax.reload();
                     toastr.success(data.message);
                 }
-            })
+            })   
         }
     })
 }

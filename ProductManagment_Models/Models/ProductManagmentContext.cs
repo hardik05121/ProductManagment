@@ -15,6 +15,18 @@ public partial class ProductManagmentContext : DbContext
     {
     }
 
+    public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
+
+    public virtual DbSet<AspNetRoleClaim> AspNetRoleClaims { get; set; }
+
+    public virtual DbSet<AspNetUser> AspNetUsers { get; set; }
+
+    public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
+
+    public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
+
+    public virtual DbSet<AspNetUserToken> AspNetUserTokens { get; set; }
+
     public virtual DbSet<Brand> Brands { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
@@ -41,6 +53,14 @@ public partial class ProductManagmentContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
+    public virtual DbSet<PurChaseOrder> PurChaseOrders { get; set; }
+
+    public virtual DbSet<PurChaseOrderXproduct> PurChaseOrderXproducts { get; set; }
+
+    public virtual DbSet<Quotation> Quotations { get; set; }
+
+    public virtual DbSet<QuotationXproduct> QuotationXproducts { get; set; }
+
     public virtual DbSet<State> States { get; set; }
 
     public virtual DbSet<Supplier> Suppliers { get; set; }
@@ -49,16 +69,28 @@ public partial class ProductManagmentContext : DbContext
 
     public virtual DbSet<Unit> Units { get; set; }
 
-    public virtual DbSet<User> Users { get; set; }
-
     public virtual DbSet<Warehouse> Warehouses { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=HARDIK\\SQLEXPRESS;Database=ProductManagment;Trusted_Connection=True;Encrypt=False;");
+        => optionsBuilder.UseSqlServer("Server=DESKTOP-9R8TEGB;Database=ProductManagment;Persist Security Info=True;User ID=sa;Password=test@123;Trusted_Connection=True;Encrypt=False;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AspNetUser>(entity =>
+        {
+            entity.HasMany(d => d.Roles).WithMany(p => p.Users)
+                .UsingEntity<Dictionary<string, object>>(
+                    "AspNetUserRole",
+                    r => r.HasOne<AspNetRole>().WithMany().HasForeignKey("RoleId"),
+                    l => l.HasOne<AspNetUser>().WithMany().HasForeignKey("UserId"),
+                    j =>
+                    {
+                        j.HasKey("UserId", "RoleId");
+                        j.ToTable("AspNetUserRoles");
+                    });
+        });
+
         modelBuilder.Entity<Brand>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_Brand");
@@ -191,6 +223,80 @@ public partial class ProductManagmentContext : DbContext
                 .HasConstraintName("FK_Products_Warehouses1");
         });
 
+        modelBuilder.Entity<PurChaseOrder>(entity =>
+        {
+            entity.HasOne(d => d.Quotation).WithMany(p => p.PurChaseOrders)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrder_Quotations");
+
+            entity.HasOne(d => d.Supplier).WithMany(p => p.PurChaseOrders)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrder_Suppliers");
+
+            entity.HasOne(d => d.User).WithMany(p => p.PurChaseOrders)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrder_AspNetUsers");
+        });
+
+        modelBuilder.Entity<PurChaseOrderXproduct>(entity =>
+        {
+            entity.HasOne(d => d.Product).WithMany(p => p.PurChaseOrderXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrderXProducts_Products");
+
+            entity.HasOne(d => d.PurChaseOrder).WithMany(p => p.PurChaseOrderXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrderXProducts_PurChaseOrder");
+
+            entity.HasOne(d => d.Tax).WithMany(p => p.PurChaseOrderXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrderXProducts_Taxs");
+
+            entity.HasOne(d => d.Unit).WithMany(p => p.PurChaseOrderXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrderXProducts_Units");
+
+            entity.HasOne(d => d.Warehouse).WithMany(p => p.PurChaseOrderXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_PurChaseOrderXProducts_Warehouses");
+        });
+
+        modelBuilder.Entity<Quotation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_Quotation");
+
+            entity.HasOne(d => d.Supplier).WithMany(p => p.Quotations)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Quotation_Suppliers");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Quotations)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Quotation_AspNetUsers");
+        });
+
+        modelBuilder.Entity<QuotationXproduct>(entity =>
+        {
+            entity.HasOne(d => d.Product).WithMany(p => p.QuotationXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuotationXProducts_Products");
+
+            entity.HasOne(d => d.Quotation).WithMany(p => p.QuotationXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuotationXProducts_Quotations");
+
+            entity.HasOne(d => d.Tax).WithMany(p => p.QuotationXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuotationXProducts_Taxs");
+
+            entity.HasOne(d => d.Unit).WithMany(p => p.QuotationXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuotationXProducts_Units");
+
+            entity.HasOne(d => d.Warehouse).WithMany(p => p.QuotationXproducts)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_QuotationXProducts_Warehouses");
+        });
+
         modelBuilder.Entity<State>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK_State");
@@ -238,7 +344,6 @@ public partial class ProductManagmentContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Suppliers_States");
         });
-
 
         OnModelCreatingPartial(modelBuilder);
     }

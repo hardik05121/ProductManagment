@@ -1,6 +1,5 @@
-﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+﻿﻿ /* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
-
 /*.divider-text:before,
 .divider-text:after {
     color: white;
@@ -100,13 +99,7 @@ bg-success {
 .card {
     border-color: #425F4B !important;
 }*/
-
-
-
 /* btn-outline-primary */
-
-
-
 /*.btn-outline-primary {
     color: #192E2F;
     border-color: #192E2F;
@@ -235,14 +228,7 @@ bg-success {
         color: #134b5f;
         background-color: transparent;
     }*/
-
-
-
-
 /* btn-primary */
-
-
-
 /*.btn-primary {
     color: #fff;
     background-color: #192E2F;
@@ -494,14 +480,7 @@ bg-success {
         color: #4b7147;
         background-color: transparent;
     }*/
-
-
-
-
 /* btn-primary */
-
-
-
 /*.btn-success {
     color: #fff;
     background-color: #4b7147;
@@ -550,20 +529,9 @@ bg-success {
         background-color: #578553;
         border-color: #578553;
     }*/
-
 /*newwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww*/
 
 
-.table-striped > tbody > tr:nth-child(odd) > td,
-.table-striped > tbody > tr:nth-child(odd) > th {
-    white-space: nowrap;
-}
-
-#tblData {
-    overflow: auto;
-}
-
- 
 body {
     position: relative;
     overflow-x: hidden;
@@ -983,16 +951,10 @@ a[href*="#followme"]::before {
 
 
 
-.content-left-sidebar .widget-area .hfe-nav-menu ul.sub-menu {
-    visibility: visible !important;
-    opacity: 1 !important;
-    height: auto !important;
-    position: relative !important;
-}
+
+
 .footer {
     z-index: 10;
     position: absolute;
     bottom: 0;
 }
-
-

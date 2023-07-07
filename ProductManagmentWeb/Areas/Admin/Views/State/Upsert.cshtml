@@ -1,9 +1,10 @@
 ﻿@model StateVM
+
 <div class="card shadow border-0 my-4">
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
             <div class="col-12 text-center">
-                <h2 class="text-white py-2"> @(Model.State.Id != 0 ? "Update" : "Create") State</h2>
+                <h2 class="text-white py-2"> @(Model.State.Id != 0 ? "Update" : "Create") StatePagination</h2>
             </div>
         </div>
     </div>
@@ -38,6 +39,7 @@
                                 @if (Model.State.Id != 0)
                                 {
                                     <button type="submit" class="btn btn-primary form-control">Update</button>
+
                                 }
                                 else
                                 {
@@ -56,19 +58,3 @@
         </form>
     </div>
 </div>
-
-
-
-
-@section Scripts{
-    <script>
-        tinymce.init({
-            selector: 'textarea',
-            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
-        });
-    </script>
-    @{
-        <partial name="_ValidationScriptsPartial" />
-    }
-}
