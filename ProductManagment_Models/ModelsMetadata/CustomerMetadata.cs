@@ -22,7 +22,7 @@ public partial class CustomerMetadata
     [StringLength(50)]
     public string CustomerName { get; set; } = null!;
 
-    [StringLength(50)]
+    [StringLength(50)]  
     public string? ContactPerson { get; set; }
 
     [StringLength(450)]
