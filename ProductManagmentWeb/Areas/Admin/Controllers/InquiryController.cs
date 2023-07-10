@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
+using System.Data;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class InquiryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +22,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<Inquiry> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,Country,State,City,InquirySource,InquiryStatus").ToList();
+            List<InquiryMetadata> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,Country,State,City,InquirySource,InquiryStatus").ToList();
 
             return View(objInquiryList);
         }
@@ -63,7 +66,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Value = u.Id.ToString()
                 }),
 
-                Inquiry = new Inquiry()
+                Inquiry = new InquiryMetadata()
             };
 
             if (id == null || id == 0)
@@ -74,7 +77,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             else
             {
                 //update
-                InquiryVM.Inquiry = _unitOfWork.Inquiry.Get(u => u.Id == id);
+                InquiryVM.Inquiry = _unitOfWork.Inquiry.Get((System.Linq.Expressions.Expression<Func<InquiryMetadata, bool>>)(u => u.Id == id));
                 return View(InquiryVM);
             }
 
@@ -143,7 +146,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Inquiry> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,State,Country,City,InquirySource,InquiryStatus").ToList();
+            List<InquiryMetadata> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,State,Country,City,InquirySource,InquiryStatus").ToList();
             return Json(new { data = objInquiryList });
         }
 
@@ -151,7 +154,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var InquiryToBeDeleted = _unitOfWork.Inquiry.Get(u => u.Id == id);
+            var InquiryToBeDeleted = _unitOfWork.Inquiry.Get((System.Linq.Expressions.Expression<Func<InquiryMetadata, bool>>)(u => u.Id == id));
             if (InquiryToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });

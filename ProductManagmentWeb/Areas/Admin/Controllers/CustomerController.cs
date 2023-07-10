@@ -5,11 +5,17 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.ViewModels;
 using ProductManagment_Models.Models;
+
+using System.Data;
+using Microsoft.AspNetCore.Authorization;
+
 using System.Drawing.Drawing2D;
+
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
 
     public class CustomerController : Controller
     {
@@ -23,7 +29,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<Customer> listCustomer = _unitOfWork.Customer.GetAll(includeProperties: "City,Country,State").ToList();
+            List<CustomerMetadata> listCustomer = _unitOfWork.Customer.GetAll(includeProperties: "City,Country,State").ToList();
             //List<Customer> listCustomer = _unitOfWork.Customer.GetAll(includeProperties: "City,Country,State").ToList();
 
             return View(listCustomer);
@@ -50,7 +56,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Value = u.Id.ToString()
                 }),
 
-                Customer = new Customer()
+                Customer = new CustomerMetadata()
             };
             if (id == null || id == 0)
             {
@@ -60,7 +66,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             else
             {
                 //update
-                customerVM.Customer = _unitOfWork.Customer.Get(u => u.Id == id);
+                customerVM.Customer = _unitOfWork.Customer.Get((System.Linq.Expressions.Expression<Func<CustomerMetadata, bool>>)(u => u.Id == id));
                 return View(customerVM);
             }
 
@@ -80,11 +86,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string customerPath = Path.Combine(wwwRootPath, @"images\customer");
 
-                    if (!string.IsNullOrEmpty(customerVM.Customer.CustomerImage))
+                    if (!string.IsNullOrEmpty((string?)customerVM.Customer.CustomerImage))
                     {
                         //delete the old image
                         var oldImagePath =
-                                    Path.Combine(wwwRootPath, customerVM.Customer.CustomerImage.TrimStart('\\'));
+                                    Path.Combine(wwwRootPath, (string)customerVM.Customer.CustomerImage.TrimStart('\\'));
 
                         if (System.IO.File.Exists(oldImagePath))
                         {
@@ -102,7 +108,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
                 if (customerVM.Customer.Id == 0)
                 {
-                    Customer customerObj = _unitOfWork.Customer.Get(u => u.CustomerName == customerVM.Customer.CustomerName);
+                    CustomerMetadata customerObj = _unitOfWork.Customer.Get(u => u.CustomerName == customerVM.Customer.CustomerName);
                     if (customerObj != null)
                     {
                         TempData["error"] = "Customer Name Already Exist!";
@@ -116,7 +122,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 }
                 else
                 {
-                    Customer customerObj = _unitOfWork.Customer.Get(u => u.Id != customerVM.Customer.Id && u.CustomerName == customerVM.Customer.CustomerName);
+                    CustomerMetadata customerObj = _unitOfWork.Customer.Get(u => u.Id != customerVM.Customer.Id && u.CustomerName == customerVM.Customer.CustomerName);
                     if (customerObj != null)
                     {
                         TempData["error"] = "Customer Name Already Exist!";
@@ -143,7 +149,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Customer> objCustomerList = _unitOfWork.Customer.GetAll(includeProperties: "City,State,Country").ToList();
+            List<CustomerMetadata> objCustomerList = _unitOfWork.Customer.GetAll(includeProperties: "City,State,Country").ToList();
             return Json(new { data = objCustomerList });
         }
 
@@ -151,7 +157,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var CustomerToBeDeleted = _unitOfWork.Customer.Get(u => u.Id == id);
+            var CustomerToBeDeleted = _unitOfWork.Customer.Get((System.Linq.Expressions.Expression<Func<CustomerMetadata, bool>>)(u => u.Id == id));
             if (CustomerToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });

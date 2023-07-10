@@ -43,7 +43,11 @@
             @RenderBody()
         </main>
     </div>
+
+    <footer class="border-top fixed-bottom bg-dark  text-muted" style="z-index:10">
+
     <footer class="border-top fixed-bottom h-auto bg-dark  text-muted ">
+
        
         <div class="text-center p-2">
             Made by <i class="bi bi-heart-fill"></i> Ebiz Technolabs
@@ -83,16 +87,13 @@
                     </a>
                 </div>
             </div>
+           
             <li>
-                <a asp-area="Customers" asp-controller="Home" asp-action="Index">Home</a>
-
-            </li>
-
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Content Managment
-                </a>
-                <ul class="dropdown-menu">
+                <a  data-toggle="collapse" aria-expanded="true" class="nav-link dropdown-toggle"  role="button" data-bs-toggle="dropdown" >Content Managment</a>
+                <ul class="collapse list-unstyled show" >
+                    <li class="nav-item">
+                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
+                    </li>
                     <li class="nav-item">
                         <a class="dropdown-item" asp-area="Admin" asp-controller="Brand" asp-action="Index">Brand</a>
                     </li>
@@ -114,9 +115,7 @@
                     <li class="nav-item">
                         <a class="dropdown-item" asp-area="Admin" asp-controller="Warehouse" asp-action="Index">WareHouse</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="dropdown-item" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
-                    </li>
+                   
                     <li class="nav-item">
                         <a class="dropdown-item" asp-area="Admin" asp-controller="Customer" asp-action="Index">Customer</a>
                     </li>
@@ -127,8 +126,7 @@
                 </ul>
             </li>
 
-
-
+           
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Address Managment
@@ -223,6 +221,11 @@
 
         $('[data-toggle="offcanvas"]').click(function () {
             $('#wrapper').toggleClass('toggled');
+        });
+    });
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar-nav').toggleClass('active');
         });
     });
 </script>

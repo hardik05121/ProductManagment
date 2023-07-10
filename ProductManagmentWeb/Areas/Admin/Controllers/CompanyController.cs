@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using System.Data;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    // [Authorize(Roles = SD.Role_Admin)]
+    [Authorize(Roles = "Admin")]
     public class CompanyController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -19,7 +21,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         #region Index
         public IActionResult Index()
         {
-            List<Company> company = _unitOfWork.Company.GetAll().ToList();
+            List<CompanyMetadata> company = _unitOfWork.Company.GetAll().ToList();
 
             return View(company);
         }
@@ -33,18 +35,18 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             if (id == null || id == 0)
             {
                 //create
-                return View(new Company());
+                return View(new CompanyMetadata());
             }
             else
             {
                 //update
-                Company company = _unitOfWork.Company.Get(u => u.Id == id);
+                CompanyMetadata company = _unitOfWork.Company.Get(u => u.Id == id);
                 return View(company);
             }
 
         }
         [HttpPost]
-        public IActionResult Upsert(Company company, IFormFile? file)
+        public IActionResult Upsert(CompanyMetadata company, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
@@ -100,7 +102,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<Company> objCompanyList = _unitOfWork.Company.GetAll().ToList();
+            List<CompanyMetadata> objCompanyList = _unitOfWork.Company.GetAll().ToList();
             return Json(new { data = objCompanyList });
         }
 
@@ -108,7 +110,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var companyToBeDeleted = _unitOfWork.Company.Get(u => u.Id == id);
+            var companyToBeDeleted = _unitOfWork.Company.Get((System.Linq.Expressions.Expression<Func<CompanyMetadata, bool>>)(u => u.Id == id));
             if (companyToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });

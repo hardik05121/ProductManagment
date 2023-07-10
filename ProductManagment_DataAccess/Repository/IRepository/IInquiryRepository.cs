@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository.IRepository
 {
-    public interface IInquiryRepository : IRepository<Inquiry>
+    public interface IInquiryRepository : IRepository<InquiryMetadata>
     {
-        void Update(Inquiry obj);
+        void Update(InquiryMetadata obj);
     }
 }
