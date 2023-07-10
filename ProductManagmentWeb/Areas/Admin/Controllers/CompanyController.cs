@@ -21,7 +21,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         #region Index
         public IActionResult Index()
         {
-            List<CompanyMetadata> company = _unitOfWork.Company.GetAll().ToList();
+            List<Company> company = _unitOfWork.Company.GetAll().ToList();
 
             return View(company);
         }
@@ -40,13 +40,13 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             else
             {
                 //update
-                CompanyMetadata company = _unitOfWork.Company.Get(u => u.Id == id);
+                Company company = _unitOfWork.Company.Get(u => u.Id == id);
                 return View(company);
             }
 
         }
         [HttpPost]
-        public IActionResult Upsert(CompanyMetadata company, IFormFile? file)
+        public IActionResult Upsert(Company company, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
@@ -102,7 +102,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<CompanyMetadata> objCompanyList = _unitOfWork.Company.GetAll().ToList();
+            List<Company> objCompanyList = _unitOfWork.Company.GetAll().ToList();
             return Json(new { data = objCompanyList });
         }
 
@@ -110,7 +110,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var companyToBeDeleted = _unitOfWork.Company.Get((System.Linq.Expressions.Expression<Func<CompanyMetadata, bool>>)(u => u.Id == id));
+            var companyToBeDeleted = _unitOfWork.Company.Get(u => u.Id == id);
             if (companyToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });

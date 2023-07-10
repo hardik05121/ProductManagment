@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository
 {
-    public class CategoryRepository : Repository<CategoryMetadata>, ICategoryRepository
+    public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         private ApplicationDbContext _db;
         public CategoryRepository(ApplicationDbContext db) : base(db)
@@ -22,7 +22,7 @@ namespace ProductManagment_DataAccess.Repository
 
         
 
-        public void Update(CategoryMetadata obj)
+        public void Update(Category obj)
         {
             _db.Categories.Update(obj);
         }

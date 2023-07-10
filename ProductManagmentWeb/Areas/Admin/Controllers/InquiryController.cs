@@ -22,7 +22,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            List<InquiryMetadata> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,Country,State,City,InquirySource,InquiryStatus").ToList();
+            List<Inquiry> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,Country,State,City,InquirySource,InquiryStatus").ToList();
 
             return View(objInquiryList);
         }
@@ -66,7 +66,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Value = u.Id.ToString()
                 }),
 
-                Inquiry = new InquiryMetadata()
+                Inquiry = new Inquiry()
             };
 
             if (id == null || id == 0)
@@ -77,7 +77,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             else
             {
                 //update
-                InquiryVM.Inquiry = _unitOfWork.Inquiry.Get((System.Linq.Expressions.Expression<Func<InquiryMetadata, bool>>)(u => u.Id == id));
+                InquiryVM.Inquiry = _unitOfWork.Inquiry.Get(u => u.Id == id);
                 return View(InquiryVM);
             }
 
@@ -146,7 +146,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<InquiryMetadata> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,State,Country,City,InquirySource,InquiryStatus").ToList();
+            List<Inquiry> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,State,Country,City,InquirySource,InquiryStatus").ToList();
             return Json(new { data = objInquiryList });
         }
 
@@ -154,7 +154,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var InquiryToBeDeleted = _unitOfWork.Inquiry.Get((System.Linq.Expressions.Expression<Func<InquiryMetadata, bool>>)(u => u.Id == id));
+            var InquiryToBeDeleted = _unitOfWork.Inquiry.Get(u => u.Id == id);
             if (InquiryToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });

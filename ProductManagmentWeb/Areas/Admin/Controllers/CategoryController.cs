@@ -20,7 +20,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<CategoryMetadata> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
             return View(objCategoryList);
         }
 
@@ -38,14 +38,14 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             else
             {
                 //update
-                CategoryMetadata category = _unitOfWork.Category.Get(u => u.Id == id);
+                Category category = _unitOfWork.Category.Get(u => u.Id == id);
                 return View(category);
             }
 
         }
 
         [HttpPost]
-        public IActionResult Upsert(CategoryMetadata category)
+        public IActionResult Upsert(Category category)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +76,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<CategoryMetadata> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
             return Json(new { data = objCategoryList });
         }
 

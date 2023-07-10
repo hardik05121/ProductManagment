@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ProductManagment_Models.Models;
 
 [ModelMetadataType(typeof(InquiryMetadata))]
-public partial class InquiryMetadata
+public partial class Inquiry
 {
 
 }

@@ -25,7 +25,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         public IActionResult Index()
         {
-            List<ExpenseMetadata> objExpenseList = _unitOfWork.Expense.GetAll(includeProperties: "ExpenseCategory").ToList();
+            List<Expense> objExpenseList = _unitOfWork.Expense.GetAll(includeProperties: "ExpenseCategory").ToList();
             return View(objExpenseList);
         }
 
@@ -45,7 +45,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 //    Text = u.FirstName,
                 //    Value = u.Id.ToString()
                 //}),
-                Expense = new ExpenseMetadata()
+                Expense = new Expense()
             };
             if (id == null || id == 0)
             {
@@ -55,7 +55,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             else
             {
                 //update
-                ExpenseVM.Expense = _unitOfWork.Expense.Get((System.Linq.Expressions.Expression<Func<ExpenseMetadata, bool>>)(u => u.Id == id));
+                ExpenseVM.Expense = _unitOfWork.Expense.Get(u => u.Id == id);
                 return View(ExpenseVM);
             }
 
@@ -120,14 +120,14 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            List<ExpenseMetadata> objExpenseList = _unitOfWork.Expense.GetAll(includeProperties: "ExpenseCategory").ToList();
+            List<Expense> objExpenseList = _unitOfWork.Expense.GetAll(includeProperties: "ExpenseCategory").ToList();
             return Json(new { data = objExpenseList });
         }
 
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var productToBeDeleted = _unitOfWork.Expense.Get((System.Linq.Expressions.Expression<Func<ExpenseMetadata, bool>>)(u => u.Id == id));
+            var productToBeDeleted = _unitOfWork.Expense.Get(u => u.Id == id);
             if (productToBeDeleted == null)
             {
                 return Json(new { success = false, message = "Error while deleting" });

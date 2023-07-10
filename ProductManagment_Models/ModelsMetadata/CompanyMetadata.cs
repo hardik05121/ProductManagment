@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ProductManagment_Models.Models;
 
 [ModelMetadataType(typeof(CompanyMetadata))]
-public partial class CompanyMetadata
+public partial class Company
 {
 
 }
