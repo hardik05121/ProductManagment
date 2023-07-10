@@ -6,7 +6,7 @@ namespace ProductManagment_Models.ViewModels
 {
     public class StateVM
     {
-       
+
         public  State State { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> CountryList { get; set; }

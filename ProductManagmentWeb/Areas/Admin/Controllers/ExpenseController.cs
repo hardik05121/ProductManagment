@@ -76,11 +76,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string productPath = Path.Combine(wwwRootPath, @"images\expense");
 
-                    if (!string.IsNullOrEmpty(ExpenseVM.Expense.ExpenseFile))
+                    if (!string.IsNullOrEmpty((string?)ExpenseVM.Expense.ExpenseFile))
                     {
                         //delete the old image
                         var oldImagePath =
-                                    Path.Combine(wwwRootPath, ExpenseVM.Expense.ExpenseFile.TrimStart('\\'));
+                                    Path.Combine(wwwRootPath, (string)ExpenseVM.Expense.ExpenseFile.TrimStart('\\'));
 
                         if (System.IO.File.Exists(oldImagePath))
                         {

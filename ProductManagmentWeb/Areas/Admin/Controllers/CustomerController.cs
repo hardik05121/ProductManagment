@@ -5,8 +5,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.ViewModels;
 using ProductManagment_Models.Models;
+
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
+
+using System.Drawing.Drawing2D;
+
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -143,11 +147,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string customerPath = Path.Combine(wwwRootPath, @"images\customer");
 
-                    if (!string.IsNullOrEmpty(customerVM.Customer.CustomerImage))
+                    if (!string.IsNullOrEmpty((string?)customerVM.Customer.CustomerImage))
                     {
                         //delete the old image
                         var oldImagePath =
-                                    Path.Combine(wwwRootPath, customerVM.Customer.CustomerImage.TrimStart('\\'));
+                                    Path.Combine(wwwRootPath, (string)customerVM.Customer.CustomerImage.TrimStart('\\'));
 
                         if (System.IO.File.Exists(oldImagePath))
                         {
@@ -165,15 +169,34 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
                 if (customerVM.Customer.Id == 0)
                 {
-                    _unitOfWork.Customer.Add(customerVM.Customer);
+                    Customer customerObj = _unitOfWork.Customer.Get(u => u.CustomerName == customerVM.Customer.CustomerName);
+                    if (customerObj != null)
+                    {
+                        TempData["error"] = "Customer Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Customer.Add(customerVM.Customer);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Customer created successfully";
+                    }
                 }
                 else
                 {
-                    _unitOfWork.Customer.Update(customerVM.Customer);
+                    Customer customerObj = _unitOfWork.Customer.Get(u => u.Id != customerVM.Customer.Id && u.CustomerName == customerVM.Customer.CustomerName);
+                    if (customerObj != null)
+                    {
+                        TempData["error"] = "Customer Name Already Exist!";
+                    }
+                    else
+                    {
+                        _unitOfWork.Customer.Update(customerVM.Customer);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Customer created successfully";
+                    }
                 }
 
-                _unitOfWork.Save();
-                TempData["success"] = "Customer created successfully";
+            
                 return RedirectToAction("Index");
             }
 

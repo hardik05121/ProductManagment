@@ -93,7 +93,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             if (id == null || id == 0)
             {
                 //create
-                return View(new Company());
+                return View(new CompanyMetadata());
             }
             else
             {

@@ -130,7 +130,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 if (cityVM.City.Id == 0)
                 {
 
-                    City cityobj = _unitOfWork.City.Get(u => u.CityName == cityVM.City.CityName);
+                    City cityobj = _unitOfWork.City.Get(u => u.CityName == cityVM.City.CityName && u.StateId == cityVM.City.StateId);
                     if (cityobj != null)
                     {
                         TempData["error"] = "City Name Already Exist!";
@@ -146,7 +146,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 }
                 else
                 {
-                    City cityObj = _unitOfWork.City.Get(u => u.Id != cityVM.City.Id && u.CityName == cityVM.City.CityName);
+                    City cityObj = _unitOfWork.City.Get(u => u.Id != cityVM.City.Id && u.CityName == cityVM.City.CityName && u.StateId == cityVM.City.StateId);
                     if (cityObj != null)
                     {
                         TempData["error"] = "Brand Name Already Exist!";
@@ -214,6 +214,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         //    _unitOfWork.City.Remove(cityToBeDeleted);
         //    _unitOfWork.Save();
 
+
         //    return Json(new { success = true, message = "Delete Successful" });
         //}
 
@@ -221,6 +222,12 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         #region Csacadion Droup down State,country, City
         [HttpGet]
+
+            #endregion
+        
+            #region Csacadion Droup down State,country, City
+            [HttpGet]
+
             public IActionResult GetStatesByCountry(int countryId)
             {
                 var states = _unitOfWork.State.GetAll(s => s.CountryId == countryId);

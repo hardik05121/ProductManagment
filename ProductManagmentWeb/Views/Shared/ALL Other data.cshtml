@@ -41,6 +41,10 @@
         public string ConfirmPassword { get; set; }
         
 
+        [AllowedExtensions(new string[] {".jpg",".png",".jpeg"})]
+        public IFormFile? Image {get; Set;}
+
+
         Connectionn String:-
         {
         "Logging": {
@@ -62,4 +66,11 @@
 
 
         *@
+
 </div>
+
+    </p>
+</div>
+
+<h1>Task List</h1>
+

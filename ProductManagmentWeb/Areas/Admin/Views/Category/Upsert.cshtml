@@ -22,14 +22,22 @@
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
+
                          <div class="py-2 col-12">
+
+                     <div class="py-2 col-12">
+
                             <label asp-for="Description" class="ms-2 text-muted"></label>
                             <textarea asp-for="Description" class="form-control border-0 shadow"></textarea>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="IsActive"></label>
+
                             <input asp-for="IsActive" type="checkbox" value="true" />
+
+                            <input asp-for="IsActive" type="checkbox" value="true" checked/>
+
                         </div> 
 
                         <div class="row pt-2">

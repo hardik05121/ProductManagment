@@ -1,4 +1,4 @@
-﻿@model Company
+﻿@model CompanyMetadata
 
 <div class="card shadow border-0 my-4">
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
@@ -59,7 +59,7 @@
                         </div>
                         <div class="mb-3">
                             <label asp-for="IsActive"></label>
-                            <input asp-for="IsActive" type="checkbox" value="true" />
+                            <input asp-for="IsActive" type="checkbox" value="true" checked />
                         </div>
                         <div class="form-floating py-2 col-12">
                             <input type="file" name="file" class="form-control border-0 shadow" />

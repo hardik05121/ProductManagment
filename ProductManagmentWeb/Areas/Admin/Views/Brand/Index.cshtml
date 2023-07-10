@@ -21,6 +21,7 @@
             </div>
         </div>
 
+
         <form asp-action="Index">
 
             <div class="row">
@@ -39,6 +40,9 @@
         </form>
 
         <table class="table table-bordered table-striped">
+
+        <table id="tblData" class="table table-bordered table-striped display" style="width:100%">
+
             <thead>
 
                 <tr>
@@ -62,6 +66,7 @@
                        
                         </td>
 
+
                        
                         <td>
                             <div class="w-75 btn-group" role="group">
@@ -84,6 +89,21 @@
                     </tr>
             }
             </tbody>
+
+
+                </tr>
+            </tfoot>
+
+                    <th>Brand Name</th>
+                   @*  <th>Office</th>
+                    <th>Age</th>
+                    <th>Start date</th>
+                    <th>Salary</th> *@
+                </tr>
+            </tfoot>
+
+
+
         </table>
 
         <nav aria-label="Page navigation example">
@@ -129,6 +149,16 @@
             margin-bottom: 17px;
         }
     </style>
+
+@section Scripts{
+    <script src="~/js/brand.js"></script>
+
+    <script src="~/css/brand.css"></script>
+
+    
+
+
+
 }
 
 @*@section Scripts{
