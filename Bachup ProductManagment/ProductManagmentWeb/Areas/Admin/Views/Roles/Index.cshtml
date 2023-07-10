@@ -1,0 +1,108 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+
+<br />
+
+
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">Role List</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <div class="row pb-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-end">
+                <a asp-controller="Roles" asp-action="Upsert" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>  Create New Role
+                </a>
+            </div>
+        </div>
+        @if (Model.Any())
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                       
+                        <th>Name</th>
+                       
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+
+                        <tr>
+                           
+                            <td>@item.Name</td>
+                            <td>
+                                <form asp-action="Delete" asp-route-id="@item.Id">
+                                    <a asp-action="Upsert" class="btn btn-primary mx-2" asp-route-id="@item.Id">
+                                        <i class="bi bi-pencil-square"></i> Update
+                                    </a>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+     
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+@*<h2>Role List</h2>
+<div class="text-right">
+    <a class="btn btn-info" asp-controller="Roles" asp-action="Upsert">Create New Role</a>
+</div>
+
+<div class="p-4 rounded border mt-2">
+    @if (Model.Any())
+    {
+        <table class="table table-striped border">
+            <thead>
+
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Action</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+                @foreach (var item in Model)
+                {
+
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>
+                            <form asp-action="Delete" asp-route-id="@item.Id">
+                                <a asp-action="Upsert" class="btn btn-warning" asp-route-id="@item.Id" style="cursor:pointer">Edit</a>
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('are you sure want to delete?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+
+        </table>
+    }
+</div>*@
+

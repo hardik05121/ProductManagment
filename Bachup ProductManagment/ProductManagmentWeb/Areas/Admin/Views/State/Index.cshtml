@@ -1,0 +1,132 @@
+﻿@model StateIndexVM
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2">State List</h2>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="card-body p-4">
+        <div class="row pb-3">
+            <div class="col-6">
+            </div>
+            <div class="col-6 text-end">
+                <a asp-controller="State" asp-action="Upsert" class="btn btn-primary" style="height:50px,width:50px">
+                    <i class="bi bi-plus-circle"></i>  Create New State
+                </a>
+            </div>
+        </div>
+        <form asp-action="Index">
+          
+            <div class="row">
+                <span class="col-md-2">
+                    <input name="term" id="SearchBox" class="form-control" value="@ViewData["CurrentFilter"]" placeholder="Search by name" />
+                </span>
+                <span class="col-md-4">
+                    <button type="submit" class="btn btn-info">Search</button>
+                </span>
+                <div class="col-2 text-end">
+                    <a asp-controller="State" asp-action="Index" class="btn btn-primary">
+                        <i class="bi bi-house-door-fill"></i> Back To List
+                    </a>
+                </div>
+            </div>
+        </form>
+
+        <table class="table table-bordered table-striped">
+            <thead>
+
+                <tr>
+                    <th>
+                        <a href="/Admin/State/Index?orderBy=@Model.NameSortOrder">State Name</a>
+                    </th>
+                    <th>
+                        Is Active
+                    </th>
+                    <th>Country</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var obj in Model.States)
+                {
+                    <tr>
+                        <td>@obj.StateName</td>
+                        <td>
+                            @obj.IsActive
+                        </td>
+
+                        <td>
+                            @obj.Country.CountryName
+                        </td>
+                        <td>
+                            <div class="w-75 btn-group" role="group">
+
+                                <a asp-controller="State" asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+
+                                <form method="post" asp-route-id="@obj.Id">
+
+                                    <button type="submit" asp-controller="State" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </button>
+                                </form>
+
+
+
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="/Admin/State/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@(Model.CurrentPage-1)" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                }
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (i == Model.CurrentPage)
+                    {
+                        <li class="page-item"><a class="page-link active" style="background-color:rgb(69, 206, 244)" href="/Admin/State/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@i"> @i</a></li>
+                    }
+                    else
+                    {
+                        <li class="page-item"><a class="page-link" style="background-color:floralwhite" href="/Admin/State/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@i"> @i</a></li>
+                    }
+                }
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="/Admin/State/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@(Model.CurrentPage+1)" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+
+    </div>
+</div>
+
+@section Styles
+    {
+    <style type="text/css">
+        #SearchBox {
+            border: 2px Solid cadetblue;
+            margin-bottom: 17px;
+        } 
+    </style>
+}
