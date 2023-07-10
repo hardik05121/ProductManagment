@@ -21,14 +21,64 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         }
 
-        #region Index
-        public IActionResult Index()
-        {
-            List<City> objCityList = _unitOfWork.City.GetAll(includeProperties: "Country,State").ToList();
+        //#region Index
+        //public IActionResult Index()
+        //{
+        //    List<City> objCityList = _unitOfWork.City.GetAll(includeProperties: "Country,State").ToList();
 
-            return View(objCityList);
+        //    return View(objCityList);
+        //}
+        //#endregion
+
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
+        {
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
+
+
+            CityIndexVM cityIndexVM = new CityIndexVM();
+            cityIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "cityName_desc" : "";
+            var cities = (from data in _unitOfWork.City.GetAll(includeProperties: "Country,State").ToList()
+                          where term == "" ||
+                             data.CityName.ToLower().
+                             Contains(term) || data.Country.CountryName.ToLower().Contains(term) || data.State.StateName.ToLower().Contains(term)
+
+
+                          select new City
+                          {
+                              Id = data.Id,
+                              CityName = data.CityName,
+                              State = data.State,
+                              IsActive = data.IsActive,
+                              Country = data.Country
+                          });
+            switch (orderBy)
+            {
+                case "cityName_desc":
+                    cities = cities.OrderByDescending(a => a.CityName);
+                    break;
+
+                default:
+                    cities = cities.OrderBy(a => a.CityName);
+                    break;
+            }
+            int totalRecords = cities.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            cities = cities.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            cityIndexVM.Cities = cities;
+            cityIndexVM.CurrentPage = currentPage;
+            cityIndexVM.TotalPages = totalPages;
+            cityIndexVM.Term = term;
+            cityIndexVM.PageSize = pageSize;
+            cityIndexVM.OrderBy = orderBy;
+            return View(cityIndexVM);
+
+
         }
-        #endregion
+
 
         #region Upsert
         public IActionResult Upsert(int? id)
@@ -123,38 +173,61 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 return View(); 
             }
         }
-            #endregion
-
-
-            #region API CALLS
-
-            [HttpGet]
-            public IActionResult GetAll()
+        #endregion
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int? id)
+        {
+            City cityToBeDeleted = _unitOfWork.City.Get(u => u.Id == id);
+            if (cityToBeDeleted == null)
             {
-                List<City> objCityList = _unitOfWork.City.GetAll(includeProperties: "Country,State").ToList();
-                return Json(new { data = objCityList });
+                TempData["error"] = "City can't be Delete.";
+                return RedirectToAction("Index");
             }
 
+            _unitOfWork.City.Remove(cityToBeDeleted);
+            _unitOfWork.Save();
+            TempData["success"] = "City Deleted successfully";
+            return RedirectToAction("Index");
 
-            [HttpDelete]
-            public IActionResult Delete(int? id)
-            {
-                var cityToBeDeleted = _unitOfWork.City.Get(u => u.Id == id);
-                if (cityToBeDeleted == null)
-                {
-                    return Json(new { success = false, message = "Error while deleting" });
-                }
+        }
 
-                _unitOfWork.City.Remove(cityToBeDeleted);
-                _unitOfWork.Save();
+        //#region API CALLS
 
-                return Json(new { success = true, message = "Delete Successful" });
-            }
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    List<City> objCityList = _unitOfWork.City.GetAll(includeProperties: "Country,State").ToList();
+        //    return Json(new { data = objCityList });
+        //}
+
+
+        //[HttpDelete]
+        //public IActionResult Delete(int? id)
+        //{
+        //    var cityToBeDeleted = _unitOfWork.City.Get(u => u.Id == id);
+        //    if (cityToBeDeleted == null)
+        //    {
+        //        return Json(new { success = false, message = "Error while deleting" });
+        //    }
+
+        //    _unitOfWork.City.Remove(cityToBeDeleted);
+        //    _unitOfWork.Save();
+
+
+        //    return Json(new { success = true, message = "Delete Successful" });
+        //}
+
+        //#endregion
+
+        #region Csacadion Droup down State,country, City
+        [HttpGet]
 
             #endregion
         
             #region Csacadion Droup down State,country, City
             [HttpGet]
+
             public IActionResult GetStatesByCountry(int countryId)
             {
                 var states = _unitOfWork.State.GetAll(s => s.CountryId == countryId);

@@ -1,0 +1,136 @@
+﻿
+@model ExpenseVM
+
+<div class="card shadow border-0 my-4">
+    <div class="card-header bg-secondary bg-gradient ml-0 py-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h2 class="text-white py-2"> @(Model.Expense.Id != 0 ? "Update" : "Create") Expense</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <form method="post" class="row" enctype="multipart/form-data">
+            <input asp-for="Expense.Id" hidden />
+            <div class="row">
+                <div class="col-12">
+                    <div class="border p-3">
+                        @*<div asp-validation-summary="ModelOnly"></div>*@
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Expense.Reference" class="form-control border-0 shadow" />
+                            <label asp-for="Expense.Reference" class="ms-2"></label>
+                            <span asp-validation-for="Expense.Reference" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Expense.Amount" class="form-control border-0 shadow" />
+                            <label asp-for="Expense.Amount" class="ms-2"></label>
+                            <span asp-validation-for="Expense.Amount" class="text-danger"></span>
+                        </div>
+                  @*      <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Expense.UserId" asp-items="@Model.UserList" id="User" class="form-select border-0 shadow">
+                                <option disabled selected>--Select Brand--</option>
+                            </select>
+                            <label asp-for="Expense.UserId" class="ms-2"></label>
+                            <span asp-validation-for="Expense.UserId" class="text-danger"></span>
+                        </div>*@
+
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="Expense.UserId" class="form-control border-0 shadow" />
+                            <label asp-for="Expense.UserId" class="ms-2"></label>
+                            <span asp-validation-for="Expense.UserId" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating py-2 col-12">
+                            <select asp-for="@Model.Expense.ExpenseCategoryId" asp-items="@Model.ExpenseCategoryList" id="Category" class="form-select border-0 shadow">
+                                <option disabled selected>--Select ExpenseCategory--</option>
+                            </select>
+                            <label asp-for="Expense.ExpenseCategoryId" class="ms-2"></label>
+                            <span asp-validation-for="Expense.ExpenseCategoryId" class="text-danger"></span>
+                        </div>
+                    
+                     @*   <div class="form-floating py-2 col-12">
+                            <input asp-for="Expense.AttachReceipt" class="form-control border-0 shadow" />
+                            <label asp-for="Expense.AttachReceipt" class="ms-2"></label>
+                            <span asp-validation-for="Expense.AttachReceipt" class="text-danger"></span>
+                        </div>*@
+                       @* <form action="/action_page.php">
+                            <input type="file" id="myFile" name="filename">
+                            <input type="submit">
+                        </form>*@
+
+                          @* <form method="post" enctype="multipart/form-data">
+                             <div>
+                            <label for="file">  Attach Receipt : </label>
+                             <input type="file" id="file" name="file" multiple />
+                            </div>
+                            </form>*@
+
+                        @if (Model.Expense.Id == 0)
+                        {
+                            <div class="form-floating py-2 col-12">
+                                <input asp-for="Expense.CreatedDate" type="date" class="form-control border-0 shadow" />
+                                <label asp-for="Expense.CreatedDate" class="ms-2"></label>
+                            </div>
+                        }
+                            
+                       
+                            <div class="form-floating py-2 col-12">
+                            <input asp-for="Expense.ExpenseDate" type="date" class="form-control border-0 shadow" />
+                            <label asp-for="Expense.ExpenseDate" class="ms-2"></label>
+                            </div>
+                        <div class="form-floating py-2 col-12">
+                            <label asp-for="Expense.Note " class="ms-2 text-muted"></label>
+                            <textarea asp-for="Expense.Note " class="form-control border-0 shadow"></textarea>
+
+                        </div>
+
+                        <div class="form-floating py-2 col-12">
+                            <input type="file" name="file" id="file" class="form-control border-0 shadow" multiple />
+                            <label asp-for="Expense.ExpenseFile" class="ms-2"></label>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-3">
+                                @if (Model.Expense.Id != 0)
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">Update</button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary form-control">Create</button>
+                                }
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <a asp-controller="Expense" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                    Back to List
+                                </a>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <div class="col-2">
+                    <img src="@Model.Expense.ExpenseFile" width="100%" style="border-radius:5px; border:1px solid #bbb9b9" />
+                </div>
+            
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
+
+
+@section Scripts{
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons  lists   table visualblocks wordcount',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
+        });
+    </script>
+    @{
+        <partial name="_ValidationScriptsPartial" />
+    }
+} 

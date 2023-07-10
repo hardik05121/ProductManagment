@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using ProductManagment_Models.ViewModels;
+using System;
 using System.Data;
+using System.Net;
+using System.Web.Helpers;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -18,14 +22,68 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        #region Index
-        public IActionResult Index()
-        {
-            List<Company> company = _unitOfWork.Company.GetAll().ToList();
+        //#region Index
+        //public IActionResult Index()
+        //{
+        //    List<Company> company = _unitOfWork.Company.GetAll().ToList();
 
-            return View(company);
+        //    return View(company);
+        //}
+        //#endregion
+
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
+        {
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
+
+
+
+
+            CompanyIndexVM companyIndexVM = new CompanyIndexVM();
+            companyIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "title_desc" : "";
+            var companies = (from data in _unitOfWork.Company.GetAll().ToList()
+                          where term == "" ||
+                             data.Title.ToLower().
+                             Contains(term)
+
+
+                          select new Company
+                          {
+                              Id = data.Id,
+                              Title = data.Title,
+                              Currency = data.Currency,
+                              Address = data.Address,
+                              PhoneNumber = data.PhoneNumber,
+                              Email = data.Email,
+                              IsActive = data.IsActive,
+                              CompanyImage = data.CompanyImage
+                          });
+            switch (orderBy)
+            {
+                case "brandName_desc":
+                    companies = companies.OrderByDescending(a => a.Title);
+                    break;
+
+                default:
+                    companies = companies.OrderBy(a => a.Title);
+                    break;
+            }
+            int totalRecords = companies.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            companies = companies.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            companyIndexVM.Companies = companies;
+            companyIndexVM.CurrentPage = currentPage;
+            companyIndexVM.TotalPages = totalPages;
+            companyIndexVM.Term = term;
+            companyIndexVM.PageSize = pageSize;
+            companyIndexVM.OrderBy = orderBy;
+            return View(companyIndexVM);
+
+
         }
-        #endregion
 
 
         #region Upsert
@@ -97,27 +155,19 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         #endregion
 
-        #region API CALLS
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            List<Company> objCompanyList = _unitOfWork.Company.GetAll().ToList();
-            return Json(new { data = objCompanyList });
-        }
-
-
-        [HttpDelete]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            var companyToBeDeleted = _unitOfWork.Company.Get(u => u.Id == id);
+            Company companyToBeDeleted = _unitOfWork.Company.Get(u => u.Id == id);
             if (companyToBeDeleted == null)
             {
-                return Json(new { success = false, message = "Error while deleting" });
+                TempData["error"] = "company can't be Delete.";
+                return RedirectToAction("Index");
             }
             var oldImagePath =
-                           Path.Combine(_webHostEnvironment.WebRootPath,
-                           companyToBeDeleted.CompanyImage.TrimStart('\\'));
+                            Path.Combine(_webHostEnvironment.WebRootPath,
+                            companyToBeDeleted.CompanyImage.TrimStart('\\'));
 
             if (System.IO.File.Exists(oldImagePath))
             {
@@ -126,11 +176,46 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
             _unitOfWork.Company.Remove(companyToBeDeleted);
             _unitOfWork.Save();
+            TempData["success"] = "Company Deleted successfully";
+            return RedirectToAction("Index");
 
-            return Json(new { success = true, message = "Delete Successful" });
         }
 
-        #endregion
+
+        //#region API CALLS
+
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    List<Company> objCompanyList = _unitOfWork.Company.GetAll().ToList();
+        //    return Json(new { data = objCompanyList });
+        //}
+
+
+        //[HttpDelete]
+        //public IActionResult Delete(int? id)
+        //{
+        //    var companyToBeDeleted = _unitOfWork.Company.Get(u => u.Id == id);
+        //    if (companyToBeDeleted == null)
+        //    {
+        //        return Json(new { success = false, message = "Error while deleting" });
+        //    }
+        //    var oldImagePath =
+        //                   Path.Combine(_webHostEnvironment.WebRootPath,
+        //                   companyToBeDeleted.CompanyImage.TrimStart('\\'));
+
+        //    if (System.IO.File.Exists(oldImagePath))
+        //    {
+        //        System.IO.File.Delete(oldImagePath);
+        //    }
+
+        //    _unitOfWork.Company.Remove(companyToBeDeleted);
+        //    _unitOfWork.Save();
+
+        //    return Json(new { success = true, message = "Delete Successful" });
+        //}
+
+        //#endregion
     }
 
 }

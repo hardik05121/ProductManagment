@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 
+using ProductManagment_Models.ViewModels;
+
 using System.Data;
 
 //using ProductManagment_Models.ModelsMetadata;
@@ -23,14 +25,63 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        #region Index
-        public IActionResult Index()
+        //#region Index
+        //public IActionResult Index()
+        //{
+        //    List<Brand> objBrandList = _unitOfWork.Brand.GetAll().ToList();
+        //    return View(objBrandList);
+        //}
+        //#endregion
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<Brand> objBrandList = _unitOfWork.Brand.GetAll().ToList();
-            return View(objBrandList);
-        }
-        #endregion
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
+ 
+
+
+            BrandIndexVM brandIndexVM = new BrandIndexVM();
+            brandIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "brandName_desc" : "";
+            var brands = (from data in _unitOfWork.Brand.GetAll().ToList()
+                          where term == "" ||
+                             data.BrandName.ToLower().
+                             Contains(term) 
+
+
+                          select new Brand
+                          {
+                              Id = data.Id,
+                              BrandName = data.BrandName,
+
+                              BrandImage = data.BrandImage
+                             
+                          });
+            switch (orderBy)
+            {
+                case "brandName_desc":
+                    brands = brands.OrderByDescending(a => a.BrandName);
+                    break;
+
+                default:
+                    brands = brands.OrderBy(a => a.BrandName);
+                    break;
+            }
+            int totalRecords = brands.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            brands = brands.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            brandIndexVM.Brands = brands;
+            brandIndexVM.CurrentPage = currentPage;
+            brandIndexVM.TotalPages = totalPages;
+            brandIndexVM.Term = term;
+            brandIndexVM.PageSize = pageSize;
+            brandIndexVM.OrderBy = orderBy;
+            return View(brandIndexVM);
+
+
+        }
         #region Upsert
         [HttpGet] // to grt the data on display.
         public IActionResult Upsert(int? id)
@@ -125,28 +176,19 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         #endregion
 
-        #region API CALLS
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            List<Brand> objBrandList = _unitOfWork.Brand.GetAll().ToList();
-            return Json(new { data = objBrandList });
-        }
-
-
-        [HttpDelete]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            var brandToBeDeleted = _unitOfWork.Brand.Get(u => u.Id == id);
+            Brand brandToBeDeleted = _unitOfWork.Brand.Get(u => u.Id == id);
             if (brandToBeDeleted == null)
             {
-                return Json(new { success = false, message = "Error while deleting" });
+                TempData["error"] = "Brand can't be Delete.";
+                return RedirectToAction("Index");
             }
-
             var oldImagePath =
-                           Path.Combine(_webHostEnvironment.WebRootPath,
-                           brandToBeDeleted.BrandImage.TrimStart('\\'));
+                      Path.Combine(_webHostEnvironment.WebRootPath,
+                       brandToBeDeleted.BrandImage.TrimStart('\\'));
 
             if (System.IO.File.Exists(oldImagePath))
             {
@@ -155,11 +197,47 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
             _unitOfWork.Brand.Remove(brandToBeDeleted);
             _unitOfWork.Save();
+            TempData["success"] = "Brand Deleted successfully";
+            return RedirectToAction("Index");
 
-            return Json(new { success = true, message = "Delete Successful" });
         }
 
 
-        #endregion
+        //#region API CALLS
+
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    List<Brand> objBrandList = _unitOfWork.Brand.GetAll().ToList();
+        //    return Json(new { data = objBrandList });
+        //}
+
+
+        //[HttpDelete]
+        //public IActionResult Delete(int? id)
+        //{
+        //    var brandToBeDeleted = _unitOfWork.Brand.Get(u => u.Id == id);
+        //    if (brandToBeDeleted == null)
+        //    {
+        //        return Json(new { success = false, message = "Error while deleting" });
+        //    }
+
+        //    var oldImagePath =
+        //                   Path.Combine(_webHostEnvironment.WebRootPath,
+        //                   brandToBeDeleted.BrandImage.TrimStart('\\'));
+
+        //    if (System.IO.File.Exists(oldImagePath))
+        //    {
+        //        System.IO.File.Delete(oldImagePath);
+        //    }
+
+        //    _unitOfWork.Brand.Remove(brandToBeDeleted);
+        //    _unitOfWork.Save();
+
+        //    return Json(new { success = true, message = "Delete Successful" });
+        //}
+
+
+        //#endregion
     }
 }

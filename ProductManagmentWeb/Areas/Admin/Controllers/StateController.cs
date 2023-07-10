@@ -24,11 +24,54 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
         #region Index
-        public IActionResult Index()
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<State> objStateList = _unitOfWork.State.GetAll(includeProperties: "Country").ToList();
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
-            return View(objStateList);
+     
+
+            StateIndexVM stateIndexVM = new StateIndexVM();
+            stateIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "stateName_desc" : "";
+            var states = (from data in _unitOfWork.State.GetAll(includeProperties: "Country").ToList()
+                          where term == "" ||
+                             data.StateName.ToLower().
+                             Contains(term) || data.Country.CountryName.ToLower().Contains(term)
+
+
+                          select new State
+                          {
+                              Id = data.Id,
+                              StateName = data.StateName,
+
+                              IsActive = data.IsActive,
+                              Country = data.Country
+                          });
+            switch (orderBy)
+            {
+                case "stateName_desc":
+                    states = states.OrderByDescending(a => a.StateName);
+                    break;
+
+                default:
+                    states = states.OrderBy(a => a.StateName);
+                    break;
+            }
+            int totalRecords = states.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            states = states.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            stateIndexVM.States = states;
+            stateIndexVM.CurrentPage = currentPage;
+            stateIndexVM.TotalPages = totalPages;
+            stateIndexVM.Term = term;
+            stateIndexVM.PageSize = pageSize;
+            stateIndexVM.OrderBy = orderBy;
+            return View(stateIndexVM);
+
+
         }
         #endregion
 
@@ -112,31 +155,51 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         #endregion
 
-        #region API CALLS
 
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            List<State> objStateList = _unitOfWork.State.GetAll(includeProperties: "Country").ToList();
-            return Json(new { data = objStateList });
-        }
-
-
-        [HttpDelete]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            var stateToBeDeleted = _unitOfWork.State.Get(u => u.Id == id);
+            State stateToBeDeleted = _unitOfWork.State.Get(u => u.Id == id);
             if (stateToBeDeleted == null)
             {
-                return Json(new { success = false, message = "Error while deleting" });
+                TempData["error"] = "State can't be Delete.";
+                return RedirectToAction("Index");
             }
 
             _unitOfWork.State.Remove(stateToBeDeleted);
             _unitOfWork.Save();
+            TempData["success"] = "State Deleted successfully";
+            return RedirectToAction("Index");
 
-            return Json(new { success = true, message = "Delete Successful" });
         }
 
-        #endregion
+
+        //#region API CALLS
+
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    List<State> objStateList = _unitOfWork.State.GetAll(includeProperties: "Country").ToList();
+        //    return Json(new { data = objStateList });
+        //}
+
+
+        //[HttpDelete]
+        //public IActionResult Delete(int? id)
+        //{
+        //    var stateToBeDeleted = _unitOfWork.State.Get(u => u.Id == id);
+        //    if (stateToBeDeleted == null)
+        //    {
+        //        return Json(new { success = false, message = "Error while deleting" });
+        //    }
+
+        //    _unitOfWork.State.Remove(stateToBeDeleted);
+        //    _unitOfWork.Save();
+
+        //    return Json(new { success = true, message = "Delete Successful" });
+        //}
+
+        //#endregion
     }
 }

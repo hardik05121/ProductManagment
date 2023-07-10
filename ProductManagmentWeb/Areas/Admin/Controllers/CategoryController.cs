@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using ProductManagment_Models.ViewModels;
 using System.Data;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
@@ -18,12 +19,60 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
 
-        public IActionResult Index()
+        //public IActionResult Index()
+        //{
+        //    List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+        //    return View(objCategoryList);
+        //}
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
-            return View(objCategoryList);
-        }
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
+        
+
+            CategoryIndexVM categoryIndexVM = new CategoryIndexVM();
+            categoryIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "Name_desc" : "";
+            var categories = (from data in _unitOfWork.Category.GetAll().ToList()
+                          where term == "" ||
+                             data.Name.ToLower().
+                             Contains(term) 
+
+
+                          select new Category
+                          {
+                              Id = data.Id,
+                              Name = data.Name,
+                              Description = data.Description,
+                              IsActive = data.IsActive
+                            
+                          });
+            switch (orderBy)
+            {
+                case "Name_desc":
+                    categories = categories.OrderByDescending(a => a.Name);
+                    break;
+
+                default:
+                    categories = categories.OrderBy(a => a.Name);
+                    break;
+            }
+            int totalRecords = categories.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            categories = categories.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            categoryIndexVM.Categories = categories;
+            categoryIndexVM.CurrentPage = currentPage;
+            categoryIndexVM.TotalPages = totalPages;
+            categoryIndexVM.Term = term;
+            categoryIndexVM.PageSize = pageSize;
+            categoryIndexVM.OrderBy = orderBy;
+            return View(categoryIndexVM);
+
+
+        }
 
 
 
@@ -70,32 +119,48 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             }
         }
 
-
-        #region API CALLS
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
-            return Json(new { data = objCategoryList });
-        }
-
-
-        [HttpDelete]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            var CategoryToBeDeleted = _unitOfWork.Category.Get(u => u.Id == id);
-            if (CategoryToBeDeleted == null)
+            Category categoryToBeDeleted = _unitOfWork.Category.Get(u => u.Id == id);
+            if (categoryToBeDeleted == null)
             {
-                return Json(new { success = false, message = "Error while deleting" });
+                TempData["error"] = "Category can't be Delete.";
+                return RedirectToAction("Index");
             }
 
-            _unitOfWork.Category.Remove(CategoryToBeDeleted);
+            _unitOfWork.Category.Remove(categoryToBeDeleted);
             _unitOfWork.Save();
+            TempData["success"] = "Category Deleted successfully";
+            return RedirectToAction("Index");
 
-            return Json(new { success = true, message = "Delete Successful" });
         }
+        //#region API CALLS
 
-        #endregion
+        //[HttpGet]
+        //public IActionResult GetAll()
+        //{
+        //    List<Category> objCategoryList = _unitOfWork.Category.GetAll().ToList();
+        //    return Json(new { data = objCategoryList });
+        //}
+
+
+        //[HttpDelete]
+        //public IActionResult Delete(int? id)
+        //{
+        //    var CategoryToBeDeleted = _unitOfWork.Category.Get(u => u.Id == id);
+        //    if (CategoryToBeDeleted == null)
+        //    {
+        //        return Json(new { success = false, message = "Error while deleting" });
+        //    }
+
+        //    _unitOfWork.Category.Remove(CategoryToBeDeleted);
+        //    _unitOfWork.Save();
+
+        //    return Json(new { success = true, message = "Delete Successful" });
+        //}
+
+        //#endregion
     }
 }
