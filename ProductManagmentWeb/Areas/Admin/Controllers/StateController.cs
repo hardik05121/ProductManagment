@@ -47,6 +47,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                               IsActive = data.IsActive,
                               Country = data.Country
                           });
+
             switch (orderBy)
             {
                 case "stateName_desc":
@@ -70,8 +71,6 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             stateIndexVM.PageSize = pageSize;
             stateIndexVM.OrderBy = orderBy;
             return View(stateIndexVM);
-
-
         }
         #endregion
 

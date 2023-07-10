@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ProductManagment_Models.Models;
 
 [ModelMetadataType(typeof(ExpenseMetadata))]
-public partial class ExpenseMetadata
+public partial class Expense
 {
 
 }
