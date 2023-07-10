@@ -12,7 +12,7 @@ namespace ProductManagment_Models.ViewModels
     public class ExpenseVM
     {
 
-        public ExpenseMetadata Expense { get; set; }
+        public Expense Expense { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> ExpenseCategoryList { get; set; }

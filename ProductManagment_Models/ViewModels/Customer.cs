@@ -13,7 +13,7 @@ namespace ProductManagment_Models.ViewModels
     {
 
         [ValidateNever]
-        public CustomerMetadata Customer { get; set; }
+        public Customer Customer { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> CityList { get; set; }
 

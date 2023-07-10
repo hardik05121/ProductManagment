@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository
 {
-    public class InquiryRepository : Repository<InquiryMetadata>, IInquiryRepository
+    public class InquiryRepository : Repository<Inquiry>, IInquiryRepository
     {
         private ApplicationDbContext _db;
         public InquiryRepository(ApplicationDbContext db) : base(db)
@@ -19,7 +19,7 @@ namespace ProductManagment_DataAccess.Repository
 
 
 
-        public void Update(InquiryMetadata obj)
+        public void Update(Inquiry obj)
         {
             _db.Inquiries.Update(obj);
         }

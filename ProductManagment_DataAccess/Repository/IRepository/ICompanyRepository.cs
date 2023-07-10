@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_DataAccess.Repository.IRepository
 {
-    public interface ICompanyRepository : IRepository<CompanyMetadata>
+    public interface ICompanyRepository : IRepository<Company>
     {
-        void Update(CompanyMetadata obj);
+        void Update(Company obj);
     }
 }

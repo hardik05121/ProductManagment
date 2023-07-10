@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ProductManagment_Models.Models;
 
 [ModelMetadataType(typeof(CustomerMetadata))]
-public partial class CustomerMetadata
+public partial class Customer
 {
 
 }

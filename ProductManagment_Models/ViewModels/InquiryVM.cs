@@ -11,7 +11,7 @@ namespace ProductManagment_Models.ViewModels
 {
     public class InquiryVM
     {
-        public InquiryMetadata Inquiry { get; set; }
+        public Inquiry Inquiry { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> ProductList { get; set; }
         //[ValidateNever]

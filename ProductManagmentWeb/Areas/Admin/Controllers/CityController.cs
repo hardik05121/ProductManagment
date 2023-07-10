@@ -152,7 +152,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             }
 
             #endregion
-
+        
             #region Csacadion Droup down State,country, City
             [HttpGet]
             public IActionResult GetStatesByCountry(int countryId)
