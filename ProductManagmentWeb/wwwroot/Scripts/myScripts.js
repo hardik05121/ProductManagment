@@ -51,13 +51,13 @@ $(document).ready(function () {
             $('#price').siblings('span.text-danger').css('visibility', 'hidden');
         }
 
-        //if (!($('#subtotal').val().trim() != '' && !isNaN($('#subtotal').val().trim()))) {
-        //    isAllValid = false;
-        //    $('#subtotal').siblings('span.text-danger').css('visibility', 'visible');
-        //}
-        //else {
-        //    $('#subtotal').siblings('span.text-danger').css('visibility', 'hidden');
-        //}
+        if (!($('#subtotal').val().trim() != '' && !isNaN($('#subtotal').val().trim()))) {
+            isAllValid = false;
+            $('#subtotal').siblings('span.text-danger').css('visibility', 'visible');
+        }
+        else {
+            $('#subtotal').siblings('span.text-danger').css('visibility', 'hidden');
+        }
 
         if (isAllValid) {
             var $newRow = $('#mainrow').clone().removeAttr('id');
@@ -65,6 +65,7 @@ $(document).ready(function () {
             $('.warehouse', $newRow).val($('#warehouse').val());
             $('.unit', $newRow).val($('#unit').val());
             $('.tax', $newRow).val($('#tax').val());
+           
          
 
             //Replace add button with remove button

@@ -11,7 +11,7 @@ public partial class AspNetUser
     [Key]
     public string Id { get; set; } = null!;
 
-    public string Discriminator { get; set; } = null!;
+    public string? Discriminator { get; set; }
 
     [StringLength(50)]
     public string? FirstName { get; set; }
@@ -70,13 +70,11 @@ public partial class AspNetUser
     [InverseProperty("User")]
     public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; } = new List<AspNetUserToken>();
 
-
     [InverseProperty("User")]
     public virtual ICollection<PurChaseOrder> PurChaseOrders { get; set; } = new List<PurChaseOrder>();
 
     [InverseProperty("User")]
     public virtual ICollection<Quotation> Quotations { get; set; } = new List<Quotation>();
-
 
     [ForeignKey("UserId")]
     [InverseProperty("Users")]
