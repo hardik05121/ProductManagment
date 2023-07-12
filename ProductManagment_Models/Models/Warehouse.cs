@@ -32,11 +32,9 @@ public partial class Warehouse
     [InverseProperty("Warehouse")]
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();
 
-
     [InverseProperty("Warehouse")]
     public virtual ICollection<PurChaseOrderXproduct> PurChaseOrderXproducts { get; set; } = new List<PurChaseOrderXproduct>();
 
     [InverseProperty("Warehouse")]
     public virtual ICollection<QuotationXproduct> QuotationXproducts { get; set; } = new List<QuotationXproduct>();
-
 }
