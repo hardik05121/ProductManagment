@@ -53,7 +53,6 @@ namespace ProductManagment_Models.Models
 
         public double? Discount { get; set; }
 
-        public double? GrandTotal { get; set; }
 
         [ForeignKey("ProductId")]
         [ValidateNever]
