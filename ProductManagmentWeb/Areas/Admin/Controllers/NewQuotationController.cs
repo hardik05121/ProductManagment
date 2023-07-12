@@ -12,12 +12,12 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
     //[Authorize(Roles = "Admin")]
-    public class QuotationController : Controller
+    public class NewQuotationController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly UserManager<IdentityUser> _userManager;
-        public QuotationController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, UserManager<IdentityUser> userManager)
+        public NewQuotationController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, UserManager<IdentityUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
@@ -33,7 +33,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         #region Upsert
         public IActionResult Upsert(int? id)
         {
-            QuotationVM quotationVM = new()
+            NewQuotationVM newQuotationVM = new()
             {
                 SupplierList = _unitOfWork.Supplier.GetAll().Select(u => new SelectListItem
                 {
@@ -62,11 +62,15 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Text = u.BaseUnit,
                     Value = u.Id.ToString()
                 }),
+                TaxList = _unitOfWork.Tax.GetAll().Select(u => new SelectListItem
+                {
+                    Text = u.Percentage.ToString(),
+                    Value = u.Id.ToString()
+                }),
                 QuotationXproduct = new QuotationXproduct(),
-                QuotationXproducts = _unitOfWork.QuotationXproduct.GetAll().ToList(),
-                Products = _unitOfWork.Product.GetAll().ToList(),
+
             };
-                return View(quotationVM);
+                return View(newQuotationVM);
           
           
         }
@@ -121,7 +125,17 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             }
         }
         #endregion
+        #region Select Product
+        [HttpGet]
+        public IActionResult GetProduct(int Id)
+        {
+            var product = _unitOfWork.Product.Get(s => s.Id == Id, includeProperties: "Brand,Category,Unit,Warehouse,Tax");
+            var warehouse = _unitOfWork.Warehouse.Get(s => s.Id == product.WarehouseId);
 
+            return Json(product);
+        }
+
+        #endregion
 
     }
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using ProductManagment_Models.ViewModels;
 using System.Data;
 using System.Drawing.Drawing2D;
 
@@ -19,13 +20,52 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
         #region Index
-        public IActionResult Index()
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<ExpenseCategory> objExpenseCategoryList = _unitOfWork.ExpenseCategory.GetAll().ToList();
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
-            return View(objExpenseCategoryList);
+
+
+            ExpenseCategoryIndexVM expenseCategoryIndexVM = new ExpenseCategoryIndexVM();
+            expenseCategoryIndexVM.ExpenseCategoryNameSortOrder = string.IsNullOrEmpty(orderBy) ? "expenseCategoryName_desc" : "";
+            var expenseCategories = (from data in _unitOfWork.ExpenseCategory.GetAll().ToList()
+                          where term == "" ||
+                             data.ExpenseCategoryName.ToLower().
+                             Contains(term)
+
+
+                          select new ExpenseCategory
+                          {
+                              Id = data.Id,
+                              ExpenseCategoryName = data.ExpenseCategoryName,
+                              IsActive = data.IsActive,
+                          });
+
+            switch (orderBy)
+            {
+                case "stateName_desc":
+                    expenseCategories = expenseCategories.OrderByDescending(a => a.ExpenseCategoryName);
+                    break;
+
+                default:
+                    expenseCategories = expenseCategories.OrderBy(a => a.ExpenseCategoryName);
+                    break;
+            }
+            int totalRecords = expenseCategories.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            expenseCategories = expenseCategories.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            expenseCategoryIndexVM.ExpenseCategories = expenseCategories;
+            expenseCategoryIndexVM.CurrentPage = currentPage;
+            expenseCategoryIndexVM.TotalPages = totalPages;
+            expenseCategoryIndexVM.Term = term;
+            expenseCategoryIndexVM.PageSize = pageSize;
+            expenseCategoryIndexVM.OrderBy = orderBy;
+            return View(expenseCategoryIndexVM);
         }
-
         #endregion
 
         #region Upsert

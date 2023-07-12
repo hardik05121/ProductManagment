@@ -9,16 +9,12 @@ using System.Threading.Tasks;
 
 namespace ProductManagment_Models.ViewModels
 {
-    public class QuotationVM
+    public class NewQuotationVM
     {
         public Quotation Quotation { get; set; }
         [ValidateNever]
-        public IEnumerable<Product> Products { get; set; }
-        [ValidateNever]
         public IEnumerable<QuotationXproduct> QuotationXproducts { get; set; }
-
         public QuotationXproduct QuotationXproduct { get; set; }
-
         [ValidateNever]
         public IEnumerable<SelectListItem> SupplierList { get; set; }
 
@@ -30,6 +26,8 @@ namespace ProductManagment_Models.ViewModels
         public IEnumerable<SelectListItem> WarehouseList { get; set; } 
         [ValidateNever]
         public IEnumerable<SelectListItem> UnitList { get; set; } 
+        [ValidateNever]
+        public IEnumerable<SelectListItem> TaxList { get; set; } 
 
     }
 }

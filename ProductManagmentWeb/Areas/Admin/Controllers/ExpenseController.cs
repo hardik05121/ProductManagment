@@ -23,11 +23,56 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
 
-        public IActionResult Index()
+        #region Index
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<Expense> objExpenseList = _unitOfWork.Expense.GetAll(includeProperties: "ExpenseCategory").ToList();
-            return View(objExpenseList);
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
+
+
+
+            ExpenseIndexVM expenseIndexVM = new ExpenseIndexVM();
+            expenseIndexVM.ExpenseNameSortOrder = string.IsNullOrEmpty(orderBy) ? "expenseName_desc" : "";
+            var expenses = (from data in _unitOfWork.Expense.GetAll(includeProperties: "ExpenseCategory").ToList()
+                          where term == "" || data.ExpenseCategory.ExpenseCategoryName.ToLower().Contains(term)
+
+                          select new Expense
+                          {
+                              Id = data.Id,
+                              CreatedDate = data.CreatedDate,
+                              ExpenseDate = data.ExpenseDate,
+                              Reference = data.Reference,
+                              Amount = data.Amount,
+                              ExpenseCategory = data.ExpenseCategory,
+                              Note = data.Note,
+                              ExpenseFile = data.ExpenseFile,
+                          });
+
+            switch (orderBy)
+            {
+                case "expenseName_desc":
+                    expenses = expenses.OrderByDescending(a => a.ExpenseCategory.ExpenseCategoryName);
+                    break;
+
+                default:
+                    expenses = expenses.OrderBy(a => a.ExpenseCategory.ExpenseCategoryName);
+                    break;
+            }
+            int totalRecords = expenses.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            expenses = expenses.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            expenseIndexVM.Expenses = expenses;
+            expenseIndexVM.CurrentPage = currentPage;
+            expenseIndexVM.TotalPages = totalPages;
+            expenseIndexVM.Term = term;
+            expenseIndexVM.PageSize = pageSize;
+            expenseIndexVM.OrderBy = orderBy;
+            return View(expenseIndexVM);
         }
+        #endregion
 
         [HttpGet]
         public IActionResult Upsert(int? id)
