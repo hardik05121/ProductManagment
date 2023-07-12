@@ -62,6 +62,8 @@ namespace ProductManagment_Models.Models
         [StringLength(450)]
         public string? ScanBarcode { get; set; }
 
+        public double? GrandTotal { get; set; }
+
         public virtual ICollection<PurChaseOrderXproduct> PurChaseOrderXproducts { get; set; } = new List<PurChaseOrderXproduct>();
 
         [ForeignKey("QuotationId")]

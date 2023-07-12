@@ -23,35 +23,35 @@
                             <label asp-for="Quotation.SupplierId" class="ms-2"></label>
                             <span asp-validation-for="Quotation.SupplierId" class="text-danger"></span>
                         </div>
-                        <div class="form-floating py-2 col-md-6">
-                            <select asp-for="@Model.Quotation.UserId" asp-items="@Model.UserList" class="form-select border-0 shadow col-md-6">
+                        <div class="form-floating py-2 col-md-12">
+                            <select asp-for="@Model.Quotation.UserId" asp-items="@Model.UserList" class="form-select border-0 shadow ">
                                 <option disabled selected>--Select User--</option>
                             </select>
                             <label asp-for="Quotation.UserId" class="ms-2"></label>
                             <span asp-validation-for="Quotation.UserId" class="text-danger "></span>
                         </div>
-                        <div class="form-floating py-2 col-md-6">
+                        <div class="form-floating py-2 col-md-12">
                             <input asp-for="Quotation.QuotationNumber" class="form-control border-0 shadow" />
                             <label asp-for="Quotation.QuotationNumber" class="ms-2"></label>
                             <span asp-validation-for="Quotation.QuotationNumber" class="text-danger"></span>
                         </div>
-                        <div class="form-floating py-2 col-md-6">
+                        <div class="form-floating py-2 col-md-12">
                             <input asp-for="Quotation.OrderDate" type="date" class="form-control border-0 shadow" />
                             <label asp-for="Quotation.OrderDate" class="ms-2"></label>
                         </div>
-                        <div class="form-floating py-2 col-md-6">
+                        <div class="form-floating py-2 col-md-12">
                             <input asp-for="Quotation.DeliveryDate" type="date" class="form-control border-0 shadow" />
                             <label asp-for="Quotation.DeliveryDate" class="ms-2"></label>
                         </div>
-                        <div class="form-floating py-2 col-md-6">
+                        <div class="form-floating py-2 col-md-12">
                             <label asp-for="Quotation.TermCondition " class="ms-2 text-muted"></label>
                             <textarea asp-for="Quotation.TermCondition " class="form-control border-0 shadow"></textarea>
                         </div>
-                        <div class="form-floating py-2 col-md-6">
+                        <div class="form-floating py-2 col-md-12">
                             <label asp-for="Quotation.Notes " class="ms-2 text-muted"></label>
                             <textarea asp-for="Quotation.Notes " class="form-control border-0 shadow"></textarea>
                         </div>
-                        <div class="form-floating py-2 col-md-6">
+                        <div class="form-floating py-2 col-md-12">
                             <input asp-for="Quotation.ScanBarCode" type="date" class="form-control border-0 shadow" />
                             <label asp-for="Quotation.ScanBarCode" class="ms-2"></label>
                         </div>
@@ -166,9 +166,22 @@
                                     <table class="table table-responsive" id="quotationxproducts"></table>
                                     <span id="quotationxproductsError" style="color:red"></span>
                                 </div>
-                               @*  <div style="padding:10px 0; text-align:right">
+                               @*     <div style="padding:10px 0; text-align:right">
                                     <input id="submit" type="button" value="Save Order" class="btn btn-warning" style="padding:10px 20px" />
                                 </div> *@
+                            </div>
+
+                             <div class="form-floating py-2 col-3">
+                                <input asp-for="QuotationXproduct.Discount" id="discount" value="0.00" class="discount form-control border-0 shadow" />
+                                <label asp-for="QuotationXproduct.Discount" class="ms-2"></label>
+                                <span asp-validation-for="QuotationXproduct.Discount" class="text-danger"></span>
+                            </div> 
+                            <br />
+                            <hr />
+                            <div class="form-floating py-2 col-3">
+                                <input asp-for="Quotation.GrandTotal" id="grandtotal" class="grandtotal form-control border-0 shadow" />
+                                <label asp-for="Quotation.GrandTotal" class="ms-2"></label>
+                                <span asp-validation-for="Quotation.GrandTotal" class="text-danger"></span>
                             </div>
                         </div>
 
