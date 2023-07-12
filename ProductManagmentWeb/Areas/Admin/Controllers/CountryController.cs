@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
+using ProductManagment_Models.ViewModels;
 using System.Data;
 
 using System.Drawing.Drawing2D;
@@ -20,13 +21,49 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
         #region Index
-        public IActionResult Index()
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<Country> objCountryList = _unitOfWork.Country.GetAll().ToList();
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
-            return View(objCountryList);
+            CountryIndexVM countryIndexVM = new CountryIndexVM();
+            countryIndexVM.CountryNameSortOrder = string.IsNullOrEmpty(orderBy) ? "countryName_desc" : "";
+            var countries = (from data in _unitOfWork.Country.GetAll().ToList()
+                          where term == "" ||
+                             data.CountryName.ToLower().
+                             Contains(term)
+
+
+                          select new Country
+                          {
+                              Id = data.Id,
+                              CountryName = data.CountryName,
+                              IsActive = data.IsActive,
+                          });
+
+            switch (orderBy)
+            {
+                case "stateName_desc":
+                    countries = countries.OrderByDescending(a => a.CountryName);
+                    break;
+
+                default:
+                    countries = countries.OrderBy(a => a.CountryName);
+                    break;
+            }
+            int totalRecords = countries.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            countries = countries.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            countryIndexVM.Countries = countries;
+            countryIndexVM.CurrentPage = currentPage;
+            countryIndexVM.Term = term;
+            countryIndexVM.PageSize = pageSize;
+            countryIndexVM.OrderBy = orderBy;
+            return View(countryIndexVM);
         }
-
         #endregion
 
         #region Upsert

@@ -14,7 +14,7 @@ using System.Data;
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize(Roles = "Admin")]
+   // [Authorize(Roles = "Admin")]
     public class BrandController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
