@@ -6,7 +6,6 @@ using ProductManagment_Models.ViewModels;
 using System;
 using System.Data;
 using System.Net;
-using System.Web.Helpers;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {

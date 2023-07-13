@@ -34,8 +34,6 @@ public partial class Quotation
     [StringLength(450)]
     public string? ScanBarCode { get; set; }
 
-    public double? GrandTotal { get; set; }
-
     [InverseProperty("Quotation")]
     public virtual ICollection<PurChaseOrder> PurChaseOrders { get; set; } = new List<PurChaseOrder>();
 
