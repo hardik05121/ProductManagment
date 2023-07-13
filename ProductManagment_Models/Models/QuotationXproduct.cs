@@ -30,6 +30,8 @@ public partial class QuotationXproduct
 
     public double? Discount { get; set; }
 
+    public double? GrandTotal { get; set; }
+
     [ForeignKey("ProductId")]
     [InverseProperty("QuotationXproducts")]
     public virtual Product Product { get; set; } = null!;

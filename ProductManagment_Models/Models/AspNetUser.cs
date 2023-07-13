@@ -11,7 +11,7 @@ public partial class AspNetUser
     [Key]
     public string Id { get; set; } = null!;
 
-    public string? Discriminator { get; set; }
+    public string Discriminator { get; set; } = null!;
 
     [StringLength(50)]
     public string? FirstName { get; set; }
