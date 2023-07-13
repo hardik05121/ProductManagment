@@ -44,6 +44,8 @@ public partial class PurChaseOrder
     [StringLength(450)]
     public string? ScanBarcode { get; set; }
 
+    public double? GrandTotal { get; set; }
+
     [InverseProperty("PurChaseOrder")]
     public virtual ICollection<PurChaseOrderXproduct> PurChaseOrderXproducts { get; set; } = new List<PurChaseOrderXproduct>();
 
