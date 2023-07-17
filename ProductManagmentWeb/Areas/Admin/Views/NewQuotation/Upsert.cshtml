@@ -1,5 +1,91 @@
 ﻿@model NewQuotationVM
 
+
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="">
+                <tr class="mycontainer" id="mainrow">
+                    <td>
+
+                        <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
+                            <option disabled selected>--Select Product--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.ProductId" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.ProductId" class="text-danger"></span>
+
+                    </td>
+                    <td>
+
+                        <select asp-for="@Model.QuotationXproduct.WarehouseId" asp-items="@Model.WarehouseList" id="warehouse" class="warehouse form-select border-0 shadow">
+                            <option disabled selected>--Select Warehouse--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.Warehouse.WarehouseName" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Warehouse.WarehouseName" class="text-danger"></span>
+
+                    </td>
+                    <td>
+
+                        <select asp-for="@Model.QuotationXproduct.UnitId" asp-items="@Model.UnitList" id="unit" class="unit form-select border-0 shadow">
+                            <option disabled selected>--Select BaseUnit--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.Unit.UnitName" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Unit.UnitName" class="text-danger"></span>
+
+                    </td>
+                    <td>
+                        <select asp-for="@Model.QuotationXproduct.TaxId" asp-items="@Model.TaxList" id="tax" class="tax form-select border-0 shadow">
+                            <option disabled selected>--Select Tax--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.Tax.Name" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Tax.Name" class="text-danger"></span>
+
+                    </td>
+                    <td>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="QuotationXproduct.Price" disabled id="price" class="price form-control border-0 shadow" />
+                            <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
+                            <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow" />
+                            <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
+                            <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
+                            <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
+                            <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
+                        </div>
+                    </td>
+                   
+                    <td>
+                        <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
+                    </td>
+                   
+                </tr>
+            </div>
+           @*  <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div> *@
+        </div>
+    </div>
+</div>
+
 <div class="card shadow border-0 my-4">
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
@@ -23,22 +109,13 @@
                             <label asp-for="Quotation.SupplierId" class="ms-2"></label>
                             <span asp-validation-for="Quotation.SupplierId" class="text-danger"></span>
                         </div>
-                        <div class="form-floating py-2 col-md-12">
-                            <select asp-for="@Model.Quotation.UserId" asp-items="@Model.UserList" class="form-select border-0 shadow ">
-                                <option disabled selected>--Select User--</option>
-                            </select>
-                            <label asp-for="Quotation.UserId" class="ms-2"></label>
-                            <span asp-validation-for="Quotation.UserId" class="text-danger "></span>
-                        </div>
+
                         <div class="form-floating py-2 col-md-12">
                             <input asp-for="Quotation.QuotationNumber" class="form-control border-0 shadow" />
                             <label asp-for="Quotation.QuotationNumber" class="ms-2"></label>
                             <span asp-validation-for="Quotation.QuotationNumber" class="text-danger"></span>
                         </div>
-                        <div class="form-floating py-2 col-md-12">
-                            <input asp-for="Quotation.OrderDate" type="date" class="form-control border-0 shadow" />
-                            <label asp-for="Quotation.OrderDate" class="ms-2"></label>
-                        </div>
+
                         <div class="form-floating py-2 col-md-12">
                             <input asp-for="Quotation.DeliveryDate" type="date" class="form-control border-0 shadow" />
                             <label asp-for="Quotation.DeliveryDate" class="ms-2"></label>
@@ -52,7 +129,7 @@
                             <textarea asp-for="Quotation.Notes " class="form-control border-0 shadow"></textarea>
                         </div>
                         <div class="form-floating py-2 col-md-12">
-                            <input asp-for="Quotation.ScanBarCode" type="date" class="form-control border-0 shadow" />
+                            <input asp-for="Quotation.ScanBarCode" type="text" class="form-control border-0 shadow" />
                             <label asp-for="Quotation.ScanBarCode" class="ms-2"></label>
                         </div>
 
@@ -74,31 +151,30 @@
                                                 Unit Name
                                             </th>
                                             <th>
-                                               Tax
+                                                Tax
                                             </th>
                                             <th>
                                                 Price
                                             </th>
                                             <th>
-                                               Quantity
+                                                Quantity
                                             </th>
                                             <th>
                                                 SubTotal
                                             </th>
                                             <th>
-                                                <button id="btnaddExperience" type="button" class="btn btn-sm btn-secondary visible"
-                                                        onclick="AddItem(this)">
-                                                    Add
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                    Select Product
                                                 </button>
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-
-                                        @*      @foreach (var data in Model.QuotationXproducts) *@
-                                        @* @for (int i=0; i < Model.QuotationXproductList.Count;i++) *@
-
-                                        <tr class="mycontainer" id="mainrow">
+                                    <tbody id ="quotationxproducts">
+                                        @*
+                                        @      @foreach (var data in Model.QuotationXproducts) @
+                                        @ @for (int i=0; i < Model.QuotationXproductList.Count;i++) @
+                                        *@
+                                     @*    <tr class="mycontainer" id="mainrow">
                                             <td>
 
                                                 <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
@@ -136,14 +212,14 @@
                                             </td>
                                             <td>
                                                 <div class="form-floating py-2 col-12">
-                                                    <input asp-for="QuotationXproduct.Price" disabled id="price"  class="price form-control border-0 shadow" />
+                                                    <input asp-for="QuotationXproduct.Price" disabled id="price" class="price form-control border-0 shadow" />
                                                     <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
                                                     <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="form-floating py-2 col-12">
-                                                    <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow"/>
+                                                    <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow" />
                                                     <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
                                                     <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
                                                 </div>
@@ -151,7 +227,7 @@
 
                                             <td>
                                                 <div class="form-floating py-2 col-12">
-                                                    <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal"  class="subtotal form-control border-0 shadow" />
+                                                    <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
                                                     <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
                                                     <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
                                                 </div>
@@ -159,32 +235,48 @@
                                             <td>
                                                 <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
                                             </td>
-                                        </tr>
+                                        </tr>*@
                                     </tbody>
                                 </table>
-                                <div id="quotationxproducts">
+                                        @*  <div id="quotationxproducts">
                                     <table class="table table-responsive" id="quotationxproducts"></table>
                                     <span id="quotationxproductsError" style="color:red"></span>
-                                </div>
-                               @*     <div style="padding:10px 0; text-align:right">
-                                    <input id="submit" type="button" value="Save Order" class="btn btn-warning" style="padding:10px 20px" />
+                                </div> 
+                                   <div style="padding:10px 0; text-align:right">
+                                <input id="submit" type="button" value="Save Order" class="btn btn-warning" style="padding:10px 20px" />
                                 </div> *@
                             </div>
 
-                             <div class="form-floating py-2 col-3">
+                            <div class="form-floating py-2 col-3">
                                 <input asp-for="QuotationXproduct.Discount" id="discount" value="0.00" class="discount form-control border-0 shadow" />
                                 <label asp-for="QuotationXproduct.Discount" class="ms-2"></label>
                                 <span asp-validation-for="QuotationXproduct.Discount" class="text-danger"></span>
-                            </div> 
+                            </div>
+                            @* <div class="form-floating py-2 col-3">
+                            <input asp-for="QuotationXproduct.TotalTax" id="totaltax" value="0.00" class="totaltax form-control border-0 shadow" />
+                            <label asp-for="QuotationXproduct.TotalTax" class="ms-2"></label>
+                            <span asp-validation-for="QuotationXproduct.TotalTax" class="text-danger"></span>
+                            </div> *@
                             <br />
                             <hr />
-                           @*  <div class="form-floating py-2 col-3">
+                            <div class="form-floating py-2 col-3">
                                 <input asp-for="Quotation.GrandTotal" id="grandtotal" class="grandtotal form-control border-0 shadow" />
                                 <label asp-for="Quotation.GrandTotal" class="ms-2"></label>
                                 <span asp-validation-for="Quotation.GrandTotal" class="text-danger"></span>
-                            </div> *@
+                            </div>
                         </div>
+                        <div class="row pt-2">
+                            <div class="col-6 col-md-3">
 
+                                <button type="submit" class="btn btn-primary form-control">Create</button>
+
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <a asp-controller="NewQuotation" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                    Back to List
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -195,14 +287,60 @@
 
 @section Scripts{
 
+   
+    @*  This Code are used to add item item in the tbody *@
+    <script>
+        $(document).ready(function () {
+            alert("1");
+            $('#add').click(function () {
+                alert("2");
+                // Get the values from the input fields
+                var productId = $('#product').val();
+                var warehouseId = $('#warehouse').val();
+                var unitId = $('#unit').val();
+                var taxId = $('#tax').val();
+                var price = $('#price').val();
+                var quantity = $('#quantity').val();
+                alert("3");
+                // Create the new row HTML
+                var newRowHtml = '<tr>';
+                newRowHtml += '<td>' + productId + '</td>';
+                newRowHtml += '<td>' + warehouseId + '</td>';
+                newRowHtml += '<td>' + unitId + '</td>';
+                newRowHtml += '<td>' + taxId + '</td>';
+                newRowHtml += '<td>' + price + '</td>';
+                newRowHtml += '<td>' + quantity + '</td>';
+                newRowHtml += '<td>' + (price * quantity) + '</td>';
+                newRowHtml += '</tr>';
+                alert("4");
+                // Append the new row to the table
+                $('#ExpTable tbody').append(newRowHtml);
+                alert("5");
+                // Update the product list on the page with the updated data
+                // Replace "#product" with the selector for the product list element
+
+            });
+        });
+
+        function GetProductListAsHtml(productList) {
+            alert("6");
+            var options = '';
+            for (var i = 0; i < productList.length; i++) {
+                options += '<option value="' + productList[i].Value + '">' + productList[i].Text + '</option>';
+            }
+            return options;
+        }
+    </script>
+
+   @*  This Code are used for the data bind of product list according to seelect product. *@
     <script type="text/javascript">
 
         $(document).ready(function () {
-           // alert('test');
+            // alert('test');
             // Bind DropDown Button Of Product item
             $("#product").change(function () {
                 var Id = $(this).val();
-              //  alert(Id);
+                //  alert(Id);
                 $.ajax({
                     url: '@Url.Action("GetProduct", "NewQuotation")',
                     type: 'GET',
@@ -221,48 +359,52 @@
                         $("#tax").empty();
                         $("#tax").append($('<option></option>').val(data.taxId).text(data.tax.percentage));
                         $("#price").empty();
-                       // $("#warehouse").append($('<option></option>').val(data.warehouseId).text(data.warehouse.warehouseName));
+                        // $("#warehouse").append($('<option></option>').val(data.warehouseId).text(data.warehouse.warehouseName));
                         $("#price").val(data.salesPrice);
 
                         // this work but the one mazor problem is the data selleect but other data will show.
                         // $("#warehouse").val(data.warehouseId)
                         // $("#unit").val(data.unitId);
                         // $("#tax").val(data.taxId);
-         
+
                     }
                 });
             });
 
-           
+
         });
 
     </script>
-     <script>
+    <script>
         $(document).ready(function () {
             $(".quantity").on("keyup", function () {
-                // alert('price')
                 var price = $(this).closest("tr").find(".price").val();
-                // alert('quantity')
                 var quantity = $(this).val();
                 var subtotal = price * quantity;
                 $(this).closest("tr").find(".subtotal").val(subtotal);
+                calculateGrandTotal();
+            });
+
+            $(".discount").on("keyup", function () {
+                calculateGrandTotal();
             });
         });
-    </script> 
-    @*  <script>
-        $(document).ready(function () {
-            alert('test');
-            $('.quantity, .price').on('input', function () {
-                var $row = $(this).closest('tr');
-                var quantity = parseFloat($row.find('.quantity').val());
-                var price = parseFloat($row.find('.price').val());
-                var total = quantity * price;
-                $row.find('.subtotal').val(total.toFixed(2));
+
+        function calculateGrandTotal() {
+            var grandTotal = 0;
+            var discount = parseFloat($("#discount").val());
+
+            $(".subtotal").each(function () {
+                var subtotal = parseFloat($(this).val());
+                grandTotal += subtotal;
             });
-        });
-    </script> *@
 
+            var totalDiscount = grandTotal * (discount / 100);
+            grandTotal -= totalDiscount;
 
+            $("#grandtotal").val(grandTotal.toFixed(2));
+        }
+    </script>
 
     <script>
         tinymce.init({
@@ -271,9 +413,11 @@
             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
         });
     </script>
-    <script src="~/Scripts/myScripts.js"></script>
+
+   @*  <script src="~/Scripts/myScripts.js"></script> *@
+
     @{
-    <partial name="_ValidationScriptsPartial" />
+        <partial name="_ValidationScriptsPartial" />
     }
 }
 
@@ -291,4 +435,210 @@
     }
 </style>
 
- 
+@*     <script>
+        function AddItem() {
+            var tableBody = document.getElementById("ExpTable").getElementsByTagName("tbody")[0];
+
+            var newRow = tableBody.insertRow();
+            newRow.className = "mycontainer";
+
+            var productCell = newRow.insertCell(0);
+            var warehouseCell = newRow.insertCell(1);
+            var unitCell = newRow.insertCell(2);
+            var taxCell = newRow.insertCell(3);
+            var priceCell = newRow.insertCell(4);
+            var quantityCell = newRow.insertCell(5);
+            var subtotalCell = newRow.insertCell(6);
+            var actionCell = newRow.insertCell(7);
+
+            var productSelect = document.createElement("select");
+            productSelect.className = "product form-select border-0 shadow";
+            productSelect.name = "QuotationXproducts[].ProductId";
+            productSelect.innerHTML = document.getElementById("product").innerHTML;
+
+            var warehouseSelect = document.createElement("select");
+            warehouseSelect.className = "warehouse form-select border-0 shadow";
+            warehouseSelect.name = "QuotationXproducts[].WarehouseId";
+            warehouseSelect.innerHTML = document.getElementById("warehouse").innerHTML;
+
+            var unitSelect = document.createElement("select");
+            unitSelect.className = "unit form-select border-0 shadow";
+            unitSelect.name = "QuotationXproducts[].UnitId";
+            unitSelect.innerHTML = document.getElementById("unit").innerHTML;
+
+            var taxSelect = document.createElement("select");
+            taxSelect.className = "tax form-select border-0 shadow";
+            taxSelect.name = "QuotationXproducts[].TaxId";
+            taxSelect.innerHTML = document.getElementById("tax").innerHTML;
+
+            var priceInput = document.createElement("input");
+            priceInput.className = "price form-control border-0 shadow";
+            priceInput.name = "QuotationXproducts[].Price";
+            priceInput.disabled = true;
+
+            var quantityInput = document.createElement("input");
+            quantityInput.className = "quantity form-control border-0 shadow";
+            quantityInput.name = "QuotationXproducts[].Quantity";
+
+            var subtotalInput = document.createElement("input");
+            subtotalInput.className = "subtotal form-control border-0 shadow";
+            subtotalInput.name = "QuotationXproducts[].Subtotal";
+            subtotalInput.disabled = true;
+
+            var removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "btn btn-danger";
+            removeButton.innerText = "Remove";
+            removeButton.onclick = function () {
+                tableBody.removeChild(newRow);
+            };
+
+            productCell.appendChild(productSelect);
+            warehouseCell.appendChild(warehouseSelect);
+            unitCell.appendChild(unitSelect);
+            taxCell.appendChild(taxSelect);
+            priceCell.appendChild(priceInput);
+            quantityCell.appendChild(quantityInput);
+            subtotalCell.appendChild(subtotalInput);
+            actionCell.appendChild(removeButton);
+        }
+    </script> *@
+
+@*
+
+      ==>>   this must include total
+
+<script>
+    $(document).ready(function () {
+        $(".quantity").on("keyup", function () {
+            // alert('price')
+            var price = $(this).closest("tr").find(".price").val();
+            // alert('quantity')
+            var quantity = $(this).val();
+            var subtotal = price * quantity;
+            $(this).closest("tr").find(".subtotal").val(subtotal);
+
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        alert('test');
+        $('.quantity, .price').on('input', function () {
+            var $row = $(this).closest('tr');
+            var quantity = parseFloat($row.find('.quantity').val());
+            var price = parseFloat($row.find('.price').val());
+            var total = quantity * price;
+            $row.find('.subtotal').val(total.toFixed(2));
+        });
+    });
+</script>
+
+
+
+      ==>>  this must include total and grand total.
+
+<script>
+    $(document).ready(function () {
+        $(".quantity").on("keyup", function () {
+            // alert('price')
+            var price = $(this).closest("tr").find(".price").val();
+            // alert('quantity')
+            var quantity = $(this).val();
+            var subtotal = price * quantity;
+            $(this).closest("tr").find(".subtotal").val(subtotal);
+            calculateGrandTotal();
+        });
+    });
+
+    function calculateGrandTotal() {
+        var grandTotal = 0;
+        $(".subtotal").each(function () {
+            var subtotal = parseFloat($(this).val());
+            var discount = $(this).closest("tr").find(".discount").val();
+            grandTotal += subtotal;
+        });
+        $("#grandtotal").val(grandTotal.toFixed(2));
+    }
+
+</script>
+
+ ==>>  this must include total and grand total and total discount.
+
+<script>
+    $(document).ready(function () {
+        $(".quantity").on("keyup", function () {
+            var price = $(this).closest("tr").find(".price").val();
+            var quantity = $(this).val();
+            var subtotal = price * quantity;
+            $(this).closest("tr").find(".subtotal").val(subtotal);
+            calculateGrandTotal();
+        });
+
+        $(".discount").on("keyup", function () {
+            calculateGrandTotal();
+        });
+    });
+
+    function calculateGrandTotal() {
+        var grandTotal = 0;
+        var discount = parseFloat($("#discount").val());
+
+        $(".subtotal").each(function () {
+            var subtotal = parseFloat($(this).val());
+            grandTotal += subtotal;
+        });
+
+        var totalDiscount = grandTotal * (discount / 100);
+        grandTotal -= totalDiscount;
+
+        $("#grandtotal").val(grandTotal.toFixed(2));
+    }
+</script>
+
+
+
+
+       ==>>   this must include total , total discount , total tax , granndtotal
+<script>
+    $(document).ready(function () {
+        $(".quantity").on("keyup", function () {
+            var price = $(this).closest("tr").find(".price").val();
+            var quantity = $(this).val();
+            var subtotal = price * quantity;
+            $(this).closest("tr").find(".subtotal").val(subtotal);
+            calculateGrandTotal();
+        });
+
+        $(".tax, .discount").on("keyup", function () {
+            calculateGrandTotal();
+        });
+    });
+
+    function calculateGrandTotal() {
+        var grandTotal = 0;
+        var discount = parseFloat($("#discount").val());
+
+        $(".subtotal").each(function () {
+            var subtotal = parseFloat($(this).val());
+            grandTotal += subtotal;
+        });
+
+        var taxTotal = 0;
+        $(".tax").each(function () {
+            var taxPercentage = parseFloat($(this).val());
+            var subtotal = parseFloat($(this).closest("tr").find(".subtotal").val());
+            var taxAmount = subtotal * (taxPercentage / 100);
+            taxTotal += taxAmount;
+            // $("#totaltax").val(totaltax.toFixed(2));
+        });
+
+        var totalDiscount = grandTotal * (discount / 100);
+        grandTotal += taxTotal;
+        //   grandTotal -= totalDiscount;
+
+        $("#grandtotal").val(grandTotal.toFixed(2));
+    }
+
+</script> *@

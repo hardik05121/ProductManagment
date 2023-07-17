@@ -14,7 +14,7 @@ public partial class Quotation
     public int SupplierId { get; set; }
 
     [StringLength(450)]
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; }
 
     [StringLength(450)]
     public string QuotationNumber { get; set; } = null!;
@@ -45,8 +45,4 @@ public partial class Quotation
     [ForeignKey("SupplierId")]
     [InverseProperty("Quotations")]
     public virtual Supplier Supplier { get; set; } = null!;
-
-    [ForeignKey("UserId")]
-    [InverseProperty("Quotations")]
-    public virtual AspNetUser User { get; set; } = null!;
 }

@@ -25,14 +25,68 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
 
-        public IActionResult Index()
+        #region Index
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<Quotation> objQuotationList = _unitOfWork.Quotation.GetAll(includeProperties: "Supplier,User").ToList();
-            return View(objQuotationList);
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
+
+
+
+            QuotationIndexVM quotationIndexVM = new QuotationIndexVM();
+            quotationIndexVM.SupplierNameSortOrder = string.IsNullOrEmpty(orderBy) ? "supplierName_desc" : "";
+            var quotations = (from data in _unitOfWork.Quotation.GetAll(includeProperties: "Supplier").ToList()
+                              where term == "" ||
+                                 data.Supplier.SupplierName.ToLower().
+                                 Contains(term)
+
+
+                              select new Quotation
+                              {
+                                  Id = data.Id,
+                                  Supplier = data.Supplier,
+                                  QuotationNumber = data.QuotationNumber,
+                                  OrderDate = data.OrderDate,
+                                  DeliveryDate = data.DeliveryDate,
+                                  TermCondition = data.TermCondition,
+                                  Notes = data.Notes,
+                                  ScanBarCode = data.ScanBarCode,
+                                  GrandTotal = data.GrandTotal
+                              });
+
+            switch (orderBy)
+            {
+                case "supplierName_desc":
+                    quotations = quotations.OrderByDescending(a => a.Supplier.SupplierName);
+                    break;
+
+                default:
+                    quotations = quotations.OrderBy(a => a.Supplier.SupplierName);
+                    break;
+            }
+            int totalRecords = quotations.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            quotations = quotations.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            quotationIndexVM.Quotations = quotations;
+            quotationIndexVM.CurrentPage = currentPage;
+            quotationIndexVM.TotalPages = totalPages;
+            quotationIndexVM.Term = term;
+            quotationIndexVM.PageSize = pageSize;
+            quotationIndexVM.OrderBy = orderBy;
+            return View(quotationIndexVM);
         }
+        #endregion
+
         #region Upsert
         public IActionResult Upsert(int? id)
         {
+            //var claimsIdentity = (ClaimsIdentity)User.Identity;
+            //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+
             NewQuotationVM newQuotationVM = new()
             {
                 SupplierList = _unitOfWork.Supplier.GetAll().Select(u => new SelectListItem
@@ -40,11 +94,8 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Text = u.SupplierName,
                     Value = u.Id.ToString()
                 }),
-                UserList = _userManager.Users.Select(x => x.UserName).Select(i => new SelectListItem
-                {
-                    Text = i,
-                    Value = i
-                }),
+
+
                 Quotation = new Quotation(),
 
                 ProductList = _unitOfWork.Product.GetAll().Select(u => new SelectListItem
@@ -70,9 +121,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 QuotationXproduct = new QuotationXproduct(),
 
             };
-                return View(newQuotationVM);
-          
-          
+            return View(newQuotationVM);
         }
 
 
@@ -80,49 +129,63 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
 
         [HttpPost]
-        public IActionResult Upsert(StateVM stateVM)
+        public IActionResult Upsert(NewQuotationVM newQuotationVM)
         {
+            //var claimsIdentity = (ClaimsIdentity)User.Identity;
+            //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            //newQuotationVM.Quotation.UserId = userId;
+            newQuotationVM.Quotation.OrderDate = System.DateTime.Now;
+
             if (ModelState.IsValid)
             {
-                if (stateVM.State.Id == 0)
+                if (newQuotationVM.Quotation.Id == 0)
                 {
-                    State stateObj = _unitOfWork.State.Get(u => u.StateName == stateVM.State.StateName && u.CountryId == stateVM.State.CountryId);
-                    if (stateObj != null)
+                    Quotation quotation = _unitOfWork.Quotation.Get(u => u.QuotationNumber == newQuotationVM.Quotation.QuotationNumber);
+
+                    if (quotation != null)
                     {
-                        TempData["error"] = "State Name Already Exist!";
+                        TempData["error"] = "quotation Name Already Exist!";
                     }
                     else
                     {
-                        _unitOfWork.State.Add(stateVM.State);
+
+                        _unitOfWork.Quotation.Add(newQuotationVM.Quotation);
                         _unitOfWork.Save();
-                        TempData["success"] = "State Created successfully";
+                        TempData["success"] = "quotation created successfully";
                     }
                 }
                 else
                 {
-                    State stateObj = _unitOfWork.State.Get(u => u.Id != stateVM.State.Id && u.StateName == stateVM.State.StateName);
-                    if (stateObj != null)
-                    {
-                        TempData["error"] = "State Name Already Exist!";
-                    }
-                    else
-                    {
-                        _unitOfWork.State.Update(stateVM.State);
-                        _unitOfWork.Save();
-                        TempData["success"] = "State Updated successfully";
-                    }
+
+                    TempData["error"] = "quotation created error";
                 }
-                return RedirectToAction("Index");
-            }
-            else
-            {
-                stateVM.CountryList = _unitOfWork.Country.GetAll().Select(u => new SelectListItem
+
+                foreach (var cart in newQuotationVM.QuotationXproducts)
                 {
-                    Text = u.CountryName,
-                    Value = u.Id.ToString()
-                });
-                return View(stateVM);
+                    QuotationXproduct quotationXproduct = new()
+                    {
+                        ProductId = cart.ProductId,
+                        WarehouseId = cart.WarehouseId,
+                        UnitId = cart.UnitId,
+                        TaxId = cart.TaxId,
+                        Price = cart.Price,
+                        Quantity = cart.Quantity,
+                        Subtotal = cart.Subtotal,
+                        Discount = cart.Discount,
+                        QuotationId = newQuotationVM.Quotation.Id,
+
+                    };
+                    _unitOfWork.QuotationXproduct.Add(quotationXproduct);
+                    _unitOfWork.Save();
+                }
+
+
             }
+            return RedirectToAction("Index");
+
+
+
         }
         #endregion
         #region Select Product
@@ -130,13 +193,10 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         public IActionResult GetProduct(int Id)
         {
             var product = _unitOfWork.Product.Get(s => s.Id == Id, includeProperties: "Brand,Category,Unit,Warehouse,Tax");
-            var warehouse = _unitOfWork.Warehouse.Get(s => s.Id == product.WarehouseId);
-
             return Json(product);
+
         }
-
         #endregion
-
     }
 
 }

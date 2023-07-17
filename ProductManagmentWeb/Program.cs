@@ -53,6 +53,6 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{area=Admin}/{controller=NewQuotation}/{action=Upsert}/{id?}");
+    pattern: "{area=Admin}/{controller=Quotation}/{action=Index}/{id?}");
 
 app.Run();

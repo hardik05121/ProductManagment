@@ -232,10 +232,6 @@ public partial class ProductManagmentContext : DbContext
             entity.HasOne(d => d.Supplier).WithMany(p => p.PurChaseOrders)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_PurChaseOrder_Suppliers");
-
-            entity.HasOne(d => d.User).WithMany(p => p.PurChaseOrders)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PurChaseOrder_AspNetUsers");
         });
 
         modelBuilder.Entity<PurChaseOrderXproduct>(entity =>
@@ -268,10 +264,6 @@ public partial class ProductManagmentContext : DbContext
             entity.HasOne(d => d.Supplier).WithMany(p => p.Quotations)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Quotation_Suppliers");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Quotations)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Quotation_AspNetUsers");
         });
 
         modelBuilder.Entity<QuotationXproduct>(entity =>

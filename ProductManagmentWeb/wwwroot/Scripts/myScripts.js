@@ -1,6 +1,6 @@
 ﻿
 $(document).ready(function () {
-
+    alert('1')
     //Add button click event
     $('#add').click(function () {
         //validation and add order items
@@ -66,8 +66,8 @@ $(document).ready(function () {
             $('.unit', $newRow).val($('#unit').val());
             $('.tax', $newRow).val($('#tax').val());
            
-         
 
+            alert('$newRow ');
             //Replace add button with remove button
             $('#add', $newRow).addClass('remove').val('Remove').removeClass('btn-success').addClass('btn-danger');
 
@@ -79,9 +79,9 @@ $(document).ready(function () {
             $('#quotationxproducts').append($newRow);
 
             //clear select data
-            $('#product,#warehouse,#unit,#tax').val('0');
-            $('#quantity,#price,#subtotal').val('');
-            $('#quotationxproductsError').empty();
+            //$('#product,#warehouse,#unit,#tax').val('0');
+            //$('#quantity,#price,#subtotal').val('');
+            //$('#quotationxproductsError').empty();
         }
 
     })
