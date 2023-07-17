@@ -17,7 +17,7 @@ public partial class QuotationXproduct
     public int QuotationId { get; set; }
 
     public int WarehouseId { get; set; }
-
+   
     public int ProductId { get; set; }
 
     public int TaxId { get; set; }

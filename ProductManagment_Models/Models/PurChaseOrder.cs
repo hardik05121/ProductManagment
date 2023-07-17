@@ -33,7 +33,7 @@ public partial class PurChaseOrder
     public int SupplierId { get; set; }
 
     [StringLength(450)]
-    public string UserId { get; set; } = null!;
+    public string? UserId { get; set; }
 
     [StringLength(50)]
     public string? TermCondition { get; set; }
@@ -56,8 +56,4 @@ public partial class PurChaseOrder
     [ForeignKey("SupplierId")]
     [InverseProperty("PurChaseOrders")]
     public virtual Supplier Supplier { get; set; } = null!;
-
-    [ForeignKey("UserId")]
-    [InverseProperty("PurChaseOrders")]
-    public virtual AspNetUser User { get; set; } = null!;
 }

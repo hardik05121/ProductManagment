@@ -70,12 +70,6 @@ public partial class AspNetUser
     [InverseProperty("User")]
     public virtual ICollection<AspNetUserToken> AspNetUserTokens { get; set; } = new List<AspNetUserToken>();
 
-    [InverseProperty("User")]
-    public virtual ICollection<PurChaseOrder> PurChaseOrders { get; set; } = new List<PurChaseOrder>();
-
-    [InverseProperty("User")]
-    public virtual ICollection<Quotation> Quotations { get; set; } = new List<Quotation>();
-
     [ForeignKey("UserId")]
     [InverseProperty("Users")]
     public virtual ICollection<AspNetRole> Roles { get; set; } = new List<AspNetRole>();

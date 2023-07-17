@@ -1,29 +1,5 @@
 ﻿@model QuotationIndexVM
 
-<!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Launch demo modal
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                ...
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="card shadow border-0 my-4">
     <div class="card-header bg-secondary bg-gradient ml-0 py-3">
         <div class="row">
@@ -39,8 +15,8 @@
             <div class="col-6">
             </div>
             <div class="col-6 text-end">
-                <a asp-controller="Quotation" asp-action="Upsert" class="btn btn-primary" style="height:50px,width:50px">
-                    <i class="bi bi-plus-circle"></i>  Create New Quotation
+                <a asp-controller="NewQuotation" asp-action="Upsert" class="btn btn-primary" style="height:50px,width:50px">
+                    <i class="bi bi-plus-circle"></i>  Create New NewQuotation
                 </a>
             </div>
         </div>
@@ -54,7 +30,7 @@
                     <button type="submit" class="btn btn-info">Search</button>
                 </span>
                 <div class="col-2 text-end">
-                    <a asp-controller="Quotation" asp-action="Index" class="btn btn-primary">
+                    <a asp-controller="NewQuotation" asp-action="Index" class="btn btn-primary">
                         <i class="bi bi-house-door-fill"></i> Back To List
                     </a>
                 </div>
@@ -76,7 +52,7 @@
                         Delivery Date
                     </th>
                     <th>
-                        <a href="/Admin/Quotation/Index?orderBy=@Model.SupplierNameSortOrder">SupplierName Name</a>
+                        <a href="/Admin/NewQuotation/Index?orderBy=@Model.SupplierNameSortOrder">SupplierName Name</a>
                     </th>
                     <th>
                         Total Amount
@@ -107,13 +83,13 @@
                         <td>
                             <div class="w-75 btn-group" role="group">
 
-                                <a asp-controller="Quotation" asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
+                                <a asp-controller="NewQuotation" asp-action="Upsert" asp-route-id="@obj.Id" class="btn btn-primary mx-2">
                                     <i class="bi bi-pencil-square"></i> Edit
                                 </a>
 
                                 <form method="post" asp-route-id="@obj.Id">
 
-                                    <button type="submit" asp-controller="Quotation" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
+                                    <button type="submit" asp-controller="NewQuotation" asp-action="Delete" asp-route-id="@obj.Id" class="btn btn-danger mx-2">
                                         <i class="bi bi-trash-fill"></i> Delete
                                     </button>
                                 </form>
@@ -129,7 +105,7 @@
                 @if (Model.CurrentPage > 1)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="/Admin/Quotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@(Model.CurrentPage-1)" aria-label="Previous">
+                        <a class="page-link" href="/Admin/NewQuotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@(Model.CurrentPage-1)" aria-label="Previous">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
@@ -138,17 +114,17 @@
                 {
                     if (i == Model.CurrentPage)
                     {
-                        <li class="page-item"><a class="page-link active" style="background-color:rgb(69, 206, 244)" href="/Admin/Quotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@i"> @i</a></li>
+                        <li class="page-item"><a class="page-link active" style="background-color:rgb(69, 206, 244)" href="/Admin/NewQuotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@i"> @i</a></li>
                     }
                     else
                     {
-                        <li class="page-item"><a class="page-link" style="background-color:floralwhite" href="/Admin/Quotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@i"> @i</a></li>
+                        <li class="page-item"><a class="page-link" style="background-color:floralwhite" href="/Admin/NewQuotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@i"> @i</a></li>
                     }
                 }
                 @if (Model.CurrentPage < Model.TotalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="/Admin/Quotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@(Model.CurrentPage+1)" aria-label="Next">
+                        <a class="page-link" href="/Admin/NewQuotation/Index?term=@Model.Term&orderBy=@Model.OrderBy&currentPage=@(Model.CurrentPage+1)" aria-label="Next">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
@@ -168,4 +144,3 @@
         }
     </style>
 }
-

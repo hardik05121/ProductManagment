@@ -13,23 +13,21 @@ namespace ProductManagment_Models.ViewModels
     {
         public Quotation Quotation { get; set; }
         [ValidateNever]
-        public IEnumerable<Product> Products { get; set; }
-        [ValidateNever]
         public IEnumerable<QuotationXproduct> QuotationXproducts { get; set; }
-
         public QuotationXproduct QuotationXproduct { get; set; }
-
         [ValidateNever]
         public IEnumerable<SelectListItem> SupplierList { get; set; }
 
         [ValidateNever]
         public IEnumerable<SelectListItem> ProductList { get; set; }
         [ValidateNever]
-        public IEnumerable<SelectListItem> UserList { get; set; } 
+        public IEnumerable<SelectListItem> UserList { get; set; }
         [ValidateNever]
-        public IEnumerable<SelectListItem> WarehouseList { get; set; } 
+        public IEnumerable<SelectListItem> WarehouseList { get; set; }
         [ValidateNever]
-        public IEnumerable<SelectListItem> UnitList { get; set; } 
+        public IEnumerable<SelectListItem> UnitList { get; set; }
+        [ValidateNever]
+        public IEnumerable<SelectListItem> TaxList { get; set; }
 
     }
 }
