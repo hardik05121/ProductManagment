@@ -13,7 +13,7 @@ namespace ProductManagment_Models.ViewModels
     {
         public Quotation Quotation { get; set; }
         [ValidateNever]
-        public IEnumerable<QuotationXproduct> QuotationXproducts { get; set; }
+        public List<QuotationXproduct> QuotationXproducts { get; set; }
         public QuotationXproduct QuotationXproduct { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> SupplierList { get; set; }

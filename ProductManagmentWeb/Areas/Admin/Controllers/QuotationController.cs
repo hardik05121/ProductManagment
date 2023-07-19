@@ -200,14 +200,15 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         // above method are work in java script
 
-        //[HttpPost]
-        //public IActionResult AddProduct(List<Product> productList)
+        [HttpPost]
+        //[ParameterAttribute("productList", ",")]
+       
+        //public IActionResult AddProduct((List<QuotationXproduct> productList)
         //{
-
         //    try
         //    {
         //        // Store the list in the session
-        //          HttpContext.Session.Set("productList", productList);
+        //          HttpContext.Session.Set("QuotationXproducts", productList);
 
         //        // Return a JSON response indicating success
         //        return Json(new { success = true });
@@ -239,7 +240,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         //    // Add the new product to the list
         //    model.QuotationXproducts = model.QuotationXproducts ?? new List<QuotationXproduct>();
-        //    ((List<QuotationXproduct>)model.QuotationXproducts).Add(quotationXproduct);
+        //    ((List<QuotationXproduct>)model.QuotationXproducts).Add(quotationXproduct);                                 
 
         //    // Get the updated product list as SelectListItem HTML
         //    var updatedProductList = GetProductListAsHtml(model.ProductList);
