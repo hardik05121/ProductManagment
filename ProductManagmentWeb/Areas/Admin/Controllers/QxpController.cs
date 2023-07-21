@@ -1,27 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using ProductManagment_DataAccess.Repository;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
 using ProductManagment_Utility;
-using System.Data;
-using System.Security.Claims;
-using System.Text;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-
-    public class QuotationController : Controller
+    public class QxpController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public QuotationController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public QxpController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
@@ -121,21 +115,8 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Value = u.Id.ToString()
                 }),
                 QuotationXproduct = new QuotationXproduct(),
-
             };
             quotationVM.QuotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
-
-
-                
-            // List < QuotationXproduct > quotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
-            //  List < QuotationXproduct > data = HttpContext.Session.GetComplexData<List<QuotationVM>>("loggerUser");
-
-        };
-            quotationVM.QuotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
-
-            return View(quotationVM);
-        }
-
 
             return View(quotationVM);
         }
@@ -194,11 +175,8 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                         };
                         _unitOfWork.QuotationXproduct.Add(quotationXproduct);
                         _unitOfWork.Save();
-                        return RedirectToAction("Index");
                     }
-                    return RedirectToAction("Upsert");
                 }
-
                 return RedirectToAction("Index");
             }
             else
@@ -206,11 +184,6 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             {
                 return View(quotationVM);
             }
-
-                return RedirectToAction("Upsert");
-            }
-            return RedirectToAction("Upsert");
-
 
         }
         #endregion
@@ -225,88 +198,13 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         [HttpPost]
 
-
-        public IActionResult AddProductList(List<QuotationXproduct> productList)
-        {
-            //List<QuotationXproduct> data = new List<QuotationXproduct>();
-            //data = productList;
-            List<QuotationXproduct> data = new List<QuotationXproduct>();
-            data =  productList;
-
-            try
-            {
-                List<QuotationXproduct> dataFromSession = new List<QuotationXproduct>();
-
-                dataFromSession = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
-
-                if (dataFromSession != null)
-                {
-                    QuotationXproduct quotationXproduct = new QuotationXproduct();
-                    quotationXproduct = data.FirstOrDefault();
-                    dataFromSession.Add(quotationXproduct);
-                    HttpContext.Session.SetComplexData("loggerUser", null);
-                    HttpContext.Session.SetComplexData("loggerUser", dataFromSession);
-
-                }
-                else
-                {
-                    HttpContext.Session.SetComplexData("loggerUser", null);
-                    HttpContext.Session.SetComplexData("loggerUser", data);
-                }
-      
-                return Json(new { success = true });
-            }
-            catch (Exception ex)
-            {
-                // Return a JSON response indicating failure and the error message
-                return Json(new { success = false, errorMessage = ex.Message });
-            }
-        }
-
-
-        //below method are used in form method.
-
-        [HttpPost]
-        public ActionResult AddProduct(QuotationVM model, int productId, int warehouseId, int unitId, int taxId, double price, int quantity)
-        {
-            // Create a new instance of QuotationXproduct
-            QuotationXproduct quotationXproduct = new QuotationXproduct
-            {
-                ProductId = productId,
-                WarehouseId = warehouseId,
-                UnitId = unitId,
-                TaxId = taxId,
-                Price = price,
-                Quantity = quantity,
-                Subtotal = price * quantity
-            };
-
-            // Add the new product to the list
-            model.QuotationXproducts = model.QuotationXproducts ?? new List<QuotationXproduct>();
-            ((List<QuotationXproduct>)model.QuotationXproducts).Add(quotationXproduct);
-            return View();
-        }
-
-        private string GetProductListAsHtml(IEnumerable<SelectListItem> productList)
-        {
-            // Convert the SelectListItem to HTML options
-            var options = new StringBuilder();
-            foreach (var product in productList)
-            {
-                options.AppendFormat("<option value='{0}'>{1}</option>", product.Value, product.Text);
-            }
-
-            // Return the HTML options
-            return options.ToString();
-        }
-
-
         public IActionResult AddProduct(QuotationXproduct product)
         {
             //List<QuotationXproduct> data = new List<QuotationXproduct>();
             //data = productList;
             List<QuotationXproduct> data = new List<QuotationXproduct>();
-            data.Add(product);
+            data
+.Add(product);
             try
             {
                 List<QuotationXproduct> dataFromSession = new List<QuotationXproduct>();
@@ -318,16 +216,16 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     QuotationXproduct quotationXproduct = new QuotationXproduct();
                     quotationXproduct = data.FirstOrDefault();
                     dataFromSession.Add(quotationXproduct);
-                    //   HttpContext.Session.SetComplexData("loggerUser", null);
+                 //   HttpContext.Session.SetComplexData("loggerUser", null);
                     HttpContext.Session.SetComplexData("loggerUser", dataFromSession);
 
                 }
                 else
                 {
-                    // HttpContext.Session.SetComplexData("loggerUser", null);
+                   // HttpContext.Session.SetComplexData("loggerUser", null);
                     HttpContext.Session.SetComplexData("loggerUser", data);
                 }
-                return Json(new { success = true });
+                return Json(new { success = true }); 
             }
             catch (Exception ex)
             {
@@ -336,5 +234,4 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
     }
-
 }

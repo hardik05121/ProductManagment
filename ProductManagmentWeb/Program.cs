@@ -28,6 +28,16 @@ builder.Services.AddSession(options => {
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+//builder.Services.AddDistributedMemoryCache();
+//builder.Services.AddSession(options => {
+//    options.IdleTimeout = TimeSpan.FromMinutes(100);
+//    options.Cookie.HttpOnly = true;
+//    options.Cookie.IsEssential = true;
+//});
+
+
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
@@ -59,6 +69,6 @@ app.UseSession();
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{area=Admin}/{controller=Quotation}/{action=Index}/{id?}");
+    pattern: "{area=Admin}/{controller=Qxp}/{action=Index}/{id?}");
 
 app.Run();
