@@ -59,6 +59,6 @@ app.UseSession();
 app.MapRazorPages();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{area=Admin}/{controller=Quotation}/{action=Index}/{id?}");
+    pattern: "{area=Admin}/{controller=Brand}/{action=Index}/{id?}");
 
 app.Run();
