@@ -411,7 +411,7 @@
 
                             </div>
                             <div class="col-6 col-md-3">
-                                <a asp-controller="Qxp" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                <a asp-controller="Quotation" asp-action="Index" class="btn btn-outline-primary border  form-control">
                                     Back to List
                                 </a>
                             </div>
@@ -455,6 +455,9 @@
             };
             $.ajax({
 
+                url: '@Url.Action("AddProduct", "Quotation")',
+
+
                 url: '@Url.Action("AddProduct", "Qxp")',
 
                 url: '@Url.Action("AddProductList", "Quotation")',
@@ -465,7 +468,7 @@
 
                     if (response.success) {
                         alert('Product list saved successfully!');
-                        window.close;
+                        
                     } else {
                         alert('Failed to save product list!');
                     }
