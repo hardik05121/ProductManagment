@@ -1,4 +1,4 @@
-﻿@model NewQuotationVM
+﻿@model QuotationVM
 
 <!-- Button trigger modal -->
 <!-- Modal -->
@@ -9,76 +9,73 @@
                 <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-          
+
             @* <form method="post"> *@
             <div class="modal-body">
-                
-                    <td>
+                <td>
+                    <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
+                        <option disabled selected>--Select Product--</option>
+                    </select>
+                    <label asp-for="QuotationXproduct.ProductId" class="ms-2"></label>
+                    <span asp-validation-for="QuotationXproduct.ProductId" class="text-danger"></span>
 
-                        <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
-                            <option disabled selected>--Select Product--</option>
-                        </select>
-                        <label asp-for="QuotationXproduct.ProductId" class="ms-2"></label>
-                        <span asp-validation-for="QuotationXproduct.ProductId" class="text-danger"></span>
+                </td>
+                <td>
 
-                    </td>
-                    <td>
+                    <select asp-for="@Model.QuotationXproduct.WarehouseId" asp-items="@Model.WarehouseList" id="warehouse" class="warehouse form-select border-0 shadow">
+                        <option disabled selected>--Select Warehouse--</option>
+                    </select>
+                    <label asp-for="QuotationXproduct.Warehouse.WarehouseName" class="ms-2"></label>
+                    <span asp-validation-for="QuotationXproduct.Warehouse.WarehouseName" class="text-danger"></span>
 
-                        <select asp-for="@Model.QuotationXproduct.WarehouseId" asp-items="@Model.WarehouseList" id="warehouse" class="warehouse form-select border-0 shadow">
-                            <option disabled selected>--Select Warehouse--</option>
-                        </select>
-                        <label asp-for="QuotationXproduct.Warehouse.WarehouseName" class="ms-2"></label>
-                        <span asp-validation-for="QuotationXproduct.Warehouse.WarehouseName" class="text-danger"></span>
+                </td>
+                <td>
 
-                    </td>
-                    <td>
+                    <select asp-for="@Model.QuotationXproduct.UnitId" asp-items="@Model.UnitList" id="unit" class="unit form-select border-0 shadow">
+                        <option disabled selected>--Select BaseUnit--</option>
+                    </select>
+                    <label asp-for="QuotationXproduct.Unit.UnitName" class="ms-2"></label>
+                    <span asp-validation-for="QuotationXproduct.Unit.UnitName" class="text-danger"></span>
 
-                        <select asp-for="@Model.QuotationXproduct.UnitId" asp-items="@Model.UnitList" id="unit" class="unit form-select border-0 shadow">
-                            <option disabled selected>--Select BaseUnit--</option>
-                        </select>
-                        <label asp-for="QuotationXproduct.Unit.UnitName" class="ms-2"></label>
-                        <span asp-validation-for="QuotationXproduct.Unit.UnitName" class="text-danger"></span>
+                </td>
+                <td>
+                    <select asp-for="@Model.QuotationXproduct.TaxId" asp-items="@Model.TaxList" id="tax" class="tax form-select border-0 shadow">
+                        <option disabled selected>--Select Tax--</option>
+                    </select>
+                    <label asp-for="QuotationXproduct.Tax.Name" class="ms-2"></label>
+                    <span asp-validation-for="QuotationXproduct.Tax.Name" class="text-danger"></span>
 
-                    </td>
-                    <td>
-                        <select asp-for="@Model.QuotationXproduct.TaxId" asp-items="@Model.TaxList" id="tax" class="tax form-select border-0 shadow">
-                            <option disabled selected>--Select Tax--</option>
-                        </select>
-                        <label asp-for="QuotationXproduct.Tax.Name" class="ms-2"></label>
-                        <span asp-validation-for="QuotationXproduct.Tax.Name" class="text-danger"></span>
-
-                    </td>
-                    <td>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="QuotationXproduct.Price" disabled id="price" class="price form-control border-0 shadow" />
-                            <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
-                            <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-floating py-2 col-12">
-                            <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow" />
-                            <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
-                            <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
-                        </div>
-                    </td>
-
-                    @*  <td>
+                </td>
+                <td>
                     <div class="form-floating py-2 col-12">
-                    <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
-                    <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
-                    <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
+                        <input asp-for="QuotationXproduct.Price" disabled id="price" class="price form-control border-0 shadow" />
+                        <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
                     </div>
-                    </td>*@
-                    @* <td>
-                        <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
-                    </td> *@
+                </td>
+                <td>
+                    <div class="form-floating py-2 col-12">
+                        <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow" />
+                        <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="form-floating py-2 col-12">
+                        <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
+                        <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
+                    </div>
+                </td>
+                @* <td>
+                <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
+                </td> *@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                @*   <button type="submit"  id="buttonsubmit" class="btn btn-primary form-control" onclick="saveData()">Save changes</button>*@
-                    <button type="submit" asp-action="AddProduct" onclick="saveData()" id="buttonsubmit" class="btn btn-primary form-control">Save changes</button>
-                </div>
+                <button type="button" id="buttonsubmit" class="btn btn-primary form-control" onclick="saveData()">Save changes</button>
+            </div>
             @* </form> *@
         </div>
     </div>
@@ -171,94 +168,99 @@
                                     </thead>
                                     <tbody id="productTableBody">
 
-                                        @*
-                                        <tr class="mycontainer" id="mainrow">
-                                        <td>
 
-                                        <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
-                                        <option disabled selected>--Select Product--</option>
-                                        </select>
-                                        <label asp-for="QuotationXproduct.ProductId" class="ms-2"></label>
-                                        <span asp-validation-for="QuotationXproduct.ProductId" class="text-danger"></span>
+                                        @if (@Model.QuotationXproducts != null)
+                                        {
 
-                                        </td>
-                                        <td>
 
-                                        <select asp-for="@Model.QuotationXproduct.WarehouseId" asp-items="@Model.WarehouseList" id="warehouse" class="warehouse form-select border-0 shadow">
-                                        <option disabled selected>--Select Warehouse--</option>
-                                        </select>
-                                        <label asp-for="QuotationXproduct.Warehouse.WarehouseName" class="ms-2"></label>
-                                        <span asp-validation-for="QuotationXproduct.Warehouse.WarehouseName" class="text-danger"></span>
 
-                                        </td>
-                                        <td>
+                                            @for (int i = 0; i < @Model.QuotationXproducts.Count; i++)
+                                            {
 
-                                        <select asp-for="@Model.QuotationXproduct.UnitId" asp-items="@Model.UnitList" id="unit" class="unit form-select border-0 shadow">
-                                        <option disabled selected>--Select BaseUnit--</option>
-                                        </select>
-                                        <label asp-for="QuotationXproduct.Unit.UnitName" class="ms-2"></label>
-                                        <span asp-validation-for="QuotationXproduct.Unit.UnitName" class="text-danger"></span>
 
-                                        </td>
-                                        <td>
-                                        <select asp-for="@Model.QuotationXproduct.TaxId" asp-items="@Model.TaxList" id="tax" class="tax form-select border-0 shadow">
-                                        <option disabled selected>--Select Tax--</option>
-                                        </select>
-                                        <label asp-for="QuotationXproduct.Tax.Name" class="ms-2"></label>
-                                        <span asp-validation-for="QuotationXproduct.Tax.Name" class="text-danger"></span>
+                                                <tr class="mycontainer" id="mainrow">
+                                                    <td>
 
-                                        </td>
-                                        <td>
-                                        <div class="form-floating py-2 col-12">
-                                        <input asp-for="QuotationXproduct.Price" disabled id="price" class="price form-control border-0 shadow" />
-                                        <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
-                                        <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
-                                        </div>
-                                        </td>
-                                        <td>
-                                        <div class="form-floating py-2 col-12">
-                                        <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow" />
-                                        <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
-                                        <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
-                                        </div>
-                                        </td>
+                                                        <select asp-for="@Model.QuotationXproducts[i].ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
+                                                            <option disabled selected>--Select Product--</option>
+                                                        </select>
+                                                        <label asp-for="QuotationXproduct.ProductId" class="ms-2"></label>
+                                                        <span asp-validation-for="QuotationXproduct.ProductId" class="text-danger"></span>
 
-                                        <td>
-                                        <div class="form-floating py-2 col-12">
-                                        <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
-                                        <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
-                                        <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
-                                        </div>
-                                        </td>
-                                        <td>
-                                        <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
-                                        </td>
-                                        </tr> *@
+                                                    </td>
+                                                    <td>
+
+                                                        <select asp-for="@Model.QuotationXproducts[i].WarehouseId" asp-items="@Model.WarehouseList" id="warehouse" class="warehouse form-select border-0 shadow">
+                                                            <option disabled selected>--Select Warehouse--</option>
+                                                        </select>
+                                                        <label asp-for="QuotationXproduct.Warehouse.WarehouseName" class="ms-2"></label>
+                                                        <span asp-validation-for="QuotationXproduct.Warehouse.WarehouseName" class="text-danger"></span>
+
+                                                    </td>
+                                                    <td>
+
+                                                        <select asp-for="@Model.QuotationXproducts[i].UnitId" asp-items="@Model.UnitList" id="unit" class="unit form-select border-0 shadow">
+                                                            <option disabled selected>--Select BaseUnit--</option>
+                                                        </select>
+                                                        <label asp-for="QuotationXproduct.Unit.UnitName" class="ms-2"></label>
+                                                        <span asp-validation-for="QuotationXproduct.Unit.UnitName" class="text-danger"></span>
+
+                                                    </td>
+                                                    <td>
+                                                        <select asp-for="@Model.QuotationXproducts[i].TaxId" asp-items="@Model.TaxList" id="tax" class="tax form-select border-0 shadow">
+                                                            <option disabled selected>--Select Tax--</option>
+                                                        </select>
+                                                        <label asp-for="QuotationXproduct.Tax.Name" class="ms-2"></label>
+                                                        <span asp-validation-for="QuotationXproduct.Tax.Name" class="text-danger"></span>
+
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-floating py-2 col-12">
+                                                            <input asp-for="QuotationXproducts[i].Price" disabled id="price" class="price form-control border-0 shadow" />
+                                                            <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
+                                                            <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="form-floating py-2 col-12">
+                                                            <input asp-for="QuotationXproducts[i].Quantity" id="quantity" class="quantity form-control border-0 shadow" />
+                                                            <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
+                                                            <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
+                                                        </div>
+                                                    </td>
+
+                                                    <td>
+                                                        <div class="form-floating py-2 col-12">
+                                                            <input asp-for="QuotationXproducts[i].Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
+                                                            <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
+                                                            <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
+                                                    </td>
+
+                                                </tr>
+                                            }
+                                        }
                                     </tbody>
                                 </table>
 
-                                @*     <div style="padding:10px 0; text-align:right">
-                                <input id="submit" type="button" value="Save Order" class="btn btn-warning" style="padding:10px 20px" />
-                                </div> *@
+                            </div>
+                            @*
+                            <div class="form-floating py-2 col-3">
+                            <input asp-for="QuotationXproduct.Discount" id="discount" value="0.00" class="discount form-control border-0 shadow" />
+                            <label asp-for="QuotationXproduct.Discount" class="ms-2"></label>
+                            <span asp-validation-for="QuotationXproduct.Discount" class="text-danger"></span>
                             </div>
 
-                            <div class="form-floating py-2 col-3">
-                                <input asp-for="QuotationXproduct.Discount" id="discount" value="0.00" class="discount form-control border-0 shadow" />
-                                <label asp-for="QuotationXproduct.Discount" class="ms-2"></label>
-                                <span asp-validation-for="QuotationXproduct.Discount" class="text-danger"></span>
-                            </div>
-                            @* <div class="form-floating py-2 col-3">
-                            <input asp-for="QuotationXproduct.TotalTax" id="totaltax" value="0.00" class="totaltax form-control border-0 shadow" />
-                            <label asp-for="QuotationXproduct.TotalTax" class="ms-2"></label>
-                            <span asp-validation-for="QuotationXproduct.TotalTax" class="text-danger"></span>
-                            </div> *@
                             <br />
                             <hr />
                             <div class="form-floating py-2 col-3">
-                                <input asp-for="Quotation.GrandTotal" id="grandtotal" class="grandtotal form-control border-0 shadow" />
-                                <label asp-for="Quotation.GrandTotal" class="ms-2"></label>
-                                <span asp-validation-for="Quotation.GrandTotal" class="text-danger"></span>
-                            </div>
+                            <input asp-for="Quotation.GrandTotal" id="grandtotal" class="grandtotal form-control border-0 shadow" />
+                            <label asp-for="Quotation.GrandTotal" class="ms-2"></label>
+                            <span asp-validation-for="Quotation.GrandTotal" class="text-danger"></span>
+                            </div> *@
                         </div>
                         <div class="row pt-2">
                             <div class="col-6 col-md-3">
@@ -267,7 +269,7 @@
 
                             </div>
                             <div class="col-6 col-md-3">
-                                <a asp-controller="NewQuotation" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                <a asp-controller="Qxp" asp-action="Index" class="btn btn-outline-primary border  form-control">
                                     Back to List
                                 </a>
                             </div>
@@ -284,8 +286,6 @@
 
     <script>
         function saveData() {
-            alert('1');
-            var productList = []; // List to store product data
 
             // Get form data
             var productId = $("#product").val();
@@ -294,7 +294,8 @@
             var taxId = $("#tax").val();
             var price = $("#price").val();
             var quantity = $("#quantity").val();
-            alert('quantity');
+            // var subtotal = $("#price").val() * $("#quantity").val();
+
             // Create an object to hold the data
             var product = {
                 ProductId: productId,
@@ -303,162 +304,27 @@
                 TaxId: taxId,
                 Price: price,
                 Quantity: quantity
+                //   Subtotal : subtotal
             };
-
-            // Add the product to the list
-            productList.push(product);
-
-            alert('2');
-            // Send the list to the server using AJAX
             $.ajax({
-                url: '@Url.Action("AddProduct", "Quotation")',
+                url: '@Url.Action("AddProduct", "Qxp")',
                 type: 'POST',
-                data: { productList: productList },
+                data: { product: product },
                 success: function (response) {
-                    // Handle success
-                    alert('4');
+
                     if (response.success) {
                         alert('Product list saved successfully!');
+                        window.close;
                     } else {
                         alert('Failed to save product list!');
                     }
                 },
-                error: function () 
-                {
+                error: function () {
                     alert('An error occurred while saving product list!');
                 }
             });
         }
     </script>
-
-
-   @*  <script>
-        $(document).ready(function () {
-            var productList = []; // List to store product data
-            alert('h');
-            $("#add").click(function () {
-                alert('hello');
-                // Get form data
-                var productId = $("#product").val();
-                var warehouseId = $("#warehouse").val();
-                var unitId = $("#unit").val();
-                var taxId = $("#tax").val();
-                var price = $("#price").val();
-                var quantity = $("#quantity").val();
-
-                alert('subtotal');
-                // Create an object to hold the data
-                var product = {
-                    ProductId: productId,
-                    WarehouseId: warehouseId,
-                    UnitId: unitId,
-                    TaxId: taxId,
-                    Price: price,
-                    Quantity: quantity
-
-                };
-                alert('product);
-                                // Add the product to the list
-                                productList.push(product);
-
-                // Send the list to the controller using AJAX
-                $.ajax({
-
-                    url: '@Url.Action("AddProduct", "Quotation")',
-                    type: "POST",
-                    //url: "/Home/SaveProductList",
-                    data: { productList: productList },
-                    success: function (response) {
-                        // Handle success
-                        alert('response')
-                        if (response.success) {
-                            alert("Product list saved successfully!");
-                        } else {
-                            alert("Failed to save product list!");
-                        }
-                    },
-                    error: function () {
-                        alert("An error occurred while saving product list!");
-                    }
-                });
-            });
-        });
-
-    </script> *@
-    @*  <script>
-        $(document).ready(function () {
-            alert('1');
-            $('#add').click(function () {
-                alert('2');
-                // // Get the values from the input fields
-                // var productId = $('#product').val();
-                // var warehouseId = $('#warehouse').val();
-                // var unitId = $('#unit').val();
-                // var taxId = $('#tax').val();
-                // var price = $('#price').val();
-                // var quantity = $('#quantity').val();
-
-                // Create the new row HTML
-                // var newRowHtml = '<tr>';
-                // newRowHtml += '<td>' + productId + '</td>';
-                // newRowHtml += '<td>' + warehouseId + '</td>';
-                // newRowHtml += '<td>' + unitId + '</td>';
-                // newRowHtml += '<td>' + taxId + '</td>';
-                // newRowHtml += '<td>' + price + '</td>';
-                // newRowHtml += '<td>' + quantity + '</td>';
-                // newRowHtml += '<td>' + (price * quantity) + '</td>';
-                // newRowHtml += '</tr>';
-
-                // Create the new row HTML
-
-                var $newRow = $('#mainrow').clone().removeAttr('id');
-                $('.product', $newRow).val($('#product').val());
-                $('.warehouse', $newRow).val($('#warehouse').val());
-                $('.unit', $newRow).val($('#unit').val());
-                $('.tax', $newRow).val($('#tax').val());
-                alert('3');
-
-
-                //Replace add button with remove button
-                $('#add', $newRow).addClass('remove').val('Remove').removeClass('btn-success').addClass('btn-danger');
-
-                //remove id attribute from new clone row
-                $('#product,#warehouse,#unit,#tax,#quantity,#price,#subtotal,#add', $newRow).removeAttr('id');
-                $('span.error', $newRow).remove();
-
-
-                //append clone row
-                // $('#quotationxproducts').append($newRow);
-                // Append the new row to the table
-                alert('4');
-                $('#productTableBody').append($newRow);
-
-                //clear select data
-                alert('5');
-                $('#product,#warehouse,#unit,#tax').val('0');
-                $('#quantity,#price,#subtotal').val('');
-                //$('#quotationxproductsError').empty();
-
-
-                // Append the new row to the table
-                // $('#ExpTable tbody').append(newRowHtml);
-
-                // Update the product list on the page with the updated data
-                // Replace "#product" with the selector for the product list element
-
-            });
-        });
-
-        function GetProductListAsHtml(productList) {
-            alert("6");
-            var options = '';
-            for (var i = 0; i < productList.length; i++) {
-                options += '<option value="' + productList[i].Value + '">' + productList[i].Text + '</option>';
-            }
-            return options;
-        }
-    </script> *@
-
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -468,14 +334,14 @@
                 var Id = $(this).val();
                 //  alert(Id);
                 $.ajax({
-                    url: '@Url.Action("GetProduct", "NewQuotation")',
+                    url: '@Url.Action("GetProduct", "Quotation")',
                     type: 'GET',
                     //dataType: 'json'
                     data: { Id: Id },
                     success: function (data) {
 
                         // fo9r the data will convert into the object
-                        alert(JSON.stringify(data));
+                        //alert(JSON.stringify(data));
 
                         // clear the data
                         $("#warehouse").empty();
@@ -487,19 +353,10 @@
                         $("#price").empty();
                         // $("#warehouse").append($('<option></option>').val(data.warehouseId).text(data.warehouse.warehouseName));
                         $("#price").val(data.salesPrice);
-
-                        // this work but the one mazor problem is the data selleect but other data will show.
-                        // $("#warehouse").val(data.warehouseId)
-                        // $("#unit").val(data.unitId);
-                        // $("#tax").val(data.taxId);
-
                     }
                 });
             });
-
-
         });
-
     </script>
     <script>
         $(document).ready(function () {
@@ -539,7 +396,6 @@
             toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough |  align lineheight | numlist bullist indent outdent',
         });
     </script>
-    @*    <script src="~/Scripts/myScripts.js"></script> *@
     @{
         <partial name="_ValidationScriptsPartial" />
     }
@@ -558,75 +414,6 @@
         background-color: rgba(255,0,0,0.35);
     }
 </style>
-
-@*     <script>
-        function AddItem() {
-            var tableBody = document.getElementById("ExpTable").getElementsByTagName("tbody")[0];
-
-            var newRow = tableBody.insertRow();
-            newRow.className = "mycontainer";
-
-            var productCell = newRow.insertCell(0);
-            var warehouseCell = newRow.insertCell(1);
-            var unitCell = newRow.insertCell(2);
-            var taxCell = newRow.insertCell(3);
-            var priceCell = newRow.insertCell(4);
-            var quantityCell = newRow.insertCell(5);
-            var subtotalCell = newRow.insertCell(6);
-            var actionCell = newRow.insertCell(7);
-
-            var productSelect = document.createElement("select");
-            productSelect.className = "product form-select border-0 shadow";
-            productSelect.name = "QuotationXproducts[].ProductId";
-            productSelect.innerHTML = document.getElementById("product").innerHTML;
-
-            var warehouseSelect = document.createElement("select");
-            warehouseSelect.className = "warehouse form-select border-0 shadow";
-            warehouseSelect.name = "QuotationXproducts[].WarehouseId";
-            warehouseSelect.innerHTML = document.getElementById("warehouse").innerHTML;
-
-            var unitSelect = document.createElement("select");
-            unitSelect.className = "unit form-select border-0 shadow";
-            unitSelect.name = "QuotationXproducts[].UnitId";
-            unitSelect.innerHTML = document.getElementById("unit").innerHTML;
-
-            var taxSelect = document.createElement("select");
-            taxSelect.className = "tax form-select border-0 shadow";
-            taxSelect.name = "QuotationXproducts[].TaxId";
-            taxSelect.innerHTML = document.getElementById("tax").innerHTML;
-
-            var priceInput = document.createElement("input");
-            priceInput.className = "price form-control border-0 shadow";
-            priceInput.name = "QuotationXproducts[].Price";
-            priceInput.disabled = true;
-
-            var quantityInput = document.createElement("input");
-            quantityInput.className = "quantity form-control border-0 shadow";
-            quantityInput.name = "QuotationXproducts[].Quantity";
-
-            var subtotalInput = document.createElement("input");
-            subtotalInput.className = "subtotal form-control border-0 shadow";
-            subtotalInput.name = "QuotationXproducts[].Subtotal";
-            subtotalInput.disabled = true;
-
-            var removeButton = document.createElement("button");
-            removeButton.type = "button";
-            removeButton.className = "btn btn-danger";
-            removeButton.innerText = "Remove";
-            removeButton.onclick = function () {
-                tableBody.removeChild(newRow);
-            };
-
-            productCell.appendChild(productSelect);
-            warehouseCell.appendChild(warehouseSelect);
-            unitCell.appendChild(unitSelect);
-            taxCell.appendChild(taxSelect);
-            priceCell.appendChild(priceInput);
-            quantityCell.appendChild(quantityInput);
-            subtotalCell.appendChild(subtotalInput);
-            actionCell.appendChild(removeButton);
-        }
-    </script> *@
 
 @*
 

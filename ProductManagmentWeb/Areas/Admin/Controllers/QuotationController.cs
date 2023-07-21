@@ -26,8 +26,6 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
 
         }
-
-
         #region Index
         public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
@@ -83,13 +81,14 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         #endregion
         #region Upsert
+        [HttpGet]
         public IActionResult Upsert(int? id)
         {
             //var claimsIdentity = (ClaimsIdentity)User.Identity;
             //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
 
-            NewQuotationVM newQuotationVM = new()
+            QuotationVM quotationVM = new()
             {
                 SupplierList = _unitOfWork.Supplier.GetAll().Select(u => new SelectListItem
                 {
@@ -121,29 +120,30 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Value = u.Id.ToString()
                 }),
                 QuotationXproduct = new QuotationXproduct(),
-
             };
-            return View(newQuotationVM);
+            quotationVM.QuotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+
+            return View(quotationVM);
         }
 
 
-
-
-
         [HttpPost]
-        public IActionResult Upsert(NewQuotationVM newQuotationVM)
+        public IActionResult Upsert(QuotationVM quotationVM)
         {
+
             //var claimsIdentity = (ClaimsIdentity)User.Identity;
             //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
+            List<QuotationXproduct> quotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+
             //newQuotationVM.Quotation.UserId = userId;
-            newQuotationVM.Quotation.OrderDate = System.DateTime.Now;
+            quotationVM.Quotation.OrderDate = System.DateTime.Now;
 
             if (ModelState.IsValid)
             {
-                if (newQuotationVM.Quotation.Id == 0)
+                if (quotationVM.Quotation.Id == 0)
                 {
-                    Quotation quotation = _unitOfWork.Quotation.Get(u => u.QuotationNumber == newQuotationVM.Quotation.QuotationNumber);
+                    Quotation quotation = _unitOfWork.Quotation.Get(u => u.QuotationNumber == quotationVM.Quotation.QuotationNumber);
 
                     if (quotation != null)
                     {
@@ -152,19 +152,18 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     else
                     {
 
-                        _unitOfWork.Quotation.Add(newQuotationVM.Quotation);
+                        _unitOfWork.Quotation.Add(quotationVM.Quotation);
                         _unitOfWork.Save();
                         TempData["success"] = "quotation created successfully";
                     }
                 }
                 else
                 {
-
                     TempData["error"] = "quotation created error";
                 }
-                if (newQuotationVM != null)
+                if (quotationVM != null)
                 {
-                    foreach (var cart in newQuotationVM.QuotationXproducts)
+                    foreach (var cart in quotationXproducts)
                     {
                         QuotationXproduct quotationXproduct = new()
                         {
@@ -176,22 +175,24 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                             Quantity = cart.Quantity,
                             Subtotal = cart.Subtotal,
                             Discount = cart.Discount,
-                            QuotationId = newQuotationVM.Quotation.Id,
+                            QuotationId = quotationVM.Quotation.Id,
 
                         };
                         _unitOfWork.QuotationXproduct.Add(quotationXproduct);
                         _unitOfWork.Save();
                     }
                 }
-
-
+                return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            else
+
+            {
+                return View(quotationVM);
+            }
 
         }
         #endregion
-        #region Select Product
-        [HttpGet]
+
         public IActionResult GetProduct(int Id)
         {
             var product = _unitOfWork.Product.Get(s => s.Id == Id, includeProperties: "Brand,Category,Unit,Warehouse,Tax");
@@ -201,93 +202,40 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         // above method are work in java script
 
         [HttpPost]
-        //[ParameterAttribute("productList", ",")]
-       
-        //public IActionResult AddProduct((List<QuotationXproduct> productList)
-        //{
-        //    try
-        //    {
-        //        // Store the list in the session
-        //          HttpContext.Session.Set("QuotationXproducts", productList);
 
-        //        // Return a JSON response indicating success
-        //        return Json(new { success = true });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Return a JSON response indicating failure and the error message
-        //        return Json(new { success = false, errorMessage = ex.Message });
-        //    }
-        //}
-
-
-        //below method are used in form method.
-
-        //[HttpPost]
-        //public ActionResult AddProduct(QuotationVM model, int productId, int warehouseId, int unitId, int taxId, double price, int quantity)
-        //{
-        //    // Create a new instance of QuotationXproduct
-        //    QuotationXproduct quotationXproduct = new QuotationXproduct
-        //    {
-        //        ProductId = productId,
-        //        WarehouseId = warehouseId,
-        //        UnitId = unitId,
-        //        TaxId = taxId,
-        //        Price = price,
-        //        Quantity = quantity,
-        //        Subtotal = price * quantity
-        //    };
-
-        //    // Add the new product to the list
-        //    model.QuotationXproducts = model.QuotationXproducts ?? new List<QuotationXproduct>();
-        //    ((List<QuotationXproduct>)model.QuotationXproducts).Add(quotationXproduct);                                 
-
-        //    // Get the updated product list as SelectListItem HTML
-        //    var updatedProductList = GetProductListAsHtml(model.ProductList);
-
-        //    // Generate the HTML for the new row
-        //    var quotationXproductRowHtml = GetNewProductRowHtml(quotationXproduct);
-
-        //    // Return the updated product list and new row HTML as JSON
-        //    return Json(new { ProductList = updatedProductList, NewRowHtml = quotationXproductRowHtml });
-        //}
-
-        private string GetProductListAsHtml(IEnumerable<SelectListItem> productList)
+        public IActionResult AddProduct(QuotationXproduct product)
         {
-            // Convert the SelectListItem to HTML options
-            var options = new StringBuilder();
-            foreach (var product in productList)
+            //List<QuotationXproduct> data = new List<QuotationXproduct>();
+            //data = productList;
+            List<QuotationXproduct> data = new List<QuotationXproduct>();
+            data.Add(product);
+            try
             {
-                options.AppendFormat("<option value='{0}'>{1}</option>", product.Value, product.Text);
+                List<QuotationXproduct> dataFromSession = new List<QuotationXproduct>();
+
+                dataFromSession = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+
+                if (dataFromSession != null)
+                {
+                    QuotationXproduct quotationXproduct = new QuotationXproduct();
+                    quotationXproduct = data.FirstOrDefault();
+                    dataFromSession.Add(quotationXproduct);
+                    //   HttpContext.Session.SetComplexData("loggerUser", null);
+                    HttpContext.Session.SetComplexData("loggerUser", dataFromSession);
+
+                }
+                else
+                {
+                    // HttpContext.Session.SetComplexData("loggerUser", null);
+                    HttpContext.Session.SetComplexData("loggerUser", data);
+                }
+                return Json(new { success = true });
             }
-
-            // Return the HTML options
-            return options.ToString();
+            catch (Exception ex)
+            {
+                return Json(new { success = false, errorMessage = ex.Message });
+            }
         }
-
-        private string GetNewProductRowHtml(QuotationXproduct product)
-        {
-            // Generate the HTML for the new row using the product data
-            var rowHtml = "<tr>";
-
-            // Add the cells with the corresponding data
-            rowHtml += "<td>" + product.ProductId + "</td>";
-            rowHtml += "<td>" + product.WarehouseId + "</td>";
-            rowHtml += "<td>" + product.UnitId + "</td>";
-            rowHtml += "<td>" + product.TaxId + "</td>";
-            rowHtml += "<td>" + product.Price + "</td>";
-            rowHtml += "<td>" + product.Quantity + "</td>";
-            rowHtml += "<td>" + product.Subtotal + "</td>";
-
-            rowHtml += "</tr>";
-
-            // Return the new row HTML
-            return rowHtml;
-        }
-
-
-
-        #endregion
 
     }
 
