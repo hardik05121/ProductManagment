@@ -7,7 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ProductManagment_Utility
+
+{ 
+
 {   
+
     public static class SessionExtension
     {
 
@@ -23,7 +27,9 @@ namespace ProductManagment_Utility
 
         public static void SetComplexData(this ISession session, string key, object value)
         {
+
             object data1 = JsonConvert.SerializeObject(value);
+
             session.SetString(key, JsonConvert.SerializeObject(value));
         }
 

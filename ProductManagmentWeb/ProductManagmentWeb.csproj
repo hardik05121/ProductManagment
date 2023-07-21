@@ -40,19 +40,4 @@
     <Folder Include="wwwroot\images\supplier\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Areas\Admin\Views\NewQuotation\Upsert.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Areas\Admin\Views\NewQuotation\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Areas\Admin\Views\NewQuotation\Index.cshtml" />
-  </ItemGroup>
-
 </Project>

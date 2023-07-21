@@ -27,8 +27,6 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             _webHostEnvironment = webHostEnvironment;
 
         }
-
-
         #region Index
         public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
@@ -84,6 +82,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         #endregion
         #region Upsert
+        [HttpGet]
         public IActionResult Upsert(int? id)
         {
             //var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -123,6 +122,10 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 }),
                 QuotationXproduct = new QuotationXproduct(),
 
+            };
+            quotationVM.QuotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+
+
                 
             // List < QuotationXproduct > quotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
             //  List < QuotationXproduct > data = HttpContext.Session.GetComplexData<List<QuotationVM>>("loggerUser");
@@ -134,7 +137,8 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
 
-
+            return View(quotationVM);
+        }
 
 
         [HttpPost]
@@ -194,14 +198,23 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     }
                     return RedirectToAction("Upsert");
                 }
+
+                return RedirectToAction("Index");
+            }
+            else
+
+            {
+                return View(quotationVM);
+            }
+
                 return RedirectToAction("Upsert");
             }
             return RedirectToAction("Upsert");
 
+
         }
         #endregion
-        #region Select Product
-        [HttpGet]
+
         public IActionResult GetProduct(int Id)
         {
             var product = _unitOfWork.Product.Get(s => s.Id == Id, includeProperties: "Brand,Category,Unit,Warehouse,Tax");
@@ -211,6 +224,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         // above method are work in java script
 
         [HttpPost]
+
 
         public IActionResult AddProductList(List<QuotationXproduct> productList)
         {
@@ -286,29 +300,40 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             return options.ToString();
         }
 
-        private string GetNewProductRowHtml(QuotationXproduct product)
+
+        public IActionResult AddProduct(QuotationXproduct product)
         {
-            // Generate the HTML for the new row using the product data
-            var rowHtml = "<tr>";
+            //List<QuotationXproduct> data = new List<QuotationXproduct>();
+            //data = productList;
+            List<QuotationXproduct> data = new List<QuotationXproduct>();
+            data.Add(product);
+            try
+            {
+                List<QuotationXproduct> dataFromSession = new List<QuotationXproduct>();
 
-            // Add the cells with the corresponding data
-            rowHtml += "<td>" + product.ProductId + "</td>";
-            rowHtml += "<td>" + product.WarehouseId + "</td>";
-            rowHtml += "<td>" + product.UnitId + "</td>";
-            rowHtml += "<td>" + product.TaxId + "</td>";
-            rowHtml += "<td>" + product.Price + "</td>";
-            rowHtml += "<td>" + product.Quantity + "</td>";
-            rowHtml += "<td>" + product.Subtotal + "</td>";
+                dataFromSession = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
 
-            rowHtml += "</tr>";
+                if (dataFromSession != null)
+                {
+                    QuotationXproduct quotationXproduct = new QuotationXproduct();
+                    quotationXproduct = data.FirstOrDefault();
+                    dataFromSession.Add(quotationXproduct);
+                    //   HttpContext.Session.SetComplexData("loggerUser", null);
+                    HttpContext.Session.SetComplexData("loggerUser", dataFromSession);
 
-            // Return the new row HTML
-            return rowHtml;
+                }
+                else
+                {
+                    // HttpContext.Session.SetComplexData("loggerUser", null);
+                    HttpContext.Session.SetComplexData("loggerUser", data);
+                }
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, errorMessage = ex.Message });
+            }
         }
-
-
-
-        #endregion
 
     }
 

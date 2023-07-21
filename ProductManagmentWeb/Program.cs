@@ -23,11 +23,12 @@ builder.Services.ConfigureApplicationCookie(options => {
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options => {
-    options.IdleTimeout = TimeSpan.FromMinutes(100);
+    options.IdleTimeout = TimeSpan.FromMinutes(10);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 
 //builder.Services.AddDistributedMemoryCache();
 //builder.Services.AddSession(options => {
@@ -35,6 +36,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 //    options.Cookie.HttpOnly = true;
 //    options.Cookie.IsEssential = true;
 //});
+
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
