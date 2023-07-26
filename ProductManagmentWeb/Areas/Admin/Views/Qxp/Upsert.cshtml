@@ -10,7 +10,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form method="post">
+
+            @* <form method="post"> *@
+
                 <div class="modal-body">
                     <td>
                         <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
@@ -61,25 +63,30 @@
                         </div>
                     </td>
 
-                    @*  <td>
+                     <td>
+
                     <div class="form-floating py-2 col-12">
                     <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
                     <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
                     <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
                     </div>
-                    </td>*@
+
+                    </td>
+
                     @* <td>
                     <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
                     </td> *@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" asp-action="AddProduct" id="buttonsubmit" class="btn btn-primary form-control" onclick="saveData()">Save changes</button>
+
+                    <button type="button" id="buttonsubmit" class="btn btn-primary form-control" onclick="saveData()">Save changes</button>
                 </div>
-            </form>
+            @* </form> *@
         </div>
     </div>
-</div>
+</div> 
+
 
 
 
@@ -294,7 +301,9 @@
             var taxId = $("#tax").val();
             var price = $("#price").val();
             var quantity = $("#quantity").val();
-            // var Subtotal;
+
+           // var subtotal = $("#price").val() * $("#quantity").val();
+
 
             // Create an object to hold the data
             var product = {
@@ -304,7 +313,9 @@
                 TaxId: taxId,
                 Price: price,
                 Quantity: quantity
-                // Subtotal : price*quantity
+
+             //   Subtotal : subtotal
+
             };
             $.ajax({
                 url: '@Url.Action("AddProduct", "Qxp")',
@@ -314,6 +325,9 @@
                    
                     if (response.success) {
                         alert('Product list saved successfully!');
+
+                        window.close;
+
                     } else {
                         alert('Failed to save product list!');
                     }
@@ -333,7 +347,9 @@
                 var Id = $(this).val();
                 //  alert(Id);
                 $.ajax({
-                    url: '@Url.Action("GetProduct", "NewQuotation")',
+
+                    url: '@Url.Action("GetProduct", "Qxp")',
+
                     type: 'GET',
                     //dataType: 'json'
                     data: { Id: Id },
@@ -355,7 +371,6 @@
                     }
                 });
             });
-
 
         });
 
@@ -416,4 +431,3 @@
         background-color: rgba(255,0,0,0.35);
     }
 </style>
-b
