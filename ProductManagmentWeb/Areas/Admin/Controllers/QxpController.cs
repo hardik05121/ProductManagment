@@ -1,26 +1,21 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProductManagment_DataAccess.Repository;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
 using ProductManagment_Utility;
-using System.Data;
-using System.Security.Claims;
-using System.Text;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-
-    public class QuotationController : Controller
+    public class QxpController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public QuotationController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public QxpController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
@@ -202,6 +197,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         // above method are work in java script
 
         [HttpPost]
+
         public IActionResult AddProduct(QuotationXproduct product)
         {
             //List<QuotationXproduct> data = new List<QuotationXproduct>();
@@ -219,16 +215,16 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     QuotationXproduct quotationXproduct = new QuotationXproduct();
                     quotationXproduct = data.FirstOrDefault();
                     dataFromSession.Add(quotationXproduct);
-                    //   HttpContext.Session.SetComplexData("loggerUser", null);
+                 //   HttpContext.Session.SetComplexData("loggerUser", null);
                     HttpContext.Session.SetComplexData("loggerUser", dataFromSession);
 
                 }
                 else
                 {
-                    // HttpContext.Session.SetComplexData("loggerUser", null);
+                   // HttpContext.Session.SetComplexData("loggerUser", null);
                     HttpContext.Session.SetComplexData("loggerUser", data);
                 }
-                return Json(new { success = true });
+                return Json(new { success = true }); 
             }
             catch (Exception ex)
             {
@@ -237,5 +233,4 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
 
     }
-
 }
