@@ -203,7 +203,10 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             //List<QuotationXproduct> data = new List<QuotationXproduct>();
             //data = productList;
             List<QuotationXproduct> data = new List<QuotationXproduct>();
-            data.Add(product);
+
+            data
+.Add(product);
+
             try
             {
                 List<QuotationXproduct> dataFromSession = new List<QuotationXproduct>();

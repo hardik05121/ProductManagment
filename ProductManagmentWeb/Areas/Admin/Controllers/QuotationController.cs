@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -120,8 +121,21 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                     Value = u.Id.ToString()
                 }),
                 QuotationXproduct = new QuotationXproduct(),
+
             };
             quotationVM.QuotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+
+
+                
+            // List < QuotationXproduct > quotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+            //  List < QuotationXproduct > data = HttpContext.Session.GetComplexData<List<QuotationVM>>("loggerUser");
+
+        };
+            quotationVM.QuotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+
+            return View(quotationVM);
+        }
+
 
             return View(quotationVM);
         }
@@ -180,8 +194,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                         };
                         _unitOfWork.QuotationXproduct.Add(quotationXproduct);
                         _unitOfWork.Save();
+                        return RedirectToAction("Index");
                     }
+                    return RedirectToAction("Upsert");
                 }
+
                 return RedirectToAction("Index");
             }
             else
@@ -189,6 +206,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             {
                 return View(quotationVM);
             }
+
+                return RedirectToAction("Upsert");
+            }
+            return RedirectToAction("Upsert");
+
 
         }
         #endregion
