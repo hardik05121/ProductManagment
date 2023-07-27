@@ -134,7 +134,8 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             //var claimsIdentity = (ClaimsIdentity)User.Identity;
             //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            List<QuotationXproduct> quotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+            // List<QuotationXproduct> quotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
+            List<QuotationXproduct> quotationXproducts = quotationVM.QuotationXproducts;
 
             //newQuotationVM.Quotation.UserId = userId;
             quotationVM.Quotation.OrderDate = System.DateTime.Now;

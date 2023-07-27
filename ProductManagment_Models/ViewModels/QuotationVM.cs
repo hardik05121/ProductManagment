@@ -12,8 +12,9 @@ namespace ProductManagment_Models.ViewModels
     public class QuotationVM
     {
         public Quotation Quotation { get; set; }
+        
+        public List<QuotationXproduct> QuotationXproducts { get; set; } = new List<QuotationXproduct>();
         [ValidateNever]
-        public List<QuotationXproduct> QuotationXproducts { get; set; }
         public QuotationXproduct QuotationXproduct { get; set; }
         [ValidateNever]
         public IEnumerable<SelectListItem> SupplierList { get; set; }
