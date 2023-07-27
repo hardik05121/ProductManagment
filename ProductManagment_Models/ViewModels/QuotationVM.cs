@@ -12,7 +12,7 @@ namespace ProductManagment_Models.ViewModels
     public class QuotationVM
     {
         public Quotation Quotation { get; set; }
-        [ValidateNever]
+        
         public List<QuotationXproduct> QuotationXproducts { get; set; } = new List<QuotationXproduct>();
         [ValidateNever]
         public QuotationXproduct QuotationXproduct { get; set; }
