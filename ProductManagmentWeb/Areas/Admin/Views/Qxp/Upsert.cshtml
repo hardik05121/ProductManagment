@@ -1,4 +1,4 @@
-@model QuotationVM
+﻿@model QuotationVM
 
 <!-- Button trigger modal -->
 <!-- Modal -->
@@ -10,76 +10,83 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
+
             @* <form method="post"> *@
-            <div class="modal-body">
-                <td>
-                    <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
-                        <option disabled selected>--Select Product--</option>
-                    </select>
-                    <label asp-for="QuotationXproduct.ProductId" class="ms-2"></label>
-                    <span asp-validation-for="QuotationXproduct.ProductId" class="text-danger"></span>
 
-                </td>
-                <td>
+                <div class="modal-body">
+                    <td>
+                        <select asp-for="@Model.QuotationXproduct.ProductId" asp-items="@Model.ProductList" id="product" class="product form-select border-0 shadow">
+                            <option disabled selected>--Select Product--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.ProductId" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.ProductId" class="text-danger"></span>
 
-                    <select asp-for="@Model.QuotationXproduct.WarehouseId" asp-items="@Model.WarehouseList" id="warehouse" class="warehouse form-select border-0 shadow">
-                        <option disabled selected>--Select Warehouse--</option>
-                    </select>
-                    <label asp-for="QuotationXproduct.Warehouse.WarehouseName" class="ms-2"></label>
-                    <span asp-validation-for="QuotationXproduct.Warehouse.WarehouseName" class="text-danger"></span>
+                    </td>
+                    <td>
 
-                </td>
-                <td>
+                        <select asp-for="@Model.QuotationXproduct.WarehouseId" asp-items="@Model.WarehouseList" id="warehouse" class="warehouse form-select border-0 shadow">
+                            <option disabled selected>--Select Warehouse--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.Warehouse.WarehouseName" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Warehouse.WarehouseName" class="text-danger"></span>
 
-                    <select asp-for="@Model.QuotationXproduct.UnitId" asp-items="@Model.UnitList" id="unit" class="unit form-select border-0 shadow">
-                        <option disabled selected>--Select BaseUnit--</option>
-                    </select>
-                    <label asp-for="QuotationXproduct.Unit.UnitName" class="ms-2"></label>
-                    <span asp-validation-for="QuotationXproduct.Unit.UnitName" class="text-danger"></span>
+                    </td>
+                    <td>
 
-                </td>
-                <td>
-                    <select asp-for="@Model.QuotationXproduct.TaxId" asp-items="@Model.TaxList" id="tax" class="tax form-select border-0 shadow">
-                        <option disabled selected>--Select Tax--</option>
-                    </select>
-                    <label asp-for="QuotationXproduct.Tax.Name" class="ms-2"></label>
-                    <span asp-validation-for="QuotationXproduct.Tax.Name" class="text-danger"></span>
+                        <select asp-for="@Model.QuotationXproduct.UnitId" asp-items="@Model.UnitList" id="unit" class="unit form-select border-0 shadow">
+                            <option disabled selected>--Select BaseUnit--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.Unit.UnitName" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Unit.UnitName" class="text-danger"></span>
 
-                </td>
-                <td>
+                    </td>
+                    <td>
+                        <select asp-for="@Model.QuotationXproduct.TaxId" asp-items="@Model.TaxList" id="tax" class="tax form-select border-0 shadow">
+                            <option disabled selected>--Select Tax--</option>
+                        </select>
+                        <label asp-for="QuotationXproduct.Tax.Name" class="ms-2"></label>
+                        <span asp-validation-for="QuotationXproduct.Tax.Name" class="text-danger"></span>
+
+                    </td>
+                    <td>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="QuotationXproduct.Price" disabled id="price" class="price form-control border-0 shadow" />
+                            <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
+                            <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-floating py-2 col-12">
+                            <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow" />
+                            <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
+                            <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
+                        </div>
+                    </td>
+
+                     <td>
+
                     <div class="form-floating py-2 col-12">
-                        <input asp-for="QuotationXproduct.Price" disabled id="price" class="price form-control border-0 shadow" />
-                        <label asp-for="QuotationXproduct.Price" class="ms-2"></label>
-                        <span asp-validation-for="QuotationXproduct.Price" class="text-danger"></span>
+                    <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
+                    <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
+                    <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
                     </div>
-                </td>
-                <td>
-                    <div class="form-floating py-2 col-12">
-                        <input asp-for="QuotationXproduct.Quantity" id="quantity" class="quantity form-control border-0 shadow" />
-                        <label asp-for="QuotationXproduct.Quantity" class="ms-2"></label>
-                        <span asp-validation-for="QuotationXproduct.Quantity" class="text-danger"></span>
-                    </div>
-                </td>
 
-                <td>
-                    <div class="form-floating py-2 col-12">
-                        <input asp-for="QuotationXproduct.Subtotal" disabled id="subtotal" class="subtotal form-control border-0 shadow" />
-                        <label asp-for="QuotationXproduct.Subtotal" class="ms-2"></label>
-                        <span asp-validation-for="QuotationXproduct.Subtotal" class="text-danger"></span>
-                    </div>
-                </td>
-                @* <td>
-                <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
-                </td> *@
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" id="buttonsubmit" class="btn btn-primary form-control" onclick="saveData()">Save changes</button>
-            </div>
+                    </td>
+
+                    @* <td>
+                    <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
+                    </td> *@
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                    <button type="button" id="buttonsubmit" class="btn btn-primary form-control" onclick="saveData()">Save changes</button>
+                </div>
             @* </form> *@
         </div>
     </div>
-</div>
+</div> 
+
 
 
 
@@ -242,24 +249,24 @@
 
                                                 </tr>
                                             }
-                                        }
+                                         } 
                                     </tbody>
                                 </table>
 
                             </div>
-                            @*
+@* 
                             <div class="form-floating py-2 col-3">
-                            <input asp-for="QuotationXproduct.Discount" id="discount" value="0.00" class="discount form-control border-0 shadow" />
-                            <label asp-for="QuotationXproduct.Discount" class="ms-2"></label>
-                            <span asp-validation-for="QuotationXproduct.Discount" class="text-danger"></span>
+                                <input asp-for="QuotationXproduct.Discount" id="discount" value="0.00" class="discount form-control border-0 shadow" />
+                                <label asp-for="QuotationXproduct.Discount" class="ms-2"></label>
+                                <span asp-validation-for="QuotationXproduct.Discount" class="text-danger"></span>
                             </div>
 
                             <br />
                             <hr />
                             <div class="form-floating py-2 col-3">
-                            <input asp-for="Quotation.GrandTotal" id="grandtotal" class="grandtotal form-control border-0 shadow" />
-                            <label asp-for="Quotation.GrandTotal" class="ms-2"></label>
-                            <span asp-validation-for="Quotation.GrandTotal" class="text-danger"></span>
+                                <input asp-for="Quotation.GrandTotal" id="grandtotal" class="grandtotal form-control border-0 shadow" />
+                                <label asp-for="Quotation.GrandTotal" class="ms-2"></label>
+                                <span asp-validation-for="Quotation.GrandTotal" class="text-danger"></span>
                             </div> *@
                         </div>
                         <div class="row pt-2">
@@ -269,7 +276,7 @@
 
                             </div>
                             <div class="col-6 col-md-3">
-                                <a asp-controller="Quotation" asp-action="Index" class="btn btn-outline-primary border  form-control">
+                                <a asp-controller="Qxp" asp-action="Index" class="btn btn-outline-primary border  form-control">
                                     Back to List
                                 </a>
                             </div>
@@ -294,7 +301,9 @@
             var taxId = $("#tax").val();
             var price = $("#price").val();
             var quantity = $("#quantity").val();
-            // var subtotal = $("#price").val() * $("#quantity").val();
+
+           // var subtotal = $("#price").val() * $("#quantity").val();
+
 
             // Create an object to hold the data
             var product = {
@@ -304,17 +313,21 @@
                 TaxId: taxId,
                 Price: price,
                 Quantity: quantity
-                //   Subtotal : subtotal
+
+             //   Subtotal : subtotal
+
             };
             $.ajax({
-                url: '@Url.Action("AddProduct", "Quotation")',
+                url: '@Url.Action("AddProduct", "Qxp")',
                 type: 'POST',
                 data: { product: product },
                 success: function (response) {
-
+                   
                     if (response.success) {
                         alert('Product list saved successfully!');
-                        
+
+                        window.close;
+
                     } else {
                         alert('Failed to save product list!');
                     }
@@ -334,7 +347,9 @@
                 var Id = $(this).val();
                 //  alert(Id);
                 $.ajax({
-                    url: '@Url.Action("GetProduct", "Quotation")',
+
+                    url: '@Url.Action("GetProduct", "Qxp")',
+
                     type: 'GET',
                     //dataType: 'json'
                     data: { Id: Id },
@@ -356,7 +371,9 @@
                     }
                 });
             });
+
         });
+
     </script>
     <script>
         $(document).ready(function () {
@@ -414,142 +431,3 @@
         background-color: rgba(255,0,0,0.35);
     }
 </style>
-
-@*
-
-      ==>>   this must include total
-
-<script>
-    $(document).ready(function () {
-        $(".quantity").on("keyup", function () {
-            // alert('price')
-            var price = $(this).closest("tr").find(".price").val();
-            // alert('quantity')
-            var quantity = $(this).val();
-            var subtotal = price * quantity;
-            $(this).closest("tr").find(".subtotal").val(subtotal);
-
-        });
-    });
-</script>
-
-<script>
-    $(document).ready(function () {
-        alert('test');
-        $('.quantity, .price').on('input', function () {
-            var $row = $(this).closest('tr');
-            var quantity = parseFloat($row.find('.quantity').val());
-            var price = parseFloat($row.find('.price').val());
-            var total = quantity * price;
-            $row.find('.subtotal').val(total.toFixed(2));
-        });
-    });
-</script>
-
-
-
-      ==>>  this must include total and grand total.
-
-<script>
-    $(document).ready(function () {
-        $(".quantity").on("keyup", function () {
-            // alert('price')
-            var price = $(this).closest("tr").find(".price").val();
-            // alert('quantity')
-            var quantity = $(this).val();
-            var subtotal = price * quantity;
-            $(this).closest("tr").find(".subtotal").val(subtotal);
-            calculateGrandTotal();
-        });
-    });
-
-    function calculateGrandTotal() {
-        var grandTotal = 0;
-        $(".subtotal").each(function () {
-            var subtotal = parseFloat($(this).val());
-            var discount = $(this).closest("tr").find(".discount").val();
-            grandTotal += subtotal;
-        });
-        $("#grandtotal").val(grandTotal.toFixed(2));
-    }
-
-</script>
-
- ==>>  this must include total and grand total and total discount.
-
-<script>
-    $(document).ready(function () {
-        $(".quantity").on("keyup", function () {
-            var price = $(this).closest("tr").find(".price").val();
-            var quantity = $(this).val();
-            var subtotal = price * quantity;
-            $(this).closest("tr").find(".subtotal").val(subtotal);
-            calculateGrandTotal();
-        });
-
-        $(".discount").on("keyup", function () {
-            calculateGrandTotal();
-        });
-    });
-
-    function calculateGrandTotal() {
-        var grandTotal = 0;
-        var discount = parseFloat($("#discount").val());
-
-        $(".subtotal").each(function () {
-            var subtotal = parseFloat($(this).val());
-            grandTotal += subtotal;
-        });
-
-        var totalDiscount = grandTotal * (discount / 100);
-        grandTotal -= totalDiscount;
-
-        $("#grandtotal").val(grandTotal.toFixed(2));
-    }
-</script>
-
-
-
-
-       ==>>   this must include total , total discount , total tax , granndtotal
-<script>
-    $(document).ready(function () {
-        $(".quantity").on("keyup", function () {
-            var price = $(this).closest("tr").find(".price").val();
-            var quantity = $(this).val();
-            var subtotal = price * quantity;
-            $(this).closest("tr").find(".subtotal").val(subtotal);
-            calculateGrandTotal();
-        });
-
-        $(".tax, .discount").on("keyup", function () {
-            calculateGrandTotal();
-        });
-    });
-
-    function calculateGrandTotal() {
-        var grandTotal = 0;
-        var discount = parseFloat($("#discount").val());
-
-        $(".subtotal").each(function () {
-            var subtotal = parseFloat($(this).val());
-            grandTotal += subtotal;
-        });
-
-        var taxTotal = 0;
-        $(".tax").each(function () {
-            var taxPercentage = parseFloat($(this).val());
-            var subtotal = parseFloat($(this).closest("tr").find(".subtotal").val());
-            var taxAmount = subtotal * (taxPercentage / 100);
-            taxTotal += taxAmount;
-            // $("#totaltax").val(totaltax.toFixed(2));
-        });
-
-        var totalDiscount = grandTotal * (discount / 100);
-        grandTotal += taxTotal;
-        //   grandTotal -= totalDiscount;
-
-        $("#grandtotal").val(grandTotal.toFixed(2));
-    }
-
-</script> *@
