@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -13,9 +15,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        public CategoryController(IUnitOfWork unitOfWork)
+        private readonly ApplicationDbContext _db;
+        public CategoryController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
         }
 
 
@@ -26,27 +30,30 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         //}
         public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
+
+            // expressions that could cause an exception
+
             ViewData["CurrentFilter"] = term;
             term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
-        
+
 
             CategoryIndexVM categoryIndexVM = new CategoryIndexVM();
             categoryIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "Name_desc" : "";
             var categories = (from data in _unitOfWork.Category.GetAll().ToList()
-                          where term == "" ||
-                             data.Name.ToLower().
-                             Contains(term) 
+                              where term == "" ||
+                                 data.Name.ToLower().
+                                 Contains(term)
 
 
-                          select new Category
-                          {
-                              Id = data.Id,
-                              Name = data.Name,
-                              Description = data.Description,
-                              IsActive = data.IsActive
-                            
-                          });
+                              select new Category
+                              {
+                                  Id = data.Id,
+                                  Name = data.Name,
+                                  Description = data.Description,
+                                  IsActive = data.IsActive
+
+                              });
             switch (orderBy)
             {
                 case "Name_desc":
@@ -70,6 +77,9 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             categoryIndexVM.PageSize = pageSize;
             categoryIndexVM.OrderBy = orderBy;
             return View(categoryIndexVM);
+
+
+
 
 
         }
@@ -96,44 +106,88 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Upsert(Category category)
         {
+
+
             if (ModelState.IsValid)
             {
+                try
+                {
+                    if (category.Id == 0)
+                    {
+                        _unitOfWork.Category.Add(category);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Category created successfully";
+                    }
+                    else
+                    {
+                        _unitOfWork.Category.Update(category);
+                        _unitOfWork.Save();
+                        TempData["success"] = "Category Updated successfully";
+                    }
+                    return RedirectToAction("Index");
 
-                if (category.Id == 0)
-                {
-                    _unitOfWork.Category.Add(category);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Category created successfully";
                 }
-                else
+                catch (Exception ex)
                 {
-                    _unitOfWork.Category.Update(category);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Category Updated successfully";
+                    LogErrorToDatabase(ex);
+
+                    TempData["error"] = "error accured";
+                    // return View(brand);
+                    return RedirectToAction("Error", "Home");
                 }
-                return RedirectToAction("Index");
+
+
             }
             else
             {
                 return View(category);
             }
+
+
         }
+
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            Category categoryToBeDeleted = _unitOfWork.Category.Get(u => u.Id == id);
-            if (categoryToBeDeleted == null)
+            try
             {
-                TempData["error"] = "Category can't be Delete.";
+                Category categoryToBeDeleted = _unitOfWork.Category.Get(u => u.Id == id);
+                if (categoryToBeDeleted == null)
+                {
+                    TempData["error"] = "Category can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+
+                _unitOfWork.Category.Remove(categoryToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "Category Deleted successfully";
                 return RedirectToAction("Index");
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
+
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
             }
 
-            _unitOfWork.Category.Remove(categoryToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "Category Deleted successfully";
-            return RedirectToAction("Index");
 
         }
         //#region API CALLS

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -15,9 +16,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        public CountryController(IUnitOfWork unitOfWork)
+        private readonly ApplicationDbContext _db;
+        public CountryController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
         }
 
         #region Index
@@ -29,17 +32,17 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             CountryIndexVM countryIndexVM = new CountryIndexVM();
             countryIndexVM.CountryNameSortOrder = string.IsNullOrEmpty(orderBy) ? "countryName_desc" : "";
             var countries = (from data in _unitOfWork.Country.GetAll().ToList()
-                          where term == "" ||
-                             data.CountryName.ToLower().
-                             Contains(term)
+                             where term == "" ||
+                                data.CountryName.ToLower().
+                                Contains(term)
 
 
-                          select new Country
-                          {
-                              Id = data.Id,
-                              CountryName = data.CountryName,
-                              IsActive = data.IsActive,
-                          });
+                             select new Country
+                             {
+                                 Id = data.Id,
+                                 CountryName = data.CountryName,
+                                 IsActive = data.IsActive,
+                             });
 
             switch (orderBy)
             {
@@ -92,32 +95,56 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
                 if (country.Id == 0)
                 {
-                    Country countryObj = _unitOfWork.Country.Get(u => u.CountryName == country.CountryName);
-                    if (countryObj != null)
+                    try
                     {
-                        TempData["error"] = "Country Name Already Exist!";
-                    }
-                    else
-                    {
+                        Country countryObj = _unitOfWork.Country.Get(u => u.CountryName == country.CountryName);
+                        if (countryObj != null)
+                        {
+                            TempData["error"] = "Country Name Already Exist!";
+                        }
+                        else
+                        {
 
-                        _unitOfWork.Country.Add(country);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Country created successfully";
+                            _unitOfWork.Country.Add(country);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Country created successfully";
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
+                    }
+
                 }
                 else
                 {
-                    Country countryObj = _unitOfWork.Country.Get(u => u.Id != country.Id && u.CountryName == country.CountryName);
-                    if (countryObj != null)
+                    try
                     {
-                        TempData["error"] = "Country Name Already Exist!";
+                        Country countryObj = _unitOfWork.Country.Get(u => u.Id != country.Id && u.CountryName == country.CountryName);
+                        if (countryObj != null)
+                        {
+                            TempData["error"] = "Country Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.Country.Update(country);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Country Updated successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.Country.Update(country);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Country Updated successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
+
                 }
                 return RedirectToAction("Index");
             }
@@ -127,6 +154,18 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             }
         }
         #endregion
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
 
         #region API CALLS
 
@@ -141,16 +180,29 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var CountryToBeDeleted = _unitOfWork.Country.Get(u => u.Id == id);
-            if (CountryToBeDeleted == null)
+            try
             {
-                return Json(new { success = false, message = "Error while deleting" });
+                var CountryToBeDeleted = _unitOfWork.Country.Get(u => u.Id == id);
+                if (CountryToBeDeleted == null)
+                {
+                    return Json(new { success = false, message = "Error while deleting" });
+                }
+
+                _unitOfWork.Country.Remove(CountryToBeDeleted);
+                _unitOfWork.Save();
+
+                return Json(new { success = true, message = "Delete Successful" });
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
+
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
             }
 
-            _unitOfWork.Country.Remove(CountryToBeDeleted);
-            _unitOfWork.Save();
-
-            return Json(new { success = true, message = "Delete Successful" });
         }
 
         #endregion

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -13,19 +15,70 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     public class InquiryController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ApplicationDbContext _db;
 
-        public InquiryController(IUnitOfWork unitOfWork)
+        public InquiryController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
-
+            _db = db;
 
         }
-        public IActionResult Index()
+        #region Index
+        public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
-            List<Inquiry> objInquiryList = _unitOfWork.Inquiry.GetAll(includeProperties: "Product,Country,State,City,InquirySource,InquiryStatus").ToList();
+            ViewData["CurrentFilter"] = term;
+            term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
-            return View(objInquiryList);
+            InquiryIndexVM inquiryIndexVM = new InquiryIndexVM(); // page and serch mate
+            inquiryIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "email_desc" : "";
+            var inquiries = (from data in _unitOfWork.Inquiry.GetAll(includeProperties: "InquirySource,InquiryStatus,Product,Country,State,City").ToList()
+                             where term == "" || data.Email.ToLower().
+                              Contains(term) || data.InquirySource.InquirySourceName.ToLower().Contains(term)
+
+                             select new Inquiry
+                             {
+                                 Id = data.Id,
+                                 Organization = data.Organization,
+                                 ContactPerson = data.ContactPerson,
+                                 Email = data.Email,
+                                 MobileNumber = data.MobileNumber,
+                                 PhoneNumber = data.PhoneNumber,
+                                 Website = data.Website,
+                                 Address = data.Address,
+                                 Country = data.Country,
+                                 Product = data.Product,
+                                 State = data.State,
+                                 City = data.City,
+                                 InquirySource = data.InquirySource,
+                                 InquiryStatus = data.InquiryStatus,
+                             });
+
+            switch (orderBy)
+            {
+                case "email_desc":
+                    inquiries = inquiries.OrderByDescending(a => a.Email);
+                    break;
+
+                default:
+                    inquiries = inquiries.OrderBy(a => a.Email);
+                    break;
+            }
+            int totalRecords = inquiries.Count();
+            int pageSize = 5;
+            int totalPages = (int)Math.Ceiling(totalRecords / (double)pageSize);
+            inquiries = inquiries.Skip((currentPage - 1) * pageSize).Take(pageSize);
+            // current=1, skip= (1-1=0), take=5 
+            // currentPage=2, skip (2-1)*5 = 5, take=5 ,
+            inquiryIndexVM.Inquiries = inquiries;
+            inquiryIndexVM.CurrentPage = currentPage;
+            inquiryIndexVM.TotalPages = totalPages;
+            inquiryIndexVM.Term = term;
+            inquiryIndexVM.PageSize = pageSize;
+            inquiryIndexVM.OrderBy = orderBy;
+            return View(inquiryIndexVM);
         }
+        #endregion
+
         public IActionResult Upsert(int? id)
         {
             InquiryVM InquiryVM = new()
@@ -59,7 +112,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 {
                     Text = u.InquirySourceName,
                     Value = u.Id.ToString()
-                }), 
+                }),
                 StatusList = _unitOfWork.InquiryStatus.GetAll().Select(u => new SelectListItem
                 {
                     Text = u.InquiryStatusName,
@@ -82,64 +135,111 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             }
 
         }
+
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
+
         [HttpPost]
         public IActionResult Upsert(InquiryVM inquiryVM)
         {
-            if (ModelState.IsValid)
+            try
             {
-
-                if (inquiryVM.Inquiry.Id == 0)
+                if (ModelState.IsValid)
                 {
-                    _unitOfWork.Inquiry.Add(inquiryVM.Inquiry);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Inquiry created successfully";
+
+                    if (inquiryVM.Inquiry.Id == 0)
+                    {
+                        try
+                        {
+                            _unitOfWork.Inquiry.Add(inquiryVM.Inquiry);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Inquiry created successfully";
+                        }
+                        catch (Exception ex)
+                        {
+                            LogErrorToDatabase(ex);
+
+                            TempData["error"] = "error accured";
+                            // return View(brand);
+                            return RedirectToAction("Error", "Home");
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            _unitOfWork.Inquiry.Update(inquiryVM.Inquiry);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Inquiry Updated successfully";
+                        }
+                        catch (Exception ex)
+                        {
+                            LogErrorToDatabase(ex);
+
+                            TempData["error"] = "error accured";
+                            // return View(brand);
+                            return RedirectToAction("Error", "Home");
+                        }
+                    }
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    _unitOfWork.Inquiry.Update(inquiryVM.Inquiry);
-                    _unitOfWork.Save();
-                    TempData["success"] = "Inquiry Updated successfully";
+                    inquiryVM.CityList = _unitOfWork.City.GetAll().Select(u => new SelectListItem
+                    {
+                        Text = u.CityName,
+                        Value = u.Id.ToString()
+                    });
+                    inquiryVM.StateList = _unitOfWork.State.GetAll().Select(u => new SelectListItem
+                    {
+                        Text = u.StateName,
+                        Value = u.Id.ToString()
+                    });
+                    inquiryVM.CountryList = _unitOfWork.Country.GetAll().Select(u => new SelectListItem
+                    {
+                        Text = u.CountryName,
+                        Value = u.Id.ToString()
+                    });
+                    inquiryVM.ProductList = _unitOfWork.Product.GetAll().Select(u => new SelectListItem
+                    {
+                        Text = u.Name,
+                        Value = u.Id.ToString()
+                    });
+                    //inquiryVM.UserList = _unitOfWork.User.GetAll().Select(u => new SelectListItem
+                    //{
+                    //    Text = u.FirstName,
+                    //    Value = u.Id.ToString()
+                    //});
+                    inquiryVM.SourceList = _unitOfWork.InquirySource.GetAll().Select(u => new SelectListItem
+                    {
+                        Text = u.InquirySourceName,
+                        Value = u.Id.ToString()
+                    });
+                    inquiryVM.StatusList = _unitOfWork.InquiryStatus.GetAll().Select(u => new SelectListItem
+                    {
+                        Text = u.InquiryStatusName,
+                        Value = u.Id.ToString()
+                    });
+                    return View(inquiryVM);
                 }
-                return RedirectToAction("Index");
             }
-            else
+            catch (Exception ex)
             {
-                inquiryVM.CityList = _unitOfWork.City.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.CityName,
-                    Value = u.Id.ToString()
-                });
-                inquiryVM.StateList = _unitOfWork.State.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.StateName,
-                    Value = u.Id.ToString()
-                });
-                inquiryVM.CountryList = _unitOfWork.Country.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.CountryName,
-                    Value = u.Id.ToString()
-                });
-                inquiryVM.ProductList = _unitOfWork.Product.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.Id.ToString()
-                });
-                //inquiryVM.UserList = _unitOfWork.User.GetAll().Select(u => new SelectListItem
-                //{
-                //    Text = u.FirstName,
-                //    Value = u.Id.ToString()
-                //});
-                inquiryVM.SourceList = _unitOfWork.InquirySource.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.InquirySourceName,
-                    Value = u.Id.ToString()
-                });
-                inquiryVM.StatusList = _unitOfWork.InquiryStatus.GetAll().Select(u => new SelectListItem
-                {
-                    Text = u.InquiryStatusName,
-                    Value = u.Id.ToString()
-                });
-                return View(inquiryVM);
+                LogErrorToDatabase(ex);
+
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
             }
         }
         #region API CALLS
@@ -154,16 +254,27 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var InquiryToBeDeleted = _unitOfWork.Inquiry.Get(u => u.Id == id);
-            if (InquiryToBeDeleted == null)
+            try
             {
-                return Json(new { success = false, message = "Error while deleting" });
+                var InquiryToBeDeleted = _unitOfWork.Inquiry.Get(u => u.Id == id);
+                if (InquiryToBeDeleted == null)
+                {
+                    return Json(new { success = false, message = "Error while deleting" });
+                }
+
+                _unitOfWork.Inquiry.Remove(InquiryToBeDeleted);
+                _unitOfWork.Save();
+
+                return Json(new { success = true, message = "Delete Successful" });
             }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
 
-            _unitOfWork.Inquiry.Remove(InquiryToBeDeleted);
-            _unitOfWork.Save();
-
-            return Json(new { success = true, message = "Delete Successful" });
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
         }
 
 

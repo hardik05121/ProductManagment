@@ -77,7 +77,7 @@ public partial class ProductMetadata
     public string? ProductImage { get; set; }
 
     [ForeignKey("BrandId")]
-    [ValidateNever]
+  
     public virtual Brand Brand { get; set; } = null!;
 
     [ForeignKey("CategoryId")]

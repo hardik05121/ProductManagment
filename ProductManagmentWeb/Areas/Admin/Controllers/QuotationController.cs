@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -19,13 +20,14 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public QuotationController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        private readonly ApplicationDbContext _db;
+        public QuotationController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment,ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
-
+            _db = db;
         }
+
         #region Index
         public IActionResult Index(string term = "", string orderBy = "", int currentPage = 1)
         {
@@ -87,7 +89,6 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             //var claimsIdentity = (ClaimsIdentity)User.Identity;
             //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-
             QuotationVM quotationVM = new()
             {
                 SupplierList = _unitOfWork.Supplier.GetAll().Select(u => new SelectListItem
@@ -130,68 +131,91 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Upsert(QuotationVM quotationVM)
         {
-
-            //var claimsIdentity = (ClaimsIdentity)User.Identity;
-            //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                //var claimsIdentity = (ClaimsIdentity)User.Identity;
+                //var userId = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier).Value;
 
             List<QuotationXproduct> quotationXproducts = HttpContext.Session.GetComplexData<List<QuotationXproduct>>("loggerUser");
 
-            //newQuotationVM.Quotation.UserId = userId;
-            quotationVM.Quotation.OrderDate = System.DateTime.Now;
+                //newQuotationVM.Quotation.UserId = userId;
+                quotationVM.Quotation.OrderDate = System.DateTime.Now;
 
-            if (ModelState.IsValid)
-            {
-                if (quotationVM.Quotation.Id == 0)
+                if (ModelState.IsValid)
                 {
-                    Quotation quotation = _unitOfWork.Quotation.Get(u => u.QuotationNumber == quotationVM.Quotation.QuotationNumber);
-
-                    if (quotation != null)
+                    if (quotationVM.Quotation.Id == 0)
                     {
-                        TempData["error"] = "quotation Name Already Exist!";
+                        Quotation quotation = _unitOfWork.Quotation.Get(u => u.QuotationNumber == quotationVM.Quotation.QuotationNumber);
+
+                        if (quotation != null)
+                        {
+                            TempData["error"] = "quotation Name Already Exist!";
+                        }
+                        else
+                        {
+
+                            _unitOfWork.Quotation.Add(quotationVM.Quotation);
+                            _unitOfWork.Save();
+                            TempData["success"] = "quotation created successfully";
+                        }
                     }
                     else
                     {
-
-                        _unitOfWork.Quotation.Add(quotationVM.Quotation);
-                        _unitOfWork.Save();
-                        TempData["success"] = "quotation created successfully";
+                        TempData["error"] = "quotation created error";
                     }
+                    if (quotationVM != null)
+                    {
+                        foreach (var cart in quotationXproducts)
+                        {
+                            QuotationXproduct quotationXproduct = new()
+                            {
+                                ProductId = cart.ProductId,
+                                WarehouseId = cart.WarehouseId,
+                                UnitId = cart.UnitId,
+                                TaxId = cart.TaxId,
+                                Price = cart.Price,
+                                Quantity = cart.Quantity,
+                                Subtotal = cart.Subtotal,
+                                Discount = cart.Discount,
+                                QuotationId = quotationVM.Quotation.Id,
+
+                            };
+                            _unitOfWork.QuotationXproduct.Add(quotationXproduct);
+                            _unitOfWork.Save();
+                        }
+                    }
+                    return RedirectToAction("Index");
                 }
                 else
-                {
-                    TempData["error"] = "quotation created error";
-                }
-                if (quotationVM != null)
-                {
-                    foreach (var cart in quotationXproducts)
-                    {
-                        QuotationXproduct quotationXproduct = new()
-                        {
-                            ProductId = cart.ProductId,
-                            WarehouseId = cart.WarehouseId,
-                            UnitId = cart.UnitId,
-                            TaxId = cart.TaxId,
-                            Price = cart.Price,
-                            Quantity = cart.Quantity,
-                            Subtotal = cart.Subtotal,
-                            Discount = cart.Discount,
-                            QuotationId = quotationVM.Quotation.Id,
 
-                        };
-                        _unitOfWork.QuotationXproduct.Add(quotationXproduct);
-                        _unitOfWork.Save();
-                    }
+                {
+                    return View(quotationVM);
                 }
-                return RedirectToAction("Index");
             }
-            else
-
+            catch (Exception ex)
             {
-                return View(quotationVM);
-            }
+                LogErrorToDatabase(ex);
 
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
         }
         #endregion
+
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
+
 
         public IActionResult GetProduct(int Id)
         {
@@ -237,6 +261,5 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             }
         }
 
-    }
-
+    }   
 }

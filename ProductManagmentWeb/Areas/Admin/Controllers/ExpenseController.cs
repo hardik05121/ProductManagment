@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -16,10 +17,13 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public ExpenseController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        private readonly ApplicationDbContext _db;
+
+        public ExpenseController(IUnitOfWork unitOfWork, ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _db = db;
         }
 
 
@@ -34,19 +38,19 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             ExpenseIndexVM expenseIndexVM = new ExpenseIndexVM();
             expenseIndexVM.ExpenseNameSortOrder = string.IsNullOrEmpty(orderBy) ? "expenseName_desc" : "";
             var expenses = (from data in _unitOfWork.Expense.GetAll(includeProperties: "ExpenseCategory").ToList()
-                          where term == "" || data.ExpenseCategory.ExpenseCategoryName.ToLower().Contains(term)
+                            where term == "" || data.ExpenseCategory.ExpenseCategoryName.ToLower().Contains(term)
 
-                          select new Expense
-                          {
-                              Id = data.Id,
-                              CreatedDate = data.CreatedDate,
-                              ExpenseDate = data.ExpenseDate,
-                              Reference = data.Reference,
-                              Amount = data.Amount,
-                              ExpenseCategory = data.ExpenseCategory,
-                              Note = data.Note,
-                              ExpenseFile = data.ExpenseFile,
-                          });
+                            select new Expense
+                            {
+                                Id = data.Id,
+                                CreatedDate = data.CreatedDate,
+                                ExpenseDate = data.ExpenseDate,
+                                Reference = data.Reference,
+                                Amount = data.Amount,
+                                ExpenseCategory = data.ExpenseCategory,
+                                Note = data.Note,
+                                ExpenseFile = data.ExpenseFile,
+                            });
 
             switch (orderBy)
             {
@@ -108,57 +112,93 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         [HttpPost]
 
-        // jayre image levani hoy tyre IFormFile? file Parameter lai levnu
+
 
         public IActionResult Upsert(ExpenseVM ExpenseVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                try
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string productPath = Path.Combine(wwwRootPath, @"images\expense");
 
-                    if (!string.IsNullOrEmpty((string?)ExpenseVM.Expense.ExpenseFile))
+
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    if (file != null)
                     {
-                        //delete the old image
-                        var oldImagePath =
-                                    Path.Combine(wwwRootPath, (string)ExpenseVM.Expense.ExpenseFile.TrimStart('\\'));
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string productPath = Path.Combine(wwwRootPath, @"images\expense");
 
-                        if (System.IO.File.Exists(oldImagePath))
+                        if (!string.IsNullOrEmpty((string?)ExpenseVM.Expense.ExpenseFile))
                         {
-                            System.IO.File.Delete(oldImagePath);
+                            //delete the old image
+                            var oldImagePath =
+                                        Path.Combine(wwwRootPath, (string)ExpenseVM.Expense.ExpenseFile.TrimStart('\\'));
+
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
                         }
-                    }
 
-                    using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                        using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+
+                        ExpenseVM.Expense.ExpenseFile = @"\images\expense\" + fileName;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToDatabase(ex);
+
+                    TempData["error"] = "error accured";
+                    // return View(brand);
+                    return RedirectToAction("Error", "Home");
+                }
+                try
+                {
+
+
+                    if (ExpenseVM.Expense.Id == 0)
                     {
-                        file.CopyTo(fileStream);
+                        _unitOfWork.Expense.Add(ExpenseVM.Expense);
+                    }
+                    else
+                    {
+                        _unitOfWork.Expense.Update(ExpenseVM.Expense);
                     }
 
-                    ExpenseVM.Expense.ExpenseFile = @"\images\expense\" + fileName;
+                    _unitOfWork.Save();
+                    TempData["success"] = "Expense created successfully";
+                    return RedirectToAction("Index");
                 }
-
-                if (ExpenseVM.Expense.Id == 0)
+                catch (Exception ex)
                 {
-                    _unitOfWork.Expense.Add(ExpenseVM.Expense);
-                }
-                else
-                {
-                    _unitOfWork.Expense.Add(ExpenseVM.Expense);
-                }
+                    LogErrorToDatabase(ex);
 
-                _unitOfWork.Save();
-                TempData["success"] = "Expense created successfully";
-                return RedirectToAction("Index");
+                    TempData["error"] = "error accured";
+                    // return View(brand);
+                    return RedirectToAction("Error", "Home");
+                }
             }
             else
             {
 
                 return View(ExpenseVM);
             }
+        }
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
         }
 
         #region API CALLS
@@ -172,25 +212,38 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var productToBeDeleted = _unitOfWork.Expense.Get(u => u.Id == id);
-            if (productToBeDeleted == null)
+            try
             {
-                return Json(new { success = false, message = "Error while deleting" });
+
+
+                var productToBeDeleted = _unitOfWork.Expense.Get(u => u.Id == id);
+                if (productToBeDeleted == null)
+                {
+                    return Json(new { success = false, message = "Error while deleting" });
+                }
+
+                var oldImagePath =
+                               Path.Combine(_webHostEnvironment.WebRootPath,
+                               productToBeDeleted.ExpenseFile.TrimStart('\\'));
+
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+
+                _unitOfWork.Expense.Remove(productToBeDeleted);
+                _unitOfWork.Save();
+
+                return Json(new { success = true, message = "Delete Successful" });
             }
-
-            var oldImagePath =
-                           Path.Combine(_webHostEnvironment.WebRootPath,
-                           productToBeDeleted.ExpenseFile.TrimStart('\\'));
-
-            if (System.IO.File.Exists(oldImagePath))
+            catch (Exception ex)
             {
-                System.IO.File.Delete(oldImagePath);
+                LogErrorToDatabase(ex);
+
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
             }
-
-            _unitOfWork.Expense.Remove(productToBeDeleted);
-            _unitOfWork.Save();
-
-            return Json(new { success = true, message = "Delete Successful" });
         }
 
 

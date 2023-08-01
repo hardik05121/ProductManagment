@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -14,10 +15,12 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     public class CityController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ApplicationDbContext _db;
 
-        public CityController(IUnitOfWork unitOfWork)
+        public CityController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
 
         }
 
@@ -125,70 +128,129 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         public IActionResult Upsert(CityVM cityVM)
         {
 
+
             if (ModelState.IsValid)
             {
+
                 if (cityVM.City.Id == 0)
                 {
-
-                    City cityobj = _unitOfWork.City.Get(u => u.CityName == cityVM.City.CityName && u.StateId == cityVM.City.StateId);
-                    if (cityobj != null)
+                    try
                     {
-                        TempData["error"] = "City Name Already Exist!";
-                    }
-                    else
-                    {
-                        _unitOfWork.City.Add(cityVM.City);
-                        _unitOfWork.Save();
-                        TempData["success"] = "City Created successfully";
-                    }
 
+
+
+                        City cityobj = _unitOfWork.City.Get(u => u.CityName == cityVM.City.CityName && u.StateId == cityVM.City.StateId);
+                        if (cityobj != null)
+                        {
+                            TempData["error"] = "City Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.City.Add(cityVM.City);
+                            _unitOfWork.Save();
+                            TempData["success"] = "City Created successfully";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
+                    }
 
                 }
                 else
                 {
-                    City cityObj = _unitOfWork.City.Get(u => u.Id != cityVM.City.Id && u.CityName == cityVM.City.CityName && u.StateId == cityVM.City.StateId);
-                    if (cityObj != null)
+                    try
                     {
-                        TempData["error"] = "Brand Name Already Exist!";
-                    }
-                    else
-                    {
-                        cityVM.CountryList = _unitOfWork.Country.GetAll().Select(u => new SelectListItem
-                        {
-                            Text = u.CountryName,
-                            Value = u.Id.ToString()
-                        });
-                        cityVM.StateList = _unitOfWork.State.GetAll().Select(u => new SelectListItem
-                        {
-                            Text = u.StateName,
-                            Value = u.Id.ToString()
-                        });
 
+
+                        City cityObj = _unitOfWork.City.Get(u => u.Id != cityVM.City.Id && u.CityName == cityVM.City.CityName && u.StateId == cityVM.City.StateId);
+                        if (cityObj != null)
+                        {
+                            TempData["error"] = "Brand Name Already Exist!";
+                        }
+                        else
+                        {
+                            cityVM.CountryList = _unitOfWork.Country.GetAll().Select(u => new SelectListItem
+                            {
+                                Text = u.CountryName,
+                                Value = u.Id.ToString()
+                            });
+                            cityVM.StateList = _unitOfWork.State.GetAll().Select(u => new SelectListItem
+                            {
+                                Text = u.StateName,
+                                Value = u.Id.ToString()
+                            });
+
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 return RedirectToAction("Index");
+
+
+
             }
             else
-            { 
-                return View(); 
+            {
+                return View(cityVM);
             }
+
+
+
+
         }
         #endregion
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            City cityToBeDeleted = _unitOfWork.City.Get(u => u.Id == id);
-            if (cityToBeDeleted == null)
+            try
             {
-                TempData["error"] = "City can't be Delete.";
+                City cityToBeDeleted = _unitOfWork.City.Get(u => u.Id == id);
+                if (cityToBeDeleted == null)
+                {
+                    TempData["error"] = "City can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+
+                _unitOfWork.City.Remove(cityToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "City Deleted successfully";
                 return RedirectToAction("Index");
             }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
 
-            _unitOfWork.City.Remove(cityToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "City Deleted successfully";
-            return RedirectToAction("Index");
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
+
 
         }
 
@@ -223,25 +285,25 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         #region Csacadion Droup down State,country, City
         [HttpGet]
 
-            #endregion
-        
-            #region Csacadion Droup down State,country, City
-            [HttpGet]
+        #endregion
 
-            public IActionResult GetStatesByCountry(int countryId)
-            {
-                var states = _unitOfWork.State.GetAll(s => s.CountryId == countryId);
-                return Json(states);
-            }
+        #region Csacadion Droup down State,country, City
+        [HttpGet]
 
-            [HttpGet]
-            public IActionResult GetCitiesByState(int stateId)
-            {
-                var cities = _unitOfWork.City.GetAll(c => c.StateId == stateId);
-                return Json(cities);
-            }
-
-            #endregion
+        public IActionResult GetStatesByCountry(int countryId)
+        {
+            var states = _unitOfWork.State.GetAll(s => s.CountryId == countryId);
+            return Json(states);
         }
+
+        [HttpGet]
+        public IActionResult GetCitiesByState(int stateId)
+        {
+            var cities = _unitOfWork.City.GetAll(c => c.StateId == stateId);
+            return Json(cities);
+        }
+
+        #endregion
     }
+}
 

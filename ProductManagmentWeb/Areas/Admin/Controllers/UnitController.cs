@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -13,9 +14,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        public UnitController(IUnitOfWork unitOfWork)
+        private readonly ApplicationDbContext _db;
+        public UnitController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
         }
 
         //#region Index
@@ -42,18 +45,18 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             UnitIndexVM unitIndexVM = new UnitIndexVM();
             unitIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "unitName_desc" : "";
             var units = (from data in _unitOfWork.Unit.GetAll().ToList()
-                          where term == "" ||
-                             data.UnitName.ToLower().
-                             Contains(term)
+                         where term == "" ||
+                            data.UnitName.ToLower().
+                            Contains(term)
 
 
-                          select new Unit
-                          {
-                              Id = data.Id,
-                              UnitName = data.UnitName,
-                              UnitCode = data.UnitCode,
-                              BaseUnit = data.BaseUnit
-                          });
+                         select new Unit
+                         {
+                             Id = data.Id,
+                             UnitName = data.UnitName,
+                             UnitCode = data.UnitCode,
+                             BaseUnit = data.BaseUnit
+                         });
             switch (orderBy)
             {
                 case "unitName_desc":
@@ -106,33 +109,59 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
 
+
                 if (unit.Id == 0)
                 {
-                    Unit unitObj = _unitOfWork.Unit.Get(u => u.UnitName == unit.UnitName);
-                    if (unitObj != null)
-                    {
-                        TempData["error"] = "Unit Name Already Exist!";
-                    }
-                    else
+                    try
                     {
 
-                        _unitOfWork.Unit.Add(unit);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Unit created successfully";
+
+                        Unit unitObj = _unitOfWork.Unit.Get(u => u.UnitName == unit.UnitName);
+                        if (unitObj != null)
+                        {
+                            TempData["error"] = "Unit Name Already Exist!";
+                        }
+                        else
+                        {
+
+                            _unitOfWork.Unit.Add(unit);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Unit created successfully";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 else
                 {
-                    Unit unitObj = _unitOfWork.Unit.Get(u => u.Id != unit.Id && u.UnitName == unit.UnitName);
-                    if (unitObj != null)
+                    try
                     {
-                        TempData["error"] = "Tax Name Already Exist!";
+
+                        Unit unitObj = _unitOfWork.Unit.Get(u => u.Id != unit.Id && u.UnitName == unit.UnitName);
+                        if (unitObj != null)
+                        {
+                            TempData["error"] = "Tax Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.Unit.Update(unit);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Tax Updated successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.Unit.Update(unit);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Tax Updated successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 return RedirectToAction("Index");
@@ -144,23 +173,47 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         #endregion
 
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
 
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            Unit unitToBeDeleted = _unitOfWork.Unit.Get(u => u.Id == id);
-            if (unitToBeDeleted == null)
+            try
             {
-                TempData["error"] = "Unit can't be Delete.";
+
+
+                Unit unitToBeDeleted = _unitOfWork.Unit.Get(u => u.Id == id);
+                if (unitToBeDeleted == null)
+                {
+                    TempData["error"] = "Unit can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+
+                _unitOfWork.Unit.Remove(unitToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "Unit Deleted successfully";
                 return RedirectToAction("Index");
             }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
 
-            _unitOfWork.Unit.Remove(unitToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "Unit Deleted successfully";
-            return RedirectToAction("Index");
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
 
         }
 

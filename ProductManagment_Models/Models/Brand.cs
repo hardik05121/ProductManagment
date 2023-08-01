@@ -15,7 +15,7 @@ public partial class Brand
     public string BrandName { get; set; } = null!;
 
     [StringLength(450)]
-    public string? BrandImage { get; set; }
+    public string? BrandImage { get; set; } 
 
     [InverseProperty("Brand")]
     public virtual ICollection<Product> Products { get; set; } = new List<Product>();

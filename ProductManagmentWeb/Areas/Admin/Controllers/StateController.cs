@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -16,10 +17,12 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     public class StateController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ApplicationDbContext _db;
 
-        public StateController(IUnitOfWork unitOfWork)
+        public StateController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
 
         }
 
@@ -29,7 +32,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             ViewData["CurrentFilter"] = term;
             term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
-     
+
 
             StateIndexVM stateIndexVM = new StateIndexVM();
             stateIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "stateName_desc" : "";
@@ -112,32 +115,60 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+
+
                 if (stateVM.State.Id == 0)
                 {
-                    State stateObj = _unitOfWork.State.Get(u => u.StateName == stateVM.State.StateName && u.CountryId == stateVM.State.CountryId);
-                    if (stateObj != null)
+                    try
                     {
-                        TempData["error"] = "State Name Already Exist!";
+
+
+                        State stateObj = _unitOfWork.State.Get(u => u.StateName == stateVM.State.StateName && u.CountryId == stateVM.State.CountryId);
+                        if (stateObj != null)
+                        {
+                            TempData["error"] = "State Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.State.Add(stateVM.State);
+                            _unitOfWork.Save();
+                            TempData["success"] = "State Created successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.State.Add(stateVM.State);
-                        _unitOfWork.Save();
-                        TempData["success"] = "State Created successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 else
                 {
-                    State stateObj = _unitOfWork.State.Get(u => u.Id != stateVM.State.Id && u.StateName == stateVM.State.StateName && u.CountryId == stateVM.State.CountryId);
-                    if (stateObj != null)
+                    try
                     {
-                        TempData["error"] = "State Name Already Exist!";
+
+
+                        State stateObj = _unitOfWork.State.Get(u => u.Id != stateVM.State.Id && u.StateName == stateVM.State.StateName && u.CountryId == stateVM.State.CountryId);
+                        if (stateObj != null)
+                        {
+                            TempData["error"] = "State Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.State.Update(stateVM.State);
+                            _unitOfWork.Save();
+                            TempData["success"] = "State Updated successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.State.Update(stateVM.State);
-                        _unitOfWork.Save();
-                        TempData["success"] = "State Updated successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 return RedirectToAction("Index");
@@ -154,22 +185,46 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         }
         #endregion
 
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
 
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            State stateToBeDeleted = _unitOfWork.State.Get(u => u.Id == id);
-            if (stateToBeDeleted == null)
+            try
             {
-                TempData["error"] = "State can't be Delete.";
+
+
+                State stateToBeDeleted = _unitOfWork.State.Get(u => u.Id == id);
+                if (stateToBeDeleted == null)
+                {
+                    TempData["error"] = "State can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+
+                _unitOfWork.State.Remove(stateToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "State Deleted successfully";
                 return RedirectToAction("Index");
             }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
 
-            _unitOfWork.State.Remove(stateToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "State Deleted successfully";
-            return RedirectToAction("Index");
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
 
         }
 
