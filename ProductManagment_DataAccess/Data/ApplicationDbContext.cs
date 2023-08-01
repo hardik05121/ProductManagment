@@ -38,5 +38,6 @@ namespace ProductManagment_DataAccess.Data
         public virtual DbSet<Warehouse> Warehouses { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
+
     }
 }
