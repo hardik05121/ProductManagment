@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -14,10 +15,13 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public SupplierController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        private readonly ApplicationDbContext _db;
+
+        public SupplierController(IUnitOfWork unitOfWork, ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _db = db;
 
         }
         //public IActionResult Index()
@@ -37,24 +41,24 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             SupplierIndexVM supplierIndexVM = new SupplierIndexVM();
             supplierIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "supplierName_desc" : "";
             var suppliers = (from data in _unitOfWork.Supplier.GetAll(includeProperties: "City,State,Country").ToList()
-                          where term == "" ||
-                             data.SupplierName.ToLower().
-                             Contains(term) || data.Country.CountryName.ToLower().Contains(term) || data.State.StateName.ToLower().Contains(term) || data.City.CityName.ToLower().Contains(term)
+                             where term == "" ||
+                                data.SupplierName.ToLower().
+                                Contains(term) || data.Country.CountryName.ToLower().Contains(term) || data.State.StateName.ToLower().Contains(term) || data.City.CityName.ToLower().Contains(term)
 
 
                              select new Supplier
-                          {
-                              Id = data.Id,
-                              SupplierName = data.SupplierName,
-                              Email = data.Email,
-                              MobileNumber = data.MobileNumber,
-                              Country = data.Country,
-                              State = data.State,
-                              City = data.City,
-                              WebSite = data.WebSite
-                             
-                          });
-           
+                             {
+                                 Id = data.Id,
+                                 SupplierName = data.SupplierName,
+                                 Email = data.Email,
+                                 MobileNumber = data.MobileNumber,
+                                 Country = data.Country,
+                                 State = data.State,
+                                 City = data.City,
+                                 WebSite = data.WebSite
+
+                             });
+
             switch (orderBy)
             {
                 case "supplierName_desc":
@@ -124,58 +128,98 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                try
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string supplierPath = Path.Combine(wwwRootPath, @"images\supplier");
 
-                    if (!string.IsNullOrEmpty(supplierVM.Supplier.SupplierImage))
+
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    if (file != null)
                     {
-                        //delete the old image
-                        var oldImagePath =
-                            Path.Combine(wwwRootPath, supplierVM.Supplier.SupplierImage.TrimStart('\\'));
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string supplierPath = Path.Combine(wwwRootPath, @"images\supplier");
 
-                        if (System.IO.File.Exists(oldImagePath))
+                        if (!string.IsNullOrEmpty(supplierVM.Supplier.SupplierImage))
                         {
-                            System.IO.File.Delete(oldImagePath);
+                            //delete the old image
+                            var oldImagePath =
+                                Path.Combine(wwwRootPath, supplierVM.Supplier.SupplierImage.TrimStart('\\'));
+
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
                         }
-                    }
 
-                    using (var fileStream = new FileStream(Path.Combine(supplierPath, fileName), FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
+                        using (var fileStream = new FileStream(Path.Combine(supplierPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
 
-                    supplierVM.Supplier.SupplierImage = @"\images\supplier\" + fileName;
+                        supplierVM.Supplier.SupplierImage = @"\images\supplier\" + fileName;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogErrorToDatabase(ex);
+
+                    TempData["error"] = "error accured";
+                    // return View(brand);
+                    return RedirectToAction("Error", "Home");
                 }
 
                 if (supplierVM.Supplier.Id == 0)
                 {
-                    Supplier supplierObj = _unitOfWork.Supplier.Get(u => u.SupplierName == supplierVM.Supplier.SupplierName);
-                    if (supplierObj != null)
+                    try
                     {
-                        TempData["error"] = "Supplier Name Already Exist!";
+
+
+                        Supplier supplierObj = _unitOfWork.Supplier.Get(u => u.SupplierName == supplierVM.Supplier.SupplierName);
+                        if (supplierObj != null)
+                        {
+                            TempData["error"] = "Supplier Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.Supplier.Add(supplierVM.Supplier);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Supplier created successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.Supplier.Add(supplierVM.Supplier);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Supplier created successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 else
                 {
-                    Supplier supplierObj = _unitOfWork.Supplier.Get(u => u.Id != supplierVM.Supplier.Id && u.SupplierName == supplierVM.Supplier.SupplierName);
-                    if (supplierObj != null)
+                    try
                     {
-                        TempData["error"] = "Supplier Name Already Exist!";
+
+
+                        Supplier supplierObj = _unitOfWork.Supplier.Get(u => u.Id != supplierVM.Supplier.Id && u.SupplierName == supplierVM.Supplier.SupplierName);
+                        if (supplierObj != null)
+                        {
+                            TempData["error"] = "Supplier Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.Supplier.Update(supplierVM.Supplier);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Supplier Updated successfully";
+                        }
+
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.Supplier.Update(supplierVM.Supplier);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Supplier Updated successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 return RedirectToAction("Index");
@@ -186,30 +230,54 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                 return View(supplierVM.Supplier);
             }
         }
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
 
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            Supplier SupplierToBeDeleted = _unitOfWork.Supplier.Get(u => u.Id == id);
-            if (SupplierToBeDeleted == null)
+            try
             {
-                TempData["error"] = "Supplier can't be Delete.";
+
+
+                Supplier SupplierToBeDeleted = _unitOfWork.Supplier.Get(u => u.Id == id);
+                if (SupplierToBeDeleted == null)
+                {
+                    TempData["error"] = "Supplier can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+                var oldImagePath =
+                          Path.Combine(_webHostEnvironment.WebRootPath,
+                           SupplierToBeDeleted.SupplierImage.TrimStart('\\'));
+
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+
+                _unitOfWork.Supplier.Remove(SupplierToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "Supplier Deleted successfully";
                 return RedirectToAction("Index");
             }
-            var oldImagePath =
-                      Path.Combine(_webHostEnvironment.WebRootPath,
-                       SupplierToBeDeleted.SupplierImage.TrimStart('\\'));
-
-            if (System.IO.File.Exists(oldImagePath))
+            catch (Exception ex)
             {
-                System.IO.File.Delete(oldImagePath);
-            }
+                LogErrorToDatabase(ex);
 
-            _unitOfWork.Supplier.Remove(SupplierToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "Supplier Deleted successfully";
-            return RedirectToAction("Index");
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
 
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -14,9 +15,11 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        public ExpenseCategoryController(IUnitOfWork unitOfWork)
+        private readonly ApplicationDbContext _db;
+        public ExpenseCategoryController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
         }
 
         #region Index
@@ -30,17 +33,17 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             ExpenseCategoryIndexVM expenseCategoryIndexVM = new ExpenseCategoryIndexVM();
             expenseCategoryIndexVM.ExpenseCategoryNameSortOrder = string.IsNullOrEmpty(orderBy) ? "expenseCategoryName_desc" : "";
             var expenseCategories = (from data in _unitOfWork.ExpenseCategory.GetAll().ToList()
-                          where term == "" ||
-                             data.ExpenseCategoryName.ToLower().
-                             Contains(term)
+                                     where term == "" ||
+                                        data.ExpenseCategoryName.ToLower().
+                                        Contains(term)
 
 
-                          select new ExpenseCategory
-                          {
-                              Id = data.Id,
-                              ExpenseCategoryName = data.ExpenseCategoryName,
-                              IsActive = data.IsActive,
-                          });
+                                     select new ExpenseCategory
+                                     {
+                                         Id = data.Id,
+                                         ExpenseCategoryName = data.ExpenseCategoryName,
+                                         IsActive = data.IsActive,
+                                     });
 
             switch (orderBy)
             {
@@ -92,34 +95,63 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
 
+
+
+
                 if (expenseCategory.Id == 0)
                 {
+                    try
+                    {
 
-                    ExpenseCategory expenseCategoryobj = _unitOfWork.ExpenseCategory.Get(u => u.ExpenseCategoryName == expenseCategory.ExpenseCategoryName);
-                    if (expenseCategoryobj != null)
-                    {
-                        TempData["error"] = "ExpenseCategory Name Already Exist!";
+
+                        ExpenseCategory expenseCategoryobj = _unitOfWork.ExpenseCategory.Get(u => u.ExpenseCategoryName == expenseCategory.ExpenseCategoryName);
+                        if (expenseCategoryobj != null)
+                        {
+                            TempData["error"] = "ExpenseCategory Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.ExpenseCategory.Add(expenseCategory);
+                            _unitOfWork.Save();
+                            TempData["success"] = "ExpenseCategory created successfully";
+                        }
+
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.ExpenseCategory.Add(expenseCategory);
-                        _unitOfWork.Save();
-                        TempData["success"] = "ExpenseCategory created successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
 
                 }
                 else
                 {
-                    ExpenseCategory expenseCategoryobj = _unitOfWork.ExpenseCategory.Get(u => u.Id != expenseCategory.Id && u.ExpenseCategoryName == expenseCategory.ExpenseCategoryName);
-                    if (expenseCategoryobj != null)
+                    try
                     {
-                        TempData["error"] = "ExpenseCategory Already Exist!";
+
+
+                        ExpenseCategory expenseCategoryobj = _unitOfWork.ExpenseCategory.Get(u => u.Id != expenseCategory.Id && u.ExpenseCategoryName == expenseCategory.ExpenseCategoryName);
+                        if (expenseCategoryobj != null)
+                        {
+                            TempData["error"] = "ExpenseCategory Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.ExpenseCategory.Update(expenseCategory);
+                            _unitOfWork.Save();
+                            TempData["success"] = "ExpenseCategory Updated successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.ExpenseCategory.Update(expenseCategory);
-                        _unitOfWork.Save();
-                        TempData["success"] = "ExpenseCategory Updated successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
 
                 }
@@ -128,14 +160,25 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             }
             else
             {
-                return View(expenseCategory); 
+                return View(expenseCategory);
             }
 
-         
+
         }
 
         #endregion
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
 
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
         #region API CALLS
 
         [HttpGet]
@@ -149,16 +192,30 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpDelete]
         public IActionResult Delete(int? id)
         {
-            var ExpenseCategoryToBeDeleted = _unitOfWork.ExpenseCategory.Get(u => u.Id == id);
-            if (ExpenseCategoryToBeDeleted == null)
+            try
             {
-                return Json(new { success = false, message = "Error while deleting" });
+
+
+                var ExpenseCategoryToBeDeleted = _unitOfWork.ExpenseCategory.Get(u => u.Id == id);
+                if (ExpenseCategoryToBeDeleted == null)
+                {
+                    return Json(new { success = false, message = "Error while deleting" });
+                }
+
+                _unitOfWork.ExpenseCategory.Remove(ExpenseCategoryToBeDeleted);
+                _unitOfWork.Save();
+
+                return Json(new { success = true, message = "Delete Successful" });
+            }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
+
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
             }
 
-            _unitOfWork.ExpenseCategory.Remove(ExpenseCategoryToBeDeleted);
-            _unitOfWork.Save();
-
-            return Json(new { success = true, message = "Delete Successful" });
         }
 
         #endregion

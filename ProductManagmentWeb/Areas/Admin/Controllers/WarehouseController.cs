@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 using ProductManagment_Models.ViewModels;
@@ -13,9 +14,11 @@ namespace ProductManagment.Areas.Admin.Controllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-        public WarehouseController(IUnitOfWork unitOfWork)
+        private readonly ApplicationDbContext _db;
+        public WarehouseController(IUnitOfWork unitOfWork, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
+            _db = db;
         }
 
 
@@ -40,22 +43,22 @@ namespace ProductManagment.Areas.Admin.Controllers
             WarehouseIndexVM warehouseIndexVM = new WarehouseIndexVM();
             warehouseIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "warehouseName_desc" : "";
             var warehouses = (from data in _unitOfWork.Warehouse.GetAll().ToList()
-                          where term == "" ||
-                             data.WarehouseName.ToLower().
-                             Contains(term)
+                              where term == "" ||
+                                 data.WarehouseName.ToLower().
+                                 Contains(term)
 
-                                 
-                          select new Warehouse
-                          {
-                              Id = data.Id,
-                              WarehouseName = data.WarehouseName,
-                              ContactPerson = data.ContactPerson,
-                              MobileNumber =  data.MobileNumber,
-                              Email = data.Email,
-                              Address = data.Address,
-                              IsActive = data.IsActive
-                        
-                          });
+
+                              select new Warehouse
+                              {
+                                  Id = data.Id,
+                                  WarehouseName = data.WarehouseName,
+                                  ContactPerson = data.ContactPerson,
+                                  MobileNumber = data.MobileNumber,
+                                  Email = data.Email,
+                                  Address = data.Address,
+                                  IsActive = data.IsActive
+
+                              });
             switch (orderBy)
             {
                 case "warehouseName_desc":
@@ -109,31 +112,57 @@ namespace ProductManagment.Areas.Admin.Controllers
 
                 if (warehouse.Id == 0)
                 {
-                    Warehouse warehouseObj = _unitOfWork.Warehouse.Get(u => u.WarehouseName == warehouse.WarehouseName);
-                    if (warehouseObj != null)
-                    {
-                        TempData["error"] = "Warehouse Name Already Exist!";
-                    }
-                    else
+                    try
                     {
 
-                        _unitOfWork.Warehouse.Add(warehouse);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Warehouse created successfully";
+
+                        Warehouse warehouseObj = _unitOfWork.Warehouse.Get(u => u.WarehouseName == warehouse.WarehouseName);
+                        if (warehouseObj != null)
+                        {
+                            TempData["error"] = "Warehouse Name Already Exist!";
+                        }
+                        else
+                        {
+
+                            _unitOfWork.Warehouse.Add(warehouse);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Warehouse created successfully";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 else
                 {
-                    Warehouse warehouseObj = _unitOfWork.Warehouse.Get(u => u.Id != warehouse.Id && u.WarehouseName == warehouse.WarehouseName);
-                    if (warehouseObj != null)
+                    try
                     {
-                        TempData["error"] = "Warehouse Name Already Exist!";
+
+
+                        Warehouse warehouseObj = _unitOfWork.Warehouse.Get(u => u.Id != warehouse.Id && u.WarehouseName == warehouse.WarehouseName);
+                        if (warehouseObj != null)
+                        {
+                            TempData["error"] = "Warehouse Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.Warehouse.Update(warehouse);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Warehouse Updated successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.Warehouse.Update(warehouse);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Warehouse Updated successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 return RedirectToAction("Index");
@@ -145,22 +174,47 @@ namespace ProductManagment.Areas.Admin.Controllers
         }
 
 
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            Warehouse warehouseToBeDeleted = _unitOfWork.Warehouse.Get(u => u.Id == id);
-            if (warehouseToBeDeleted == null)
+            try
             {
-                TempData["error"] = "warehouse can't be Delete.";
+
+
+                Warehouse warehouseToBeDeleted = _unitOfWork.Warehouse.Get(u => u.Id == id);
+                if (warehouseToBeDeleted == null)
+                {
+                    TempData["error"] = "warehouse can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+
+                _unitOfWork.Warehouse.Remove(warehouseToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "warehouse Deleted successfully";
                 return RedirectToAction("Index");
             }
+            catch (Exception ex)
+            {
+                LogErrorToDatabase(ex);
 
-            _unitOfWork.Warehouse.Remove(warehouseToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "warehouse Deleted successfully";
-            return RedirectToAction("Index");
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
 
         }
 

@@ -10,7 +10,7 @@ using System.Data;
 using Microsoft.AspNetCore.Authorization;
 
 using System.Drawing.Drawing2D;
-
+using ProductManagment_DataAccess.Data;
 
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
@@ -21,11 +21,13 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ApplicationDbContext _db;
 
-        public CustomerController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public CustomerController(IUnitOfWork unitOfWork, ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _db = db;
         }
         //public IActionResult Index()
         //{
@@ -50,24 +52,24 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             CustomerIndexVM customerIndexVM = new CustomerIndexVM();
             customerIndexVM.NameSortOrder = string.IsNullOrEmpty(orderBy) ? "customerName_desc" : "";
             var customers = (from data in _unitOfWork.Customer.GetAll(includeProperties: "City,Country,State").ToList()
-                          where term == "" ||
-                             data.CustomerName.ToLower().
-                             Contains(term) || data.Country.CountryName.ToLower().Contains(term) || data.State.StateName.ToLower().Contains(term) || data.City.CityName.ToLower().Contains(term)
+                             where term == "" ||
+                                data.CustomerName.ToLower().
+                                Contains(term) || data.Country.CountryName.ToLower().Contains(term) || data.State.StateName.ToLower().Contains(term) || data.City.CityName.ToLower().Contains(term)
 
 
                              select new Customer
-                          {
-                              Id = data.Id,
-                              CustomerName = data.CustomerName,
-                              ContactPerson = data.ContactPerson,
-                              Email = data.Email,
-                              MobileNumber = data.MobileNumber,
-                              WebSite = data.WebSite,
-                              CustomerImage = data.CustomerImage
+                             {
+                                 Id = data.Id,
+                                 CustomerName = data.CustomerName,
+                                 ContactPerson = data.ContactPerson,
+                                 Email = data.Email,
+                                 MobileNumber = data.MobileNumber,
+                                 WebSite = data.WebSite,
+                                 CustomerImage = data.CustomerImage
 
-                         
 
-                          });
+
+                             });
             switch (orderBy)
             {
                 case "customerName_desc":
@@ -135,99 +137,161 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
         [HttpPost]
 
-        // jayre image levani hoy tyre IFormFile? file Parameter lai levnu
+
 
         public IActionResult Upsert(CustomerVM customerVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                try
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string customerPath = Path.Combine(wwwRootPath, @"images\customer");
-
-                    if (!string.IsNullOrEmpty((string?)customerVM.Customer.CustomerImage))
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    if (file != null)
                     {
-                        //delete the old image
-                        var oldImagePath =
-                                    Path.Combine(wwwRootPath, (string)customerVM.Customer.CustomerImage.TrimStart('\\'));
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                        string customerPath = Path.Combine(wwwRootPath, @"images\customer");
 
-                        if (System.IO.File.Exists(oldImagePath))
+                        if (!string.IsNullOrEmpty((string?)customerVM.Customer.CustomerImage))
                         {
-                            System.IO.File.Delete(oldImagePath);
+                            //delete the old image
+                            var oldImagePath =
+                                        Path.Combine(wwwRootPath, (string)customerVM.Customer.CustomerImage.TrimStart('\\'));
+
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                            }
                         }
-                    }
 
-                    using (var fileStream = new FileStream(Path.Combine(customerPath, fileName), FileMode.Create))
-                    {
-                        file.CopyTo(fileStream);
-                    }
+                        using (var fileStream = new FileStream(Path.Combine(customerPath, fileName), FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
 
-                    customerVM.Customer.CustomerImage = @"\images\customer\" + fileName;
+                        customerVM.Customer.CustomerImage = @"\images\customer\" + fileName;
+                    }
                 }
+                catch (Exception ex)
+                {
+                    LogErrorToDatabase(ex);
+
+                    TempData["error"] = "error accured";
+                    // return View(brand);
+                    return RedirectToAction("Error", "Home");
+                }
+
 
                 if (customerVM.Customer.Id == 0)
                 {
-                    Customer customerObj = _unitOfWork.Customer.Get(u => u.CustomerName == customerVM.Customer.CustomerName);
-                    if (customerObj != null)
+                    try
                     {
-                        TempData["error"] = "Customer Name Already Exist!";
+
+
+                        Customer customerObj = _unitOfWork.Customer.Get(u => u.CustomerName == customerVM.Customer.CustomerName);
+                        if (customerObj != null)
+                        {
+                            TempData["error"] = "Customer Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.Customer.Add(customerVM.Customer);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Customer created successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.Customer.Add(customerVM.Customer);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Customer created successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
                 else
                 {
-                    Customer customerObj = _unitOfWork.Customer.Get(u => u.Id != customerVM.Customer.Id && u.CustomerName == customerVM.Customer.CustomerName);
-                    if (customerObj != null)
+                    try
                     {
-                        TempData["error"] = "Customer Name Already Exist!";
+
+
+                        Customer customerObj = _unitOfWork.Customer.Get(u => u.Id != customerVM.Customer.Id && u.CustomerName == customerVM.Customer.CustomerName);
+                        if (customerObj != null)
+                        {
+                            TempData["error"] = "Customer Name Already Exist!";
+                        }
+                        else
+                        {
+                            _unitOfWork.Customer.Update(customerVM.Customer);
+                            _unitOfWork.Save();
+                            TempData["success"] = "Customer created successfully";
+                        }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        _unitOfWork.Customer.Update(customerVM.Customer);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Customer created successfully";
+                        LogErrorToDatabase(ex);
+
+                        TempData["error"] = "error accured";
+                        // return View(brand);
+                        return RedirectToAction("Error", "Home");
                     }
                 }
 
-            
+
                 return RedirectToAction("Index");
             }
 
             return View(customerVM);
         }
 
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
 
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            Customer customerToBeDeleted = _unitOfWork.Customer.Get(u => u.Id == id);
-            if (customerToBeDeleted == null)
+            try
             {
-                TempData["error"] = "customer can't be Delete.";
+                Customer customerToBeDeleted = _unitOfWork.Customer.Get(u => u.Id == id);
+                if (customerToBeDeleted == null)
+                {
+                    TempData["error"] = "customer can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+                var oldImagePath =
+                                   Path.Combine(_webHostEnvironment.WebRootPath,
+                                    customerToBeDeleted.CustomerImage.TrimStart('\\'));
+
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+
+                _unitOfWork.Customer.Remove(customerToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "customer Deleted successfully";
                 return RedirectToAction("Index");
             }
-            var oldImagePath =
-                         Path.Combine(_webHostEnvironment.WebRootPath,
-                          customerToBeDeleted.CustomerImage.TrimStart('\\'));
 
-            if (System.IO.File.Exists(oldImagePath))
+
+            catch (Exception ex)
             {
-                System.IO.File.Delete(oldImagePath);
-            }
+                LogErrorToDatabase(ex);
 
-            _unitOfWork.Customer.Remove(customerToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "customer Deleted successfully";
-            return RedirectToAction("Index");
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
+            }
 
         }
 

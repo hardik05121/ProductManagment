@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using ProductManagment_DataAccess.Data;
 using ProductManagment_DataAccess.Repository.IRepository;
 using ProductManagment_Models.Models;
 
@@ -14,15 +16,17 @@ using System.Data;
 namespace ProductManagmentWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
-   // [Authorize(Roles = "Admin")]
+    // [Authorize(Roles = "Admin")]
     public class BrandController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public BrandController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        private readonly ApplicationDbContext _db;
+        public BrandController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, ApplicationDbContext db)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _db = db;
         }
 
         //#region Index
@@ -37,7 +41,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             ViewData["CurrentFilter"] = term;
             term = string.IsNullOrEmpty(term) ? "" : term.ToLower();
 
- 
+
 
 
             BrandIndexVM brandIndexVM = new BrandIndexVM();
@@ -45,7 +49,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
             var brands = (from data in _unitOfWork.Brand.GetAll().ToList()
                           where term == "" ||
                              data.BrandName.ToLower().
-                             Contains(term) 
+                             Contains(term)
 
 
                           select new Brand
@@ -54,7 +58,7 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
                               BrandName = data.BrandName,
 
                               BrandImage = data.BrandImage
-                             
+
                           });
             switch (orderBy)
             {
@@ -82,6 +86,14 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
 
 
         }
+
+
+
+
+
+
+
+
         #region Upsert
         [HttpGet] // to grt the data on display.
         public IActionResult Upsert(int? id)
@@ -105,139 +117,200 @@ namespace ProductManagmentWeb.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Upsert(Brand brand, IFormFile? file)
         {
-            if (ModelState.IsValid)
+
+            try
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                if (file != null)
+                if (ModelState.IsValid)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string brandPath = Path.Combine(wwwRootPath, @"images\brand");
-
-                    if (!string.IsNullOrEmpty(brand.BrandImage))
+                    try
                     {
-                        //delete the old image
-                        var oldImagePath =
-                            Path.Combine(wwwRootPath, brand.BrandImage.TrimStart('\\'));
-
-                        if (System.IO.File.Exists(oldImagePath))
+                        string wwwRootPath = _webHostEnvironment.WebRootPath;
+                        if (file != null)
                         {
-                            System.IO.File.Delete(oldImagePath);
+                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                            string brandPath = Path.Combine(wwwRootPath, @"images\brand");
+
+                            if (!string.IsNullOrEmpty(brand.BrandImage))
+                            {
+                                //delete the old image
+                                var oldImagePath =
+                                Path.Combine(wwwRootPath, brand.BrandImage.TrimStart('\\'));
+
+                                if (System.IO.File.Exists(oldImagePath))
+                                {
+                                    System.IO.File.Delete(oldImagePath);
+                                }
+                            }
+
+                            using (var fileStream = new FileStream(Path.Combine(brandPath, fileName), FileMode.Create))
+                            {
+                                file.CopyTo(fileStream);
+                            }
+
+                            brand.BrandImage = @"\images\brand\" + fileName;
                         }
                     }
-
-                    using (var fileStream = new FileStream(Path.Combine(brandPath, fileName), FileMode.Create))
+                    catch (Exception ex)
                     {
-                        file.CopyTo(fileStream);
+                        LogErrorToDatabase(ex);
+                        TempData["error"] = ex.Message;
+                        // return View(brand);
+                        return View(brand);
                     }
 
-                    brand.BrandImage = @"\images\brand\" + fileName;
-                }
 
-
-
-                if (brand.Id == 0)
-                {
-                    Brand brandObj = _unitOfWork.Brand.Get(u => u.BrandName == brand.BrandName);
-                    if (brandObj != null)
+                    if (brand.Id == 0)
                     {
-                        TempData["error"] = "Brand Name Already Exist!";
+                        try
+                        {
+                            Brand brandObj = _unitOfWork.Brand.Get(u => u.BrandName == brand.BrandName);
+                            if (brandObj != null)
+                            {
+                                TempData["error"] = "Brand Name Already Exist!";
+
+                            }
+                            else
+                            {
+                                _unitOfWork.Brand.Add(brand);
+                                _unitOfWork.Save();
+                                TempData["success"] = "Brand created successfully";
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // LogErrorToDatabase(ex);
+
+                            TempData["error"] = ex.Message;
+                            // return View(brand);
+                            return View(brand);
+                        }
+
                     }
                     else
                     {
-                        _unitOfWork.Brand.Add(brand);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Brand created successfully";
+                        try
+                        {
+                            Brand brandObj = _unitOfWork.Brand.Get(u => u.Id != brand.Id && u.BrandName == brand.BrandName);
+                            if (brandObj != null)
+                            {
+                                TempData["error"] = "Brand Name Already Exist!";
+
+                            }
+                            else
+                            {
+                                _unitOfWork.Brand.Update(brand);
+                                _unitOfWork.Save();
+                                TempData["success"] = "Brand Updated successfully";
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            TempData["error"] = ex.Message;
+                            // return View(brand);
+                            return View(brand);
+                        }
                     }
+                    return RedirectToAction("Index");
                 }
                 else
                 {
-                    Brand brandObj = _unitOfWork.Brand.Get(u => u.Id != brand.Id && u.BrandName == brand.BrandName);
-                    if (brandObj != null)
-                    {
-                        TempData["error"] = "Brand Name Already Exist!";
-                    }
-                    else
-                    {
-                        _unitOfWork.Brand.Update(brand);
-                        _unitOfWork.Save();
-                        TempData["success"] = "Brand Updated successfully";
-                    }
 
+                    return View(brand);
                 }
-;
 
-                return RedirectToAction("Index");
             }
-            else
+            catch (Exception ex)
             {
-            
-                return View(brand);
+                LogErrorToDatabase(ex);
+
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
             }
         }
+        private void LogErrorToDatabase(Exception ex)
+        {
+            var error = new ErrorLog
+            {
+                ErrorMessage = ex.Message,
+                //  StackTrace = ex.StackTrace,
+                ErrorDate = DateTime.Now
+            };
+
+            _db.ErrorLogs.Add(error);
+            _db.SaveChanges();
+        }
+
+
         #endregion
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Delete(int? id)
         {
-            Brand brandToBeDeleted = _unitOfWork.Brand.Get(u => u.Id == id);
-            if (brandToBeDeleted == null)
+            try
             {
-                TempData["error"] = "Brand can't be Delete.";
+                Brand brandToBeDeleted = _unitOfWork.Brand.Get(u => u.Id == id);
+                if (brandToBeDeleted == null)
+                {
+                    TempData["error"] = "Brand can't be Delete.";
+                    return RedirectToAction("Index");
+                }
+                var oldImagePath =
+                          Path.Combine(_webHostEnvironment.WebRootPath,
+                           brandToBeDeleted.BrandImage.TrimStart('\\'));
+
+                if (System.IO.File.Exists(oldImagePath))
+                {
+                    System.IO.File.Delete(oldImagePath);
+                }
+
+                _unitOfWork.Brand.Remove(brandToBeDeleted);
+                _unitOfWork.Save();
+                TempData["success"] = "Brand Deleted successfully";
                 return RedirectToAction("Index");
             }
-            var oldImagePath =
-                      Path.Combine(_webHostEnvironment.WebRootPath,
-                       brandToBeDeleted.BrandImage.TrimStart('\\'));
-
-            if (System.IO.File.Exists(oldImagePath))
+            catch (Exception ex)
             {
-                System.IO.File.Delete(oldImagePath);
+                var error = new ErrorLog
+                {
+                    ErrorMessage = ex.Message,
+                    StackTrace = ex.StackTrace,
+                    ErrorDate = DateTime.Now
+                };
+
+                _db.ErrorLogs.Add(error);
+                _db.SaveChanges();
+
+                TempData["error"] = "error accured";
+                // return View(brand);
+                return RedirectToAction("Error", "Home");
             }
-
-            _unitOfWork.Brand.Remove(brandToBeDeleted);
-            _unitOfWork.Save();
-            TempData["success"] = "Brand Deleted successfully";
-            return RedirectToAction("Index");
-
         }
-
-
-        //#region API CALLS
-
-        //[HttpGet]
-        //public IActionResult GetAll()
-        //{
-        //    List<Brand> objBrandList = _unitOfWork.Brand.GetAll().ToList();
-        //    return Json(new { data = objBrandList });
-        //}
-
-
-        //[HttpDelete]
-        //public IActionResult Delete(int? id)
-        //{
-        //    var brandToBeDeleted = _unitOfWork.Brand.Get(u => u.Id == id);
-        //    if (brandToBeDeleted == null)
-        //    {
-        //        return Json(new { success = false, message = "Error while deleting" });
-        //    }
-
-        //    var oldImagePath =
-        //                   Path.Combine(_webHostEnvironment.WebRootPath,
-        //                   brandToBeDeleted.BrandImage.TrimStart('\\'));
-
-        //    if (System.IO.File.Exists(oldImagePath))
-        //    {
-        //        System.IO.File.Delete(oldImagePath);
-        //    }
-
-        //    _unitOfWork.Brand.Remove(brandToBeDeleted);
-        //    _unitOfWork.Save();
-
-        //    return Json(new { success = true, message = "Delete Successful" });
-        //}
-
-
-        //#endregion
     }
 }
+
+// catch (IOException ex)
+//    {
+//    // Handle IO-related exceptions (file operations)
+//    TempData["error"] = "An error occurred while processing the file.";
+//}
+//    catch (DbUpdateException ex)
+//    {
+//    // Handle database update related exceptions
+//    TempData["error"] = "An error occurred while saving data to the database.";
+//}
+//    catch (Exception ex)
+//    {
+//    // Catch any other unexpected exceptions
+//    TempData["error"] = "An unexpected error occurred.";
+//}
+
+//// Log the error to the ILogger
+//LogErrorToDatabase(ex);
+
+//// Redirect to the error page
+//return RedirectToAction("Error", "Home");
+//}

@@ -29,4 +29,8 @@
     <Folder Include="DatabaseScripts\2023\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ProductManagment_DataAccess\ProductManagment_DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>

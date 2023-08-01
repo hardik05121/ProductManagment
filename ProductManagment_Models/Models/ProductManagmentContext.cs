@@ -39,6 +39,8 @@ public partial class ProductManagmentContext : DbContext
 
     public virtual DbSet<Customer> Customers { get; set; }
 
+    public virtual DbSet<ErrorLog> ErrorLogs { get; set; }
+
     public virtual DbSet<Expense> Expenses { get; set; }
 
     public virtual DbSet<ExpenseCategory> ExpenseCategories { get; set; }
